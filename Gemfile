@@ -71,3 +71,6 @@ gem "view_component", "~> 4.15"
 gem "lookbook", "~> 2.3", group: :development
 
 gem "i18n-tasks", "~> 1.1", groups: [:development, :test]
+
+gem "axe-core-api", "~> 4.13", group: :test
+gem "axe-core-capybara", "~> 4.13", group: :test
