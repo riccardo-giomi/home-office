@@ -65,3 +65,7 @@ end
 gem "standard", "~> 1.56", groups: [:development, :test], require: false
 
 gem "minitest-spec-rails", "~> 7.4", group: :test
+
+gem "view_component", "~> 4.15"
+
+gem "lookbook", "~> 2.3", group: :development
