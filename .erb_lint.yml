@@ -1,0 +1,15 @@
+---
+EnableDefaultLinters: true
+linters:
+  ErbSafetyLinter:
+    enabled: false
+  Rubocop:
+    enabled: true
+    rubocop_config:
+      inherit_gem:
+        standard: config/base.yml
+      # ERB files are fragments: these two layout cops are artefacts of that, not findings
+      Layout/InitialIndentation:
+        Enabled: false
+      Layout/TrailingEmptyLines:
+        Enabled: false
