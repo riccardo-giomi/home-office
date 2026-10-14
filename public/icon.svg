@@ -1,3 +1,17 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <style>
+    .body { fill: #3b5bdb; }
+    .screen { fill: #eef1ff; }
+    .check { stroke: #3b5bdb; }
+    @media (prefers-color-scheme: dark) {
+      .body { fill: #91a7ff; }
+      .screen { fill: #1c2340; }
+      .check { stroke: #91a7ff; }
+    }
+  </style>
+  <rect class="body" x="48" y="64" width="416" height="288" rx="40"/>
+  <rect class="screen" x="80" y="96" width="352" height="224" rx="16"/>
+  <path class="check" d="M168 212l64 64 112-120" fill="none" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect class="body" x="226" y="352" width="60" height="56"/>
+  <rect class="body" x="132" y="408" width="248" height="40" rx="20"/>
 </svg>
