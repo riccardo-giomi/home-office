@@ -1,0 +1,10 @@
+<% content_for :title, t(".title") %>
+<div class="w-full max-w-md">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title"), back_href: admin_users_path, back_label: t("admin.users.back")) %>
+  <%= render "form", user: @user %>
+  <%= render(Core::UI::FormActionsComponent.new) do |actions| %>
+    <% actions.with_primary do %>
+      <%= render(Core::UI::ButtonComponent.new(type: :submit, form: "user-form")) { t("admin.users.form.submit") } %>
+    <% end %>
+  <% end %>
+</div>

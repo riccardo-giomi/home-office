@@ -1,0 +1,7 @@
+<%= form_with model: [:admin, user], id: "user-form" do |form| %>
+  <%= render Core::UI::ErrorSummaryComponent.new(record: user) %>
+  <%= render Core::UI::FieldComponent.new(form:, attribute: :email_address, label: User.human_attribute_name(:email_address), as: :email_field, autocomplete: "off", required: true) %>
+  <%= render Core::UI::FieldComponent.new(form:, attribute: :role, label: User.human_attribute_name(:role), as: :select, choices: User.roles.keys.map { [t("users.roles.#{it}"), it] }) %>
+  <%= render Core::UI::FieldComponent.new(form:, attribute: :password, label: User.human_attribute_name(:password), as: :password_field, hint: (user.new_record? ? t(".password_hint_new", count: 12) : t(".password_hint", count: 12)), autocomplete: "new-password", required: user.new_record?) %>
+  <%= render Core::UI::FieldComponent.new(form:, attribute: :password_confirmation, label: User.human_attribute_name(:password_confirmation), as: :password_field, autocomplete: "new-password", required: user.new_record?) %>
+<% end %>

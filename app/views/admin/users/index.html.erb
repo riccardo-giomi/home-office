@@ -1,0 +1,31 @@
+<% content_for :title, t(".title") %>
+<div class="w-full">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title")) %>
+  <%= render(Core::UI::PageToolbarComponent.new) do |toolbar| %>
+    <% toolbar.with_leading do %>
+      <%= render(Core::UI::ButtonComponent.new(href: new_admin_user_path)) { t(".new") } %>
+    <% end %>
+  <% end %>
+  <%# Plain table markup; emails wrap so 320 px does not scroll sideways %>
+  <table class="w-full text-left">
+    <caption class="sr-only"><%= t(".caption") %></caption>
+    <thead>
+      <tr>
+        <th scope="col" class="py-2 pe-2"><%= User.human_attribute_name(:email_address) %></th>
+        <th scope="col" class="py-2 pe-2"><%= User.human_attribute_name(:role) %></th>
+        <th scope="col" class="py-2"><span class="sr-only"><%= t(".actions") %></span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr class="border-t border-base-300">
+          <td class="py-2 pe-2 break-all"><%= user.email_address %></td>
+          <td class="py-2 pe-2"><%= t("users.roles.#{user.role}") %></td>
+          <td class="py-2">
+            <%= render(Core::UI::LinkComponent.new(href: edit_admin_user_path(user))) do %><%= t(".edit") %><span class="sr-only"> <%= user.email_address %></span><% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

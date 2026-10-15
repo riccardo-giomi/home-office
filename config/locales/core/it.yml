@@ -13,6 +13,28 @@ it:
           attributes:
             role:
               last_admin: 'non può essere cambiato: è l''ultimo amministratore'
+  admin:
+    forbidden: Non hai accesso a questa pagina.
+    users:
+      back: Torna agli utenti
+      create:
+        created: Utente creato.
+      edit:
+        title: Modifica utente
+      form:
+        password_hint: Lascia vuoto per mantenere la password attuale. Almeno %{count} caratteri.
+        password_hint_new: Almeno %{count} caratteri.
+        submit: Salva
+      index:
+        actions: Azioni
+        caption: Utenti e relativi ruoli
+        edit: Modifica
+        new: Nuovo utente
+        title: Utenti
+      new:
+        title: Nuovo utente
+      update:
+        updated: Utente aggiornato.
   core:
     app_name: Home Office
     ui:
@@ -38,6 +60,7 @@ it:
       sign_out: Esci
       signed_in_as: Accesso eseguito come %{email}.
       title: Home Office
+      users: Utenti
   sessions:
     invalid: Prova un altro indirizzo email o un'altra password.
     new:
@@ -46,3 +69,7 @@ it:
       submit: Accedi
       title: Accedi
     rate_limited: Troppi tentativi. Riprova più tardi.
+  users:
+    roles:
+      admin: Amministratore
+      user: Utente
