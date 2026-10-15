@@ -11,4 +11,12 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
 
   # A test that resizes the window must not leave the next one narrow
   setup { page.current_window.resize_to(1400, 1400) }
+
+  def sign_in_through_form(user, password: TEST_PASSWORD)
+    visit new_session_path
+    fill_in I18n.t("sessions.new.email_address"), with: user.email_address
+    fill_in I18n.t("sessions.new.password"), with: password
+    click_button I18n.t("sessions.new.submit")
+    assert_selector "h1", text: I18n.t("home.show.title")
+  end
 end

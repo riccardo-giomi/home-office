@@ -35,4 +35,14 @@ en:
         label: Dark theme
   home:
     show:
+      sign_out: Sign out
+      signed_in_as: Signed in as %{email}.
       title: Home Office
+  sessions:
+    invalid: Try another email address or password.
+    new:
+      email_address: Email address
+      password: Password
+      submit: Sign in
+      title: Sign in
+    rate_limited: Too many attempts. Try again later.

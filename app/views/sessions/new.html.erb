@@ -1,2 +1,10 @@
-<%# Placeholder %>
-<h1>Sign in</h1>
+<%# app/views/sessions/new.html.erb %>
+<% content_for :title, t(".title") %>
+<div class="w-full max-w-sm">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title")) %>
+  <%= form_with url: session_path do |form| %>
+    <%= render Core::UI::FieldComponent.new(form:, attribute: :email_address, label: t(".email_address"), as: :email_field, autocomplete: "username", required: true, autofocus: true) %>
+    <%= render Core::UI::FieldComponent.new(form:, attribute: :password, label: t(".password"), as: :password_field, autocomplete: "current-password", required: true) %>
+    <%= render(Core::UI::ButtonComponent.new(type: :submit)) { t(".submit") } %>
+  <% end %>
+</div>

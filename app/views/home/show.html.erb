@@ -1,1 +1,7 @@
-<h1 class="text-3xl font-bold"><%= t(".title") %></h1>
+<div>
+  <h1 class="text-3xl font-bold"><%= t(".title") %></h1>
+  <p class="my-4"><%= t(".signed_in_as", email: Current.user.email_address) %></p>
+  <%= form_with url: session_path, method: :delete do %>
+    <%= render(Core::UI::ButtonComponent.new(type: :submit, variant: :ghost)) { t(".sign_out") } %>
+  <% end %>
+</div>

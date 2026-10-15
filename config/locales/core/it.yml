@@ -35,4 +35,14 @@ it:
         label: Tema scuro
   home:
     show:
+      sign_out: Esci
+      signed_in_as: Accesso eseguito come %{email}.
       title: Home Office
+  sessions:
+    invalid: Prova un altro indirizzo email o un'altra password.
+    new:
+      email_address: Indirizzo email
+      password: Password
+      submit: Accedi
+      title: Accedi
+    rate_limited: Troppi tentativi. Riprova più tardi.

@@ -15,6 +15,9 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
+    # The rate limiter needs a real cache store, which must not keep counts between tests
+    setup { Rails.cache.clear }
+
     # Add more helper methods to be used by all tests here...
   end
 end
