@@ -1,5 +1,18 @@
 ---
 it:
+  activerecord:
+    attributes:
+      user:
+        email_address: Indirizzo email
+        password: Password
+        password_confirmation: Conferma della password
+        role: Ruolo
+    errors:
+      models:
+        user:
+          attributes:
+            role:
+              last_admin: 'non può essere cambiato: è l''ultimo amministratore'
   core:
     app_name: Home Office
     ui:

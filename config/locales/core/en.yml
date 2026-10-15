@@ -1,5 +1,18 @@
 ---
 en:
+  activerecord:
+    attributes:
+      user:
+        email_address: Email address
+        password: Password
+        password_confirmation: Password confirmation
+        role: Role
+    errors:
+      models:
+        user:
+          attributes:
+            role:
+              last_admin: 'cannot be changed: this is the last administrator'
   core:
     app_name: Home Office
     ui:
