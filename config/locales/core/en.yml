@@ -37,6 +37,17 @@ en:
         updated: User updated.
   core:
     app_name: Home Office
+    setup:
+      admin:
+        created: Created the administrator %{email}.
+        email_prompt: 'Email address of the administrator: '
+        no_password: No password given. Set HOME_OFFICE_ADMIN_PASSWORD or run this task in a terminal.
+        password_confirm_prompt: 'Type the password again: '
+        password_mismatch: The two passwords differ. Nothing was created.
+        password_prompt: 'Password (at least 12 characters, hidden): '
+        skipped: An administrator exists already. Nothing changed.
+        title: Administrator
+      running: 'Running: %{title}'
     ui:
       error_summary:
         title:

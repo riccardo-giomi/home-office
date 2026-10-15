@@ -23,5 +23,6 @@ describe "db/seeds.rb" do
     first = table_counts
     load_seed_as_development
     _(table_counts).must_equal first
+    assert User.exists?(email_address: "demo-admin@example.com")
   end
 end

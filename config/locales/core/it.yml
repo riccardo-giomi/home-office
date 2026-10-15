@@ -37,6 +37,17 @@ it:
         updated: Utente aggiornato.
   core:
     app_name: Home Office
+    setup:
+      admin:
+        created: Creato l'amministratore %{email}.
+        email_prompt: 'Indirizzo email dell''amministratore: '
+        no_password: Nessuna password indicata. Imposta HOME_OFFICE_ADMIN_PASSWORD oppure esegui il comando in un terminale.
+        password_confirm_prompt: 'Digita di nuovo la password: '
+        password_mismatch: Le due password sono diverse. Non è stato creato nulla.
+        password_prompt: 'Password (almeno 12 caratteri, nascosta): '
+        skipped: Esiste già un amministratore. Nulla è cambiato.
+        title: Amministratore
+      running: 'In corso: %{title}'
     ui:
       error_summary:
         title:
