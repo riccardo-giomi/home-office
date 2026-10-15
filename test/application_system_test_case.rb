@@ -12,6 +12,14 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   # A test that resizes the window must not leave the next one narrow
   setup { page.current_window.resize_to(1400, 1400) }
 
+  # 320 px is the reflow width of WCAG 1.4.10
+  def small_screen(&block)
+    page.driver.browser.manage.window.resize_to(320, 900)
+    block.call
+  ensure
+    page.driver.browser.manage.window.resize_to(1400, 1400)
+  end
+
   def sign_in_through_form(user, password: TEST_PASSWORD)
     visit new_session_path
     fill_in I18n.t("sessions.new.email_address"), with: user.email_address
