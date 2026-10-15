@@ -476,6 +476,7 @@ DEPENDENCIES
   propshaft
   puma (>= 5.0)
   rails (~> 8.1.4)
+  rails-i18n (~> 8.1)
   selenium-webdriver
   solid_cable
   solid_cache

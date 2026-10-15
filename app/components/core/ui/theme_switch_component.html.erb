@@ -1,0 +1,7 @@
+<%# The icon and the text carry the state; aria-checked is set by the controller from the page's color scheme %>
+<button type="button" role="switch" aria-checked="false" class="group btn btn-ghost btn-square"
+  data-controller="theme-switch" data-action="theme-switch#toggle" data-theme-switch-url-value="<%= @url %>">
+  <%= render Core::UI::IconComponent.new(name: :sun, class: "size-5 group-aria-checked:hidden") %>
+  <%= render Core::UI::IconComponent.new(name: :moon, class: "size-5 hidden group-aria-checked:block") %>
+  <span class="sr-only"><%= t("core.ui.theme_switch.label") %></span>
+</button>

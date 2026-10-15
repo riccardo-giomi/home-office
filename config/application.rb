@@ -28,16 +28,20 @@ module HomeOffice
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
 
-    config.i18n.available_locales = %i[en it]
-    config.i18n.default_locale = :en
-    config.i18n.fallbacks = [:en]
-
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
     # config.time_zone = "Central Time (US & Canada)"
+
+    # Rails globs config/locales/**/*.yml itself: locale files live at config/locales/<module>/<locale>.yml
+    config.i18n.available_locales = %i[en it]
+    config.i18n.default_locale = :en
+    config.i18n.fallbacks = [:en]
+
+    # Previews (Lookbook, /rails/view_components) have no request, user or preferences for the shell
+    config.view_component.previews.default_layout = "component_preview"
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end

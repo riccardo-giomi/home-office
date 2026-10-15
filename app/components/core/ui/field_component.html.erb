@@ -1,0 +1,19 @@
+<div class="mb-4">
+  <% if @as == :check_box %>
+    <div class="flex items-center gap-2 min-h-6">
+      <%= control %>
+      <%= @form.label @attribute, @label, class: "label text-base-content" %>
+    </div>
+  <% else %>
+    <%= @form.label @attribute, @label, class: "label mb-1 text-base-content" %>
+    <%= control %>
+  <% end %>
+  <% if @hint %><p id="<%= field_id %>_hint" class="text-sm mt-1"><%= @hint %></p><% end %>
+  <% if errors.any? %>
+    <div id="<%= field_id %>_error" class="text-error mt-1">
+      <% errors.each do |message| %>
+        <p class="flex gap-1"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-5 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg><span><%= message %></span></p>
+      <% end %>
+    </div>
+  <% end %>
+</div>

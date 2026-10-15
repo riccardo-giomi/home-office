@@ -1,0 +1,34 @@
+<%# Always shown from xl (1280 px) up; below that a panel the menu button opens (sidebar controller) %>
+<div class="fixed inset-0 z-30 hidden bg-black/50 data-open:block xl:hidden!" aria-hidden="true" data-sidebar-target="backdrop" data-action="click->sidebar#close"></div>
+<nav id="sidebar" aria-label="<%= t("core.ui.sidebar.label") %>" data-sidebar-target="panel" <%= "data-open" if @open %>
+  class="hidden data-open:flex fixed inset-y-0 start-0 z-40 w-72 max-w-full flex-col border-e border-base-300 bg-base-100 xl:flex xl:w-64 xl:z-10">
+  <button type="button" class="btn btn-ghost justify-end xl:hidden" data-action="sidebar#close"><span aria-hidden="true">✕</span> <%= t("core.ui.sidebar.close") %></button>
+  <div class="flex-1 overflow-y-auto p-2">
+    <% @groups.each do |group| %>
+      <% if group.label %><p id="<%= group_id(group) %>" class="menu-title px-3 pt-4 text-base-content/70"><%= group.label %></p><% end %>
+      <ul class="menu w-full p-0" <%= tag.attributes(aria: {labelledby: (group_id(group) if group.label)}) %>>
+        <% group.items.each do |item| %>
+          <li>
+            <%= link_to item.path, class: ["min-h-6", ("font-bold menu-active" if current?(item))], aria: {current: ("page" if current?(item))} do %>
+              <%= render Core::UI::IconComponent.new(name: item.icon) %><%= item.label %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+  <div class="border-t border-base-300 p-2">
+    <% if @footer_items.any? %>
+      <ul class="menu w-full p-0" data-part="footer-links">
+        <% @footer_items.each do |item| %>
+          <li>
+            <%= link_to item.path, class: ["min-h-6", ("font-bold menu-active" if current?(item))], aria: {current: ("page" if current?(item))} do %>
+              <%= render Core::UI::IconComponent.new(name: item.icon) %><%= item.label %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+    <div class="px-3 pt-2 pb-1"><%= content %></div>
+  </div>
+</nav>

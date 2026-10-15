@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<%# Lookbook's display option "theme" (config/environments/development.rb); without it the browser's own scheme applies %>
+<html lang="<%= I18n.locale %>" <%= tag.attributes("data-theme": (params.dig(:lookbook, :display, :theme) if %w[light dark].include?(params.dig(:lookbook, :display, :theme)))) %>>
+  <head>
+    <title>Preview</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= stylesheet_link_tag :app %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="bg-base-100 text-base-content p-4">
+    <%= yield %>
+  </body>
+</html>

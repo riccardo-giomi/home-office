@@ -1,0 +1,13 @@
+<header data-sidebar-target="page" class="navbar sticky top-0 z-20 h-14 min-h-14 gap-2 border-b border-base-300 bg-base-100 px-2">
+  <% if @menu %>
+    <button type="button" class="btn btn-ghost btn-square xl:hidden" aria-controls="sidebar" aria-expanded="false"
+      data-sidebar-target="button" data-action="sidebar#open">
+      <%= render Core::UI::IconComponent.new(name: :bars) %>
+      <span class="sr-only"><%= t("core.ui.header.menu") %></span>
+    </button>
+  <% end %>
+  <div class="min-w-0 flex-1 truncate text-lg px-2">
+    <span class="font-semibold"><%= t("core.app_name") %></span><% if @page_title.present? %><span class="text-base-content/70"> / <%= @page_title %></span><% end %>
+  </div>
+  <%= content %>
+</header>

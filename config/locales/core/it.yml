@@ -1,5 +1,25 @@
 ---
 it:
+  core:
+    app_name: Home Office
+    ui:
+      error_summary:
+        title:
+          one: 1 errore ha impedito il salvataggio
+          other: "%{count} errori hanno impedito il salvataggio"
+      header:
+        menu: Menu
+      modal:
+        close: Chiudi
+      noscript:
+        body: Home Office ha bisogno di JavaScript. Attivalo nelle impostazioni del browser e ricarica la pagina.
+        title: JavaScript è necessario
+      sidebar:
+        close: Chiudi
+        label: Principale
+      skip_link: Vai al contenuto principale
+      theme_switch:
+        label: Tema scuro
   home:
     show:
       title: Home Office
