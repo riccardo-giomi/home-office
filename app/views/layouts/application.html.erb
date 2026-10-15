@@ -24,7 +24,10 @@
   </head>
 
   <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+    <main class="container mx-auto mt-8 px-5">
+      <% flash.each do |kind, message| %>
+        <%= render Core::UI::FlashComponent.new(kind:, message:) %>
+      <% end %>
       <%= yield %>
     </main>
   </body>
