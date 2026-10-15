@@ -1,8 +1,11 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
+require_relative "test_helpers/session_test_helper"
 
 Dir[Rails.root.join("test/support/**/*.rb")].each { |file| require file }
+
+TEST_PASSWORD = "this is a long password, isn't it?".freeze
 
 module ActiveSupport
   class TestCase
