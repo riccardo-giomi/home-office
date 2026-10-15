@@ -1,0 +1,5 @@
+<ul class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+  <% TOKENS.each do |token, classes| %>
+    <li data-token="<%= token %>" class="<%= classes %> rounded-box border border-base-300 p-3 text-sm font-medium"><%= token %></li>
+  <% end %>
+</ul>

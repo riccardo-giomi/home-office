@@ -4,6 +4,7 @@
 
   <% if Current.user.admin? %>
     <p class="mb-4"><%= render(Core::UI::LinkComponent.new(href: admin_users_path)) { t(".users") } %></p>
+    <p class="mb-4"><%= render(Core::UI::LinkComponent.new(href: admin_theme_path)) { t(".theme") } %></p>
   <% end %>
 
   <%= form_with url: session_path, method: :delete do %>

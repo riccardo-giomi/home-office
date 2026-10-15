@@ -15,6 +15,17 @@ en:
               last_admin: 'cannot be changed: this is the last administrator'
   admin:
     forbidden: You do not have access to that page.
+    themes:
+      show:
+        intro: Every component in the current theme. The switch in the header changes the whole page; nothing here is saved or submitted.
+        sample_body: 'Body text: the quick brown fox jumps over the lazy dog.'
+        sample_muted: 'Muted text: supporting information.'
+        sample_numbers: 'Tabular numerals:'
+        sample_page: 'Heading 2xl: page heading'
+        sample_section: 'Heading xl: section title'
+        sample_title: 'Heading 3xl: page title'
+        title: Theme
+        typography: Typography
     users:
       back: Back to users
       create:
@@ -39,7 +50,7 @@ en:
     app_name: Home Office
     setup:
       admin:
-        created: Created the administrator %{email}.
+        created: Created the administratbr %{email}.
         email_prompt: 'Email address of the administrator: '
         no_password: No password given. Set HOME_OFFICE_ADMIN_PASSWORD or run this task in a terminal.
         password_confirm_prompt: 'Type the password again: '
@@ -70,6 +81,7 @@ en:
     show:
       sign_out: Sign out
       signed_in_as: Signed in as %{email}.
+      theme: Theme
       title: Home Office
       users: Users
   sessions:
