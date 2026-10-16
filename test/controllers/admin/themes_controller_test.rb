@@ -11,6 +11,27 @@ class Admin::ThemesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
   end
 
+  %w[light dark].each do |theme|
+    it "renders the page in the #{theme} theme the user chose" do
+      users(:admin).update!(theme:)
+      sign_in_as users(:admin)
+      get admin_theme_path
+      assert_select "html[data-theme=#{theme}]"
+    end
+  end
+
+  it "has the shell once: one header, one sidebar, one main, and the entry in the navigation for admins only" do
+    sign_in_as users(:admin)
+    get admin_theme_path
+    assert_select "header", 1
+    assert_select "nav#sidebar", 1
+    assert_select "main", 1
+    assert_select "nav a[href='#{admin_theme_path}']", text: I18n.t("core.nav.theme")
+    sign_in_as users(:member)
+    get root_path
+    assert_select "nav a[href='#{admin_theme_path}']", 0
+  end
+
   it "renders every example of every preview that can appear more than once" do
     sign_in_as users(:admin)
     get admin_theme_path

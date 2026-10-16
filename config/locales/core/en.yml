@@ -98,11 +98,8 @@ en:
         label: Dark theme
   home:
     show:
-      sign_out: Sign out
       signed_in_as: Signed in as %{email}.
-      theme: Theme
       title: Home Office
-      users: Users
   preferences:
     automatic: Automatic
     back: Back to home

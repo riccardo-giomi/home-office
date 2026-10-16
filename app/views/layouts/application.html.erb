@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= I18n.locale %>" <%= tag.attributes(theme_attributes) %>>
+<html lang="<%= I18n.locale %>" data-controller="page-focus" <%= tag.attributes(theme_attributes) %>>
   <head>
     <title><%= page_title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -23,12 +23,33 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body data-controller="time-zone theme">
-    <main class="container mx-auto mt-8 px-5">
-      <% flash.each do |kind, message| %>
-        <%= render Core::UI::FlashComponent.new(kind:, message:) %>
+  <body class="bg-base-200" data-controller="time-zone theme">
+    <%= render Core::UI::SkipLinkComponent.new(target: "main-content") %>
+    <%= render Core::UI::NoscriptNoticeComponent.new %>
+    <div class="noscript:hidden min-h-screen xl:ps-64"
+      <%= tag.attributes(data: {controller: ("sidebar" if navigation_groups.any?), action: "keydown.esc->sidebar#close turbo:before-cache@document->sidebar#hide"}) %>>
+      <%= render(Core::UI::HeaderComponent.new(page_title: content_for(:title), menu: navigation_groups.any?)) do %>
+        <% if authenticated? %>
+          <%= render Core::UI::ClockComponent.new(zone: Time.zone.name, date_format: effective_preferences.date_format, time_format: effective_preferences.time_format, locale: I18n.locale.to_s) %>
+        <% end %>
+        <%= render Core::UI::ThemeSwitchComponent.new(url: theme_path) %>
       <% end %>
-      <%= yield %>
-    </main>
+      <%= render(Core::UI::SidebarComponent.new(groups: navigation_groups, footer_items: navigation_footer_items, current_path: request.path)) do %>
+        <% if authenticated? %>
+          <p class="text-sm break-all"><%= Current.user.email_address %></p>
+          <p class="text-sm text-base-content/70 mb-2"><%= t("users.roles.#{Current.user.role}") %></p>
+          <%= form_with url: session_path, method: :delete do %>
+            <%= render(Core::UI::ButtonComponent.new(type: :submit, variant: :ghost)) { t("core.nav.sign_out") } %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <main id="main-content" tabindex="-1" data-sidebar-target="page" class="px-5 py-8 focus:outline-none">
+        <% flash.each do |kind, message| %>
+          <%= render Core::UI::FlashComponent.new(kind:, message:) %>
+        <% end %>
+        <%= yield %>
+      </main>
+    </div>
+    <%= render Core::UI::LiveRegionComponent.new %>
   </body>
 </html>

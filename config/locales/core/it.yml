@@ -98,11 +98,8 @@ it:
         label: Tema scuro
   home:
     show:
-      sign_out: Esci
       signed_in_as: Accesso eseguito come %{email}.
-      theme: Tema
       title: Home Office
-      users: Utenti
   preferences:
     automatic: Automatico
     back: Torna alla home

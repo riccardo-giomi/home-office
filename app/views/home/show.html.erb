@@ -1,13 +1,4 @@
 <div>
   <h1 class="text-3xl font-bold"><%= t(".title") %></h1>
   <p class="my-4"><%= t(".signed_in_as", email: Current.user.email_address) %></p>
-
-  <% if Current.user.admin? %>
-    <p class="mb-4"><%= render(Core::UI::LinkComponent.new(href: admin_users_path)) { t(".users") } %></p>
-    <p class="mb-4"><%= render(Core::UI::LinkComponent.new(href: admin_theme_path)) { t(".theme") } %></p>
-  <% end %>
-
-  <%= form_with url: session_path, method: :delete do %>
-    <%= render(Core::UI::ButtonComponent.new(type: :submit, variant: :ghost)) { t(".sign_out") } %>
-  <% end %>
 </div>
