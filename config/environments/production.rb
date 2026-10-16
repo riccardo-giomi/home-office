@@ -3,6 +3,10 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # The Theme page renders the component previews on the server too; `enabled` stays false, so the
+  # public /rails/view_components routes do not exist
+  config.view_component.previews.paths = [Rails.root.join("test/components/previews").to_s]
+
   # Code is not reloaded between requests.
   config.enable_reloading = false
 

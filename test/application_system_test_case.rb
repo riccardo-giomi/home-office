@@ -3,6 +3,7 @@ require "test_helper"
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   include AxeAssertions
   include LayoutAssertions
+  include CspAssertions
 
   # Headless Chrome has no pointer that can hover, which switches every hover: style off; say it has a mouse
   driven_by :selenium, using: :headless_chrome, screen_size: [1400, 1400] do |options|
@@ -10,7 +11,17 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   end
 
   # A test that resizes the window must not leave the next one narrow
-  setup { page.current_window.resize_to(1400, 1400) }
+  setup do
+    page.current_window.resize_to(1400, 1400)
+    record_csp_violations
+  end
+
+  # Before Capybara resets the session: afterwards the page is about:blank and cannot be asked
+  def before_teardown
+    assert_no_csp_violations
+  ensure
+    super
+  end
 
   # 320 px is the reflow width of WCAG 1.4.10
   def small_screen(&block)
