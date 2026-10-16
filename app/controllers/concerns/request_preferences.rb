@@ -12,7 +12,8 @@ module RequestPreferences
     @effective_preferences ||= Core::EffectivePreferences.new(
       user: Current.user,
       accept_language: request.headers["Accept-Language"],
-      browser_time_zone: browser_time_zone
+      browser_time_zone: browser_time_zone,
+      browser_theme: cookie_text(:theme)
     )
   end
 
@@ -28,6 +29,7 @@ module RequestPreferences
 
   def use_effective_preferences(&block)
     remember_detected_time_zone
+    mirror_theme_cookie
     I18n.with_locale(effective_preferences.locale) do
       Time.use_zone(effective_preferences.time_zone, &block)
     end
@@ -40,5 +42,16 @@ module RequestPreferences
     return if zone == Current.user.detected_time_zone
 
     Current.user.update_column(:detected_time_zone, zone)
+  end
+
+  # The cookie lets pages without a user (the sign-in page) start in the right theme
+  def mirror_theme_cookie
+    return unless Current.user
+
+    if Current.user.theme
+      cookies[:theme] = {value: Current.user.theme, expires: 1.year, same_site: :lax} unless cookies[:theme] == Current.user.theme
+    else
+      cookies.delete(:theme)
+    end
   end
 end

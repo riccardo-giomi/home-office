@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= I18n.locale %>">
+<html lang="<%= I18n.locale %>" <%= tag.attributes(theme_attributes) %>>
   <head>
     <title><%= page_title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -23,7 +23,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body data-controller="time-zone">
+  <body data-controller="time-zone theme">
     <main class="container mx-auto mt-8 px-5">
       <% flash.each do |kind, message| %>
         <%= render Core::UI::FlashComponent.new(kind:, message:) %>
