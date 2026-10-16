@@ -13,6 +13,14 @@ class AuthenticationTest < ApplicationSystemTestCase
     assert_selector "h1", text: I18n.t("home.show.title")
   end
 
+  it "puts focus on the heading after signing in, without a ring around it" do
+    visit new_session_path
+    page.send_keys users(:admin).email_address, :tab, TEST_PASSWORD, :enter
+    assert_selector "h1", text: I18n.t("home.show.title")
+    assert_equal "H1", evaluate_script("document.activeElement.tagName")
+    assert_equal "none", evaluate_script("getComputedStyle(document.activeElement).outlineStyle")
+  end
+
   it "announces a failed sign-in" do
     visit new_session_path
     fill_in I18n.t("sessions.new.email_address"), with: users(:admin).email_address
