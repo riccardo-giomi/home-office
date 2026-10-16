@@ -1,0 +1,78 @@
+require "test_helper"
+
+describe Core::Modules do
+  before do
+    @saved = Core::Modules.all
+    Core::Modules.reset!
+  end
+
+  after do
+    Core::Modules.reset!
+    @saved.each { |manifest| Core::Modules.register(manifest) }
+  end
+
+  def manifest(name, navigation: [], setup_steps: [])
+    Core::ModuleManifest.new(name:, navigation:, setup_steps:)
+  end
+
+  it "registers a manifest once by name" do
+    Core::Modules.register(manifest("a"))
+    Core::Modules.register(manifest("a"))
+    _(Core::Modules.all.map(&:name)).must_equal ["a"]
+  end
+
+  it "lists navigation in registration order and hides admin entries from members" do
+    open_item = Core::NavItem.new(label_key: "core.nav.home", route: :root_path, icon: :home)
+    admin_item = Core::NavItem.new(label_key: "core.nav.users", route: :admin_users_path, icon: :users, admin: true)
+    Core::Modules.register(manifest("a", navigation: [open_item]))
+    Core::Modules.register(manifest("b", navigation: [admin_item]))
+    _(Core::Modules.navigation(admin: false)).must_equal [open_item]
+    _(Core::Modules.navigation(admin: true)).must_equal [open_item, admin_item]
+  end
+
+  it "puts admin entries after every module's own entries, however they were registered" do
+    admin_item = Core::NavItem.new(label_key: "core.nav.users", route: :admin_users_path, icon: :users, admin: true)
+    first = Core::NavItem.new(label_key: "core.nav.home", route: :root_path, icon: :home)
+    second = Core::NavItem.new(label_key: "core.nav.preferences", route: :edit_preferences_path, icon: :cog)
+    Core::Modules.register(manifest("a", navigation: [first, admin_item]))
+    Core::Modules.register(manifest("b", navigation: [second]))
+    _(Core::Modules.navigation(admin: true)).must_equal [first, second, admin_item]
+  end
+
+  it "keeps footer entries out of the main list and lists them apart" do
+    main = Core::NavItem.new(label_key: "core.nav.home", route: :root_path, icon: :home)
+    footer = Core::NavItem.new(label_key: "core.nav.preferences", route: :edit_preferences_path, icon: :cog, placement: :footer)
+    Core::Modules.register(manifest("a", navigation: [footer, main]))
+    _(Core::Modules.navigation(admin: false)).must_equal [main]
+    _(Core::Modules.navigation(admin: false, placement: :footer)).must_equal [footer]
+  end
+
+  it "collects setup steps in registration order" do
+    Core::Modules.register(manifest("a", setup_steps: [:one]))
+    Core::Modules.register(manifest("b", setup_steps: [:two]))
+    _(Core::Modules.setup_steps).must_equal [:one, :two]
+  end
+end
+
+describe "the booted registry" do
+  it "has Core first, then Planner" do
+    _(Core::Modules.all.map(&:name)).must_equal %w[core planner]
+  end
+
+  it "feeds the setup runner, administrator step first" do
+    _(Core::Setup::Runner.default_steps.first).must_be_instance_of Core::Setup::AdminStep
+  end
+
+  it "lays the sidebar out as Home, then Admin; Preferences sits at the bottom" do
+    _(Core::Modules.navigation(admin: false).map(&:route)).must_equal %i[root_path]
+    _(Core::Modules.navigation(admin: true).map(&:route)).must_equal %i[root_path admin_users_path admin_theme_path]
+    [false, true].each do |admin|
+      _(Core::Modules.navigation(admin:, placement: :footer).map(&:route)).must_equal %i[edit_preferences_path]
+    end
+  end
+
+  it "gives members no admin navigation and admins Users" do
+    _(Core::Modules.navigation(admin: false).map(&:route)).wont_include :admin_users_path
+    _(Core::Modules.navigation(admin: true).map(&:route)).must_include :admin_users_path
+  end
+end

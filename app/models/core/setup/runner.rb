@@ -2,7 +2,7 @@ require "io/console"
 
 # Ordered, re-runnable install steps.
 class Core::Setup::Runner
-  def self.default_steps = [Core::Setup::AdminStep.new]
+  def self.default_steps = Core::Modules.setup_steps
 
   def initialize(steps: self.class.default_steps, input: $stdin, output: $stdout, env: ENV,
     password_reader: ->(prompt) { IO.console&.getpass(prompt) })

@@ -54,6 +54,14 @@ en:
         updated: User updated.
   core:
     app_name: Home Office
+    nav:
+      groups:
+        admin: Admin
+      home: Home
+      preferences: Preferences
+      sign_out: Sign out
+      theme: Theme
+      users: Users
     preferences:
       defaults:
         date_format: mdy

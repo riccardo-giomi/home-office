@@ -54,6 +54,14 @@ it:
         updated: Utente aggiornato.
   core:
     app_name: Home Office
+    nav:
+      groups:
+        admin: Amministrazione
+      home: Home
+      preferences: Preferenze
+      sign_out: Esci
+      theme: Tema
+      users: Utenti
     preferences:
       defaults:
         date_format: dmy
