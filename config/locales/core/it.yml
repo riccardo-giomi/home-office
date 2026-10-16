@@ -48,6 +48,11 @@ it:
         updated: Utente aggiornato.
   core:
     app_name: Home Office
+    preferences:
+      defaults:
+        date_format: dmy
+        first_weekday: 1
+        time_format: 24h
     setup:
       admin:
         created: Creato l'amministratore %{email}.
