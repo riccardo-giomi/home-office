@@ -1,0 +1,69 @@
+---
+it:
+  activerecord:
+    attributes:
+      planner/event:
+        day: Giorno
+        end_time: Ora di fine
+        notes: Note
+        start_time: Ora di inizio
+        title: Titolo
+        tracks_done: Mostra una casella "fatto"
+    errors:
+      models:
+        planner/event:
+          attributes:
+            day:
+              not_start_day: deve essere il giorno in cui inizia l'evento
+            end_time:
+              after_start: deve essere dopo l'ora di inizio
+              same_day: deve essere nello stesso giorno dell'inizio
+  planner:
+    completions:
+      update:
+        done: 'Segnato come fatto: %{title}'
+        not_done: 'Segnato come non fatto: %{title}'
+    events:
+      back: Torna agli eventi
+      back_to_event: Torna all'evento
+      create:
+        created: Evento creato.
+      destroy:
+        deleted: Evento eliminato.
+      edit:
+        delete: Elimina evento
+        delete_confirm: Elimina evento
+        delete_title: Eliminare questo evento?
+        delete_warning: "«%{title}» verrà eliminato definitivamente."
+        title: 'Modifica evento: %{title}'
+      form:
+        submit: Salva evento
+        times_hint: Lascia vuote entrambe le ore per un evento di tutto il giorno.
+      index:
+        all_day: Tutto il giorno
+        caption_past: Eventi passati, dal più recente
+        caption_upcoming: Eventi in arrivo, dal più vicino
+        done: Fatto
+        done_label: 'Fatto: %{title}'
+        edit: Modifica
+        new: Nuovo evento
+        none_past: Nessun evento passato.
+        none_upcoming: Nessun evento in arrivo.
+        pages: Pagine degli eventi
+        past: Passati
+        title: Eventi
+        upcoming: In arrivo
+        views: Scegli quali eventi elencare
+        when: Quando
+      new:
+        title: Nuovo evento
+      show:
+        done: Fatto
+        done_at_html: Fatto il %{time}
+        edit: Modifica evento
+        notes: Note
+        when: Quando
+      update:
+        updated: Evento aggiornato.
+    nav:
+      events: Eventi

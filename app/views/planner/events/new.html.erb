@@ -1,0 +1,10 @@
+<% content_for :title, t(".title") %>
+<div class="w-full max-w-md">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title"), back_href: planner_events_path, back_label: t("planner.events.back")) %>
+  <%= render "form", event: @event %>
+  <%= render(Core::UI::FormActionsComponent.new) do |actions| %>
+    <% actions.with_primary do %>
+      <%= render(Core::UI::ButtonComponent.new(type: :submit, form: "event-form")) { t("planner.events.form.submit") } %>
+    <% end %>
+  <% end %>
+</div>

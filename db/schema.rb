@@ -10,7 +10,46 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_16_074815) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_16_143544) do
+  create_table "core_entities", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "record_type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["id", "record_type"], name: "index_core_entities_on_id_and_record_type", unique: true
+    t.index ["id", "user_id", "record_type"], name: "index_core_entities_on_id_and_user_id_and_record_type", unique: true
+    t.index ["id", "user_id"], name: "index_core_entities_on_id_and_user_id", unique: true
+  end
+
+  create_table "planner_items", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "record_type", default: "Planner::Item", null: false
+    t.string "type", null: false
+    t.string "title", null: false
+    t.text "notes"
+    t.date "day"
+    t.datetime "starts_at"
+    t.datetime "ends_at"
+    t.string "time_zone"
+    t.string "state", default: "active", null: false
+    t.integer "tracks_done", default: 0, null: false
+    t.datetime "done_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "type", "day", "starts_at"], name: "index_planner_items_on_day"
+    t.check_constraint "(starts_at IS NULL) = (ends_at IS NULL) AND (starts_at IS NULL) = (time_zone IS NULL)", name: "chk_planner_items_times_paired"
+    t.check_constraint "day IS NOT NULL OR type = 'Planner::Todo'", name: "chk_planner_items_day_required"
+    t.check_constraint "day IS NULL OR day = date(day)", name: "chk_planner_items_day_format"
+    t.check_constraint "done_at IS NULL OR tracks_done = 1", name: "chk_planner_items_done_tracked"
+    t.check_constraint "ends_at > starts_at", name: "chk_planner_items_window_order"
+    t.check_constraint "length(trim(title)) BETWEEN 1 AND 255", name: "chk_planner_items_title"
+    t.check_constraint "record_type = 'Planner::Item'", name: "chk_planner_items_record_type"
+    t.check_constraint "state <> 'cancelled' OR type = 'Planner::Event'", name: "chk_planner_items_cancelled_events"
+    t.check_constraint "state IN ('active', 'abandoned', 'cancelled')", name: "chk_planner_items_state"
+    t.check_constraint "tracks_done IN (0, 1)", name: "chk_planner_items_tracks_done"
+    t.check_constraint "type IN ('Planner::Event')", name: "chk_planner_items_type"
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "ip_address"
@@ -43,5 +82,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_074815) do
     t.check_constraint "time_format IN ('12h', '24h')", name: "chk_users_time_format"
   end
 
+  add_foreign_key "core_entities", "users", on_delete: :cascade
+  add_foreign_key "planner_items", "core_entities", column: ["id", "user_id", "record_type"], primary_key: ["id", "user_id", "record_type"], on_delete: :cascade
   add_foreign_key "sessions", "users", on_delete: :cascade
 end

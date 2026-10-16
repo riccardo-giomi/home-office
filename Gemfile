@@ -78,3 +78,5 @@ gem "axe-core-capybara", "~> 4.13", group: :test
 gem "erb_lint", "~> 0.9.0", groups: [:development, :test], require: false
 
 gem "rails-i18n", "~> 8.1"
+
+gem "pagy", "~> 43.7"

@@ -1,6 +1,11 @@
 class Core::UI::ButtonComponent < ApplicationComponent
   SIZES = {xs: "btn-xs", sm: "btn-sm"}.freeze
-  VARIANTS = {primary: "btn-primary", secondary: "bg-base-100 border-base-300 hover:bg-base-300", ghost: "btn-ghost", danger: "btn-error"}.freeze
+  VARIANTS = {
+    primary: "btn-primary",
+    secondary: "bg-base-100 border-base-300 hover:bg-base-300",
+    ghost: "btn-ghost",
+    danger: "btn-error"
+  }.freeze
 
   # With href: it is a link drawn as a button (it goes somewhere), without it
   # really is a button (it does something).

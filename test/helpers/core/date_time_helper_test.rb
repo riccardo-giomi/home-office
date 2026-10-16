@@ -29,6 +29,14 @@ class Core::DateTimeHelperTest < ActionView::TestCase
     end
   end
 
+  it "formats a time in a given zone when the time belongs to that zone, not to the viewer" do
+    time = Time.utc(2026, 10, 6, 22, 30)
+    with_preferences(time_zone: "America/Los_Angeles", time_format: "24h") do
+      assert_dom_equal %(<time datetime="2026-10-07T00:30:00+02:00">00:30</time>), format_time(time, zone: "Europe/Rome")
+      assert_dom_equal %(<time datetime="2026-10-06T15:30:00-07:00">15:30</time>), format_time(time)
+    end
+  end
+
   it "shows midnight and noon correctly in the 12-hour clock" do
     with_preferences(time_zone: "Europe/Rome", time_format: "12h") do
       _(format_time(Time.utc(2026, 10, 5, 22, 5))).must_include ">12:05 AM<"

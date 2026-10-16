@@ -63,9 +63,9 @@ describe "the booted registry" do
     _(Core::Setup::Runner.default_steps.first).must_be_instance_of Core::Setup::AdminStep
   end
 
-  it "lays the sidebar out as Home, then Admin; Preferences sits at the bottom" do
-    _(Core::Modules.navigation(admin: false).map(&:route)).must_equal %i[root_path]
-    _(Core::Modules.navigation(admin: true).map(&:route)).must_equal %i[root_path admin_users_path admin_theme_path]
+  it "lays the sidebar out as Home, the Planner, then Admin; Preferences sits at the bottom" do
+    _(Core::Modules.navigation(admin: false).map(&:route)).must_equal %i[root_path planner_events_path]
+    _(Core::Modules.navigation(admin: true).map(&:route)).must_equal %i[root_path planner_events_path admin_users_path admin_theme_path]
     [false, true].each do |admin|
       _(Core::Modules.navigation(admin:, placement: :footer).map(&:route)).must_equal %i[edit_preferences_path]
     end

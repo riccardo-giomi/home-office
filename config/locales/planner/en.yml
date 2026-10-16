@@ -1,0 +1,69 @@
+---
+en:
+  activerecord:
+    attributes:
+      planner/event:
+        day: Day
+        end_time: End time
+        notes: Notes
+        start_time: Start time
+        title: Title
+        tracks_done: Show a done checkbox
+    errors:
+      models:
+        planner/event:
+          attributes:
+            day:
+              not_start_day: must be the day the event starts
+            end_time:
+              after_start: must be after the start time
+              same_day: must be on the same day as the start
+  planner:
+    completions:
+      update:
+        done: 'Marked done: %{title}'
+        not_done: 'Marked not done: %{title}'
+    events:
+      back: Back to events
+      back_to_event: Back to the event
+      create:
+        created: Event created.
+      destroy:
+        deleted: Event deleted.
+      edit:
+        delete: Delete event
+        delete_confirm: Delete event
+        delete_title: Delete this event?
+        delete_warning: "“%{title}” will be deleted for good."
+        title: 'Edit event: %{title}'
+      form:
+        submit: Save event
+        times_hint: Leave both times empty for an all-day event.
+      index:
+        all_day: All day
+        caption_past: Past events, latest first
+        caption_upcoming: Upcoming events, earliest first
+        done: Done
+        done_label: 'Done: %{title}'
+        edit: Edit
+        new: New event
+        none_past: No past events.
+        none_upcoming: No upcoming events.
+        pages: Pages of events
+        past: Past
+        title: Events
+        upcoming: Upcoming
+        views: Choose which events to list
+        when: When
+      new:
+        title: New event
+      show:
+        done: Done
+        done_at_html: Done at %{time}
+        edit: Edit event
+        notes: Notes
+        when: When
+      update:
+        updated: Event updated.
+    nav:
+      events: Events

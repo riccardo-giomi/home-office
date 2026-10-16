@@ -1,0 +1,58 @@
+<% content_for :title, t(".title") %>
+<%# A tick saves and redirects here: morphing keeps focus on the checkbox %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<div class="w-full">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title")) %>
+  <%= render(Core::UI::PageToolbarComponent.new) do |toolbar| %>
+    <% toolbar.with_leading do %>
+      <%= render(Core::UI::ButtonComponent.new(href: new_planner_event_path)) { t(".new") } %>
+    <% end %>
+    <% toolbar.with_trailing do %>
+      <%= render Core::UI::TabsComponent.new(label: t(".views"), items: event_views) %>
+    <% end %>
+  <% end %>
+  <% if @events.empty? %>
+    <p><%= (@when == :past) ? t(".none_past") : t(".none_upcoming") %></p>
+  <% else %>
+    <%# Scaffolding %>
+    <table class="w-full text-left">
+      <caption class="sr-only"><%= (@when == :past) ? t(".caption_past") : t(".caption_upcoming") %></caption>
+      <thead>
+        <tr>
+          <th scope="col" class="py-2 pe-2"><%= t(".when") %></th>
+          <th scope="col" class="py-2 pe-2"><%= t(".done") %></th>
+          <th scope="col" class="py-2"><%= Planner::Event.human_attribute_name(:title) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @events.each do |event| %>
+          <tr class="border-t border-base-300">
+            <td class="py-2 pe-2">
+              <%= format_date(event.day) %><br>
+              <% if event.starts_at %>
+                <%= format_time(event.starts_at, zone: event.time_zone) %>&ndash;<%= format_time(event.ends_at, zone: event.time_zone) %>
+              <% else %>
+                <%= t(".all_day") %>
+              <% end %>
+            </td>
+            <td class="py-2 pe-2">
+              <% if event.tracks_done? %>
+                <%= form_with url: planner_event_completion_path(event), method: :patch, data: {controller: "auto-submit"} do %>
+                  <%= render Core::UI::CheckboxComponent.new(name: "done", checked: event.done?, label: t(".done_label", title: event.title), id: "done_event_#{event.id}", data: {action: "auto-submit#submit"}) %>
+                <% end %>
+              <% end %>
+            </td>
+            <td class="py-2 break-words">
+              <%= render(Core::UI::LinkComponent.new(href: planner_event_path(event))) do %>
+                <% if event.done? %><s class="opacity-70"><%= event.title %></s><span class="sr-only"> <%= t(".done") %></span><% else %><%= event.title %><% end %>
+              <% end %>
+              <br>
+              <%= render(Core::UI::LinkComponent.new(href: edit_planner_event_path(event))) do %><%= t(".edit") %><span class="sr-only"> <%= event.title %></span><% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <%= render Core::UI::PaginationComponent.new(pagy: @pagy, label: t(".pages")) %>
+  <% end %>
+</div>

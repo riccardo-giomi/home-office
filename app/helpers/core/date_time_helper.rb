@@ -3,8 +3,10 @@ module Core::DateTimeHelper
     tag.time(date.strftime(date_pattern), datetime: date.iso8601)
   end
 
-  def format_time(time)
-    local = time.in_time_zone
+  # zone: for a time that belongs to a place (an event keeps its own zone), not
+  # to the viewer
+  def format_time(time, zone: nil)
+    local = time.in_time_zone(zone || Time.zone)
     tag.time(local.strftime(time_pattern), datetime: local.iso8601)
   end
 

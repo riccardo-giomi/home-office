@@ -154,6 +154,7 @@ ignore_unused:
   - "activerecord.*"
   - "core.nav.*"
   - "core.preferences.defaults.*"
+  - "planner.nav.*"
   - "preferences.date_formats.*"
   - "preferences.locales.*"
   - "preferences.themes.*"
