@@ -1,5 +1,7 @@
 class User < ApplicationRecord
   has_secure_password
+  include Preferences
+
   # delete_all: strict loading forbids loading the sessions just to destroy them
   has_many :sessions, dependent: :delete_all
   enum :role, {admin: "admin", user: "user"}, default: :user, validate: true
