@@ -23,7 +23,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body data-controller="time-zone">
     <main class="container mx-auto mt-8 px-5">
       <% flash.each do |kind, message| %>
         <%= render Core::UI::FlashComponent.new(kind:, message:) %>
