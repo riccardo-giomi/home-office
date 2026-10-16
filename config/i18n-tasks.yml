@@ -154,6 +154,10 @@ ignore_unused:
   - "activerecord.*"
   - "user.roles.*"
   - "core.preferences.defaults.*"
+  - "preferences.locales.*"
+  - "preferences.date_formats.*"
+  - "preferences.time_formats.*"
+  - "preferences.themes.*"
 # - '{devise,kaminari,will_paginate}.*'
 # - 'simple_form.{yes,no}'
 # - 'simple_form.{placeholders,hints,labels}.*'

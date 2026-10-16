@@ -1,0 +1,21 @@
+<% content_for :title, t(".title") %>
+<div class="w-full max-w-md">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title"), back_href: root_path, back_label: t("preferences.back")) %>
+  <p class="mb-6"><%= t(".intro") %></p>
+  <%= form_with model: @user, url: preferences_path, method: :patch, id: "preferences-form" do |form| %>
+    <%= render Core::UI::ErrorSummaryComponent.new(record: @user) %>
+    <%= render Core::UI::FieldComponent.new(form:, attribute: :locale, label: User.human_attribute_name(:locale), as: :select, choices: locale_choices) %>
+    <%= render Core::UI::FieldComponent.new(form:, attribute: :date_format, label: User.human_attribute_name(:date_format), as: :select, choices: date_format_choices, hint: t(".date_format_hint")) %>
+    <%= render Core::UI::FieldComponent.new(form:, attribute: :first_weekday, label: User.human_attribute_name(:first_weekday), as: :select, choices: weekday_choices) %>
+    <%= render Core::UI::FieldComponent.new(form:, attribute: :time_format, label: User.human_attribute_name(:time_format), as: :select, choices: time_format_choices) %>
+    <%= render Core::UI::FieldComponent.new(form:, attribute: :time_zone, label: User.human_attribute_name(:time_zone), as: :select, choices: time_zone_choices) %>
+    <%= render Core::UI::FieldComponent.new(form:, attribute: :theme, label: User.human_attribute_name(:theme), as: :select, choices: theme_choices) %>
+    <p class="mb-1"><%= t(".example") %> <%= format_datetime(Time.current) %> (<%= Time.zone.name %>)</p>
+    <p class="mb-6"><%= t(".week_starts", day: first_weekday_name) %></p>
+  <% end %>
+  <%= render(Core::UI::FormActionsComponent.new) do |actions| %>
+    <% actions.with_primary do %>
+      <%= render(Core::UI::ButtonComponent.new(type: :submit, form: "preferences-form")) { t(".submit") } %>
+    <% end %>
+  <% end %>
+</div>

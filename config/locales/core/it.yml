@@ -3,10 +3,16 @@ it:
   activerecord:
     attributes:
       user:
+        date_format: Formato della data
         email_address: Indirizzo email
+        first_weekday: Primo giorno della settimana
+        locale: Lingua
         password: Password
         password_confirmation: Conferma della password
         role: Ruolo
+        theme: Tema
+        time_format: Formato dell'ora
+        time_zone: Fuso orario
     errors:
       models:
         user:
@@ -89,6 +95,31 @@ it:
       theme: Tema
       title: Home Office
       users: Utenti
+  preferences:
+    automatic: Automatico
+    back: Torna alla home
+    date_formats:
+      dmy: Giorno/mese/anno (31/12/2026)
+      mdy: Mese/giorno/anno (12/31/2026)
+      ymd: Anno-mese-giorno (2026-12-31)
+    edit:
+      date_format_hint: I campi data dentro i moduli usano sempre il formato del tuo browser.
+      example: 'Esempio, adesso:'
+      intro: Lascia un'impostazione su Automatico per seguire il browser e la lingua.
+      submit: Salva le preferenze
+      title: Preferenze
+      week_starts: 'Primo giorno della settimana: %{day}.'
+    locales:
+      en: English
+      it: Italiano
+    themes:
+      dark: Scuro
+      light: Chiaro
+    time_formats:
+      12h: Orologio a 12 ore (1:30 PM)
+      24h: Orologio a 24 ore (13:30)
+    update:
+      updated: Preferenze salvate.
   sessions:
     invalid: Prova un altro indirizzo email o un'altra password.
     new:

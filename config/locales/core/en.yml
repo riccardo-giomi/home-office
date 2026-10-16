@@ -3,10 +3,16 @@ en:
   activerecord:
     attributes:
       user:
+        date_format: Date format
         email_address: Email address
+        first_weekday: First day of the week
+        locale: Language
         password: Password
         password_confirmation: Password confirmation
         role: Role
+        theme: Theme
+        time_format: Time format
+        time_zone: Time zone
     errors:
       models:
         user:
@@ -89,6 +95,31 @@ en:
       theme: Theme
       title: Home Office
       users: Users
+  preferences:
+    automatic: Automatic
+    back: Back to home
+    date_formats:
+      dmy: Day/month/year (31/12/2026)
+      mdy: Month/day/year (12/31/2026)
+      ymd: Year-month-day (2026-12-31)
+    edit:
+      date_format_hint: Date fields inside forms always use your browser's own format.
+      example: 'Example, now:'
+      intro: Leave a setting on Automatic to follow your browser and language.
+      submit: Save preferences
+      title: Preferences
+      week_starts: Weeks start on %{day}.
+    locales:
+      en: English
+      it: Italiano
+    themes:
+      dark: Dark
+      light: Light
+    time_formats:
+      12h: 12-hour clock (1:30 PM)
+      24h: 24-hour clock (13:30)
+    update:
+      updated: Preferences saved.
   sessions:
     invalid: Try another email address or password.
     new:
