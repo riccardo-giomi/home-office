@@ -1,0 +1,36 @@
+<table class="w-full table-fixed border-collapse">
+  <caption class="sr-only"><%= @caption %></caption>
+  <thead>
+    <tr>
+      <% weekday_headers.each do |full, short| %>
+        <th scope="col" class="border border-base-300 bg-base-200 p-1 text-sm font-semibold">
+          <span aria-hidden="true"><%= short %></span><span class="sr-only"><%= full %></span>
+        </th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% @weeks.each do |week| %>
+      <tr>
+        <% week.each do |date| %>
+          <td class="<%= ["h-16 md:h-28 border border-base-300 p-1 align-top", ("bg-base-200" if outside_month?(date))].compact.join(" ") %>">
+            <%= link_to @day_href.call(date), class: "mb-1 inline-flex min-h-6 min-w-6 items-center justify-center rounded-full px-1 font-semibold #{"bg-primary text-primary-content" if date == @today}", "aria-current": ("date" if date == @today) do %>
+              <span aria-hidden="true"><%= date.day %></span><span class="sr-only"><%= I18n.l(date, format: :long) %></span>
+            <% end %>
+            <% if entries(date).any? %>
+              <p class="md:hidden text-xs"><%= t("core.ui.month_grid.events", count: entries(date).size) %></p>
+              <ul class="hidden md:block space-y-1">
+                <% entries(date).first(MAX_ENTRIES).each do |attributes| %>
+                  <li class="text-sm"><%= render_entry(attributes) %></li>
+                <% end %>
+              </ul>
+              <% if entries(date).size > MAX_ENTRIES %>
+                <%= link_to t("core.ui.month_grid.more", count: entries(date).size - MAX_ENTRIES), @day_href.call(date), class: "hidden md:inline-flex min-h-6 items-center text-sm link" %>
+              <% end %>
+            <% end %>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

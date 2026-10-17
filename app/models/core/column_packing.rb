@@ -15,8 +15,8 @@ module Core::ColumnPacking
   # Entry "1" from <start> to <end> fits in column 1 of 4, in "sub-group" 3.
   #
   # A sub-group contains all entries that are part of a
-  # chain and share the same number of columns. Will come in handy building
-  # sub-grids in the views.
+  # chain and share the same number of columns. Will come in handy for building
+  # their own sub-grids inside cells in the view.
   Placement = Struct.new(:entry, :from, :to, :column, :columns, :cluster)
   Result = Struct.new(:placements, :overflow)
   Cluster = Struct.new(:members, :latest_end)

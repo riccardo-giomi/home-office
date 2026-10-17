@@ -90,6 +90,13 @@ it:
         menu: Menu
       modal:
         close: Chiudi
+      month_grid:
+        events:
+          one: 1 evento
+          other: "%{count} eventi"
+        more:
+          one: "+%{count} altro"
+          other: "+%{count} altri"
       noscript:
         body: Home Office ha bisogno di JavaScript. Attivalo nelle impostazioni del browser e ricarica la pagina.
         title: JavaScript è necessario
