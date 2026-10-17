@@ -79,6 +79,9 @@ en:
         title: Administrator
       running: 'Running: %{title}'
     ui:
+      calendar_entry:
+        all_day: All day
+        done: Done
       error_summary:
         title:
           one: 1 error prevented saving

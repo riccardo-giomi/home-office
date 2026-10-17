@@ -57,3 +57,12 @@ class Core::DateTimeHelperTest < ActionView::TestCase
     end
   end
 end
+
+class Core::DateTimeHelperWithoutControllerTest < ActionView::TestCase
+  tests Core::DateTimeHelper
+
+  # Component previews render through a controller that has no request preferences
+  it "falls back to the locale defaults when the view has no effective preferences" do
+    assert_dom_equal %(<time datetime="2026-12-31">12/31/2026</time>), format_date(Date.new(2026, 12, 31))
+  end
+end

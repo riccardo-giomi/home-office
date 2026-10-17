@@ -3,8 +3,8 @@ module Core::DateTimeHelper
     tag.time(date.strftime(date_pattern), datetime: date.iso8601)
   end
 
-  # zone: for a time that belongs to a place (an event keeps its own zone), not
-  # to the viewer
+  # Zone: for a time that belongs to a place (an event keeps its own timezone),
+  # not to the viewer.
   def format_time(time, zone: nil)
     local = time.in_time_zone(zone || Time.zone)
     tag.time(local.strftime(time_pattern), datetime: local.iso8601)
@@ -17,7 +17,11 @@ module Core::DateTimeHelper
 
   private
 
-  def date_pattern = Core::DateTimePatterns::DATE.fetch(effective_preferences.date_format)
+  def date_pattern = Core::DateTimePatterns::DATE.fetch(preferences.date_format)
 
-  def time_pattern = Core::DateTimePatterns::TIME.fetch(effective_preferences.time_format)
+  def time_pattern = Core::DateTimePatterns::TIME.fetch(preferences.time_format)
+
+  # Previews render through a controller without request preferences: use the
+  # locale's defaults.
+  def preferences = respond_to?(:effective_preferences) ? effective_preferences : Core::EffectivePreferences.new
 end
