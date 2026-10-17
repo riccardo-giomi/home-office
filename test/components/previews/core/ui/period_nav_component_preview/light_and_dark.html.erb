@@ -1,0 +1,7 @@
+<%# The navigation is rendered twice, a new component each time (instances are single-use); data-theme forces the colors %>
+<% %w[light dark].each do |theme| %>
+  <div data-theme="<%= theme %>" class="mb-4 bg-base-200 p-4 text-base-content">
+    <p class="mb-2 font-mono text-sm"><%= theme %></p>
+    <%= render build_nav.call(theme) %>
+  </div>
+<% end %>

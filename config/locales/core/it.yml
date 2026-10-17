@@ -93,6 +93,8 @@ it:
       noscript:
         body: Home Office ha bisogno di JavaScript. Attivalo nelle impostazioni del browser e ricarica la pagina.
         title: JavaScript è necessario
+      period_nav:
+        today: Oggi
       sidebar:
         close: Chiudi
         label: Principale

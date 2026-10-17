@@ -93,6 +93,8 @@ en:
       noscript:
         body: Home Office needs JavaScript. Turn it on in your browser settings and reload the page.
         title: JavaScript is required
+      period_nav:
+        today: Today
       sidebar:
         close: Close
         label: Main
