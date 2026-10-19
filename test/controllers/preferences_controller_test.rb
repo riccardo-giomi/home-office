@@ -87,4 +87,21 @@ class PreferencesControllerTest < ActionDispatch::IntegrationTest
       assert_select "time[datetime='2026-10-06T09:30:00+09:00']", text: "2026-10-06 09:30"
     end
   end
+
+  describe "the shape of the page" do
+    before { sign_in_as member }
+
+    it "puts the way back right under the heading, before the introduction and the form" do
+      get edit_preferences_path
+      assert_select "h1 + p a[href='#{root_path}']", text: "Back to home"
+      html = response.body
+      assert_operator html.index("Back to home"), :<, html.index('id="preferences-form"')
+    end
+
+    it "keeps Save outside the form element, in the actions row at the end of the page" do
+      get edit_preferences_path
+      assert_select "form#preferences-form button[type=submit]", count: 0
+      assert_select "div.sm\\:justify-between > button.btn-primary[type=submit][form=preferences-form]", 1
+    end
+  end
 end

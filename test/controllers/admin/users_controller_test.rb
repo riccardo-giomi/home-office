@@ -111,4 +111,29 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
       assert_equal "admin", users(:admin).reload.role
     end
   end
+
+  describe "the shape of the pages" do
+    before { sign_in_as users(:admin) }
+
+    it "has New user as the page's main action in the toolbar under the heading" do
+      get admin_users_path
+      assert_select "h1 + div.justify-between a.btn.btn-primary[href='#{new_admin_user_path}']", text: "New user"
+    end
+
+    it "puts the way back right under the heading of the new and edit pages, not under the form" do
+      [new_admin_user_path, edit_admin_user_path(users(:member))].each do |path|
+        get path
+        assert_select "h1 + p a[href='#{admin_users_path}']", text: "Back to users"
+        assert_select "main form#user-form a", count: 0
+      end
+    end
+
+    it "keeps Save outside the form element, in the actions row at the end of the page" do
+      [new_admin_user_path, edit_admin_user_path(users(:member))].each do |path|
+        get path
+        assert_select "form#user-form button[type=submit]", count: 0
+        assert_select "div.sm\\:justify-between > button.btn-primary[type=submit][form=user-form]", 1
+      end
+    end
+  end
 end
