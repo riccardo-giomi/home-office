@@ -1,0 +1,25 @@
+<div <%= tag.attributes(data: {controller: ("agenda-scroll" if @now)}) %>>
+<% if @days.empty? %>
+  <p><%= @empty_text %></p>
+<% else %>
+  <% @days.each do |day| %>
+    <%# Halfway between the page and the cards: the cards are base-100, a half-opaque base-100 over the page color sits between in both themes %>
+    <section class="mb-4 scroll-mt-20 rounded-box border border-base-300 bg-base-100/50 p-3" <%= tag.attributes(data: {today: (true if @now && day[:date] == @today)}) %>>
+      <h2 class="mb-2 text-lg font-bold" <%= tag.attributes("aria-current": ("date" if day[:date] == @today)) %>>
+        <span class="<%= "inline-block rounded-full bg-primary px-3 text-primary-content" if day[:date] == @today %>">
+          <%= I18n.t("date.day_names")[day[:date].wday] %> <%= helpers.format_date(day[:date]) %>
+        </span>
+      </h2>
+      <ul class="space-y-2">
+        <% day[:entries].each_with_index do |attributes, index| %>
+          <% if divider_before(day) == index %>
+            <%= render_divider %>
+          <% end %>
+          <li class="rounded border border-base-300 bg-base-100 p-2" <%= tag.attributes(data: {start_minutes: attributes[:from]}) %>><%= render_entry(attributes) %></li>
+        <% end %>
+        <%= render_divider if divider_before(day) == day[:entries].size %>
+      </ul>
+    </section>
+  <% end %>
+<% end %>
+</div>
