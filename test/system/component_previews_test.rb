@@ -6,8 +6,11 @@ require "application_system_test_case"
 class ComponentPreviewsTest < ApplicationSystemTestCase
   PAGE_RULES = %w[region landmark-one-main page-has-heading-one].freeze
 
-  def examples
-    ViewComponent::Preview.all.flat_map { |preview| preview.examples.map { |example| "/rails/view_components/#{preview.preview_name}/#{example}" } }
+  # wide_only: the app shows that component from 640 px up only (a phone gets the day view), so it is
+  # not asked to fit 320 px
+  def examples(small_screen: false)
+    previews = ViewComponent::Preview.all.reject { |preview| small_screen && preview.try(:wide_only?) }
+    previews.flat_map { |preview| preview.examples.map { |example| "/rails/view_components/#{preview.preview_name}/#{example}" } }
   end
 
   %w[light dark].each do |theme|
@@ -23,7 +26,7 @@ class ComponentPreviewsTest < ApplicationSystemTestCase
 
   it "fits a 320 px screen in every preview" do
     page.current_window.resize_to(320, 900)
-    examples.each do |path|
+    examples(small_screen: true).each do |path|
       visit path
       assert_selector "body"
       assert_fits_small_screen

@@ -108,6 +108,11 @@ en:
       skip_link: Skip to main content
       theme_switch:
         label: Dark theme
+      time_grid:
+        empty: No events.
+        more:
+          one: "+1 more"
+          other: "+%{count} more"
   home:
     show:
       signed_in_as: Signed in as %{email}.

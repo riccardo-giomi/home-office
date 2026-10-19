@@ -108,6 +108,11 @@ it:
       skip_link: Vai al contenuto principale
       theme_switch:
         label: Tema scuro
+      time_grid:
+        empty: Nessun evento.
+        more:
+          one: "+1 altro"
+          other: "+%{count} altri"
   home:
     show:
       signed_in_as: Accesso eseguito come %{email}.

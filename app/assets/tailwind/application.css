@@ -85,3 +85,6 @@ table, time {
   font-variant-numeric: tabular-nums;
 }
 
+
+/* Grid placement for the week's time grid is computed per entry, and the CSP forbids inline styles */
+@source inline("row-start-{1..97} row-span-{1..98} col-start-{1..8} grid-cols-{1..8}");
