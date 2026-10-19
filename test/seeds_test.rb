@@ -32,11 +32,19 @@ describe "db/seeds.rb" do
     end
   end
 
+  it "gives the demo user three overlapping events today, to try the week view" do
+    load_seed_as_development
+    demo = User.find_by!(email_address: "demo-user@example.com")
+    today = Planner::Event.owned_by(demo).where(day: Date.current).where.not(starts_at: nil).order(:starts_at).to_a
+    _(today.size).must_be :>=, 3
+    _(today.count { |event| event.starts_at < today.first.ends_at }).must_be :>=, 3
+  end
+
   it "creates demo events for the demo user only, one set however often it runs" do
     load_seed_as_development
     load_seed_as_development
     demo = User.find_by!(email_address: "demo-user@example.com")
-    _(Planner::Event.owned_by(demo).count).must_equal 4
+    _(Planner::Event.owned_by(demo).count).must_equal 7
     _(Planner::Event.owned_by(demo).where.not(starts_at: nil)).wont_be_empty
     _(Planner::Event.owned_by(demo).where(tracks_done: 1)).wont_be_empty
     _(Planner::Event.where.not(user: demo).count).must_equal Planner::Event.where(user_id: users(:admin).id).count + Planner::Event.where(user_id: users(:other_admin).id).count

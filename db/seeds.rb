@@ -15,6 +15,9 @@ Planner::Event.owned_by(demo_user).destroy_all
 [
   {title: "Dentist", days: 2, times: %w[09:30 10:15]},
   {title: "Team lunch", days: 5, times: %w[12:30 14:00]},
+  {title: "Planning", days: 0, times: %w[10:00 11:30]},
+  {title: "Code review", days: 0, times: %w[10:30 11:00]},
+  {title: "Call with the client", days: 0, times: %w[11:00 12:00]},
   {title: "Pay the rent", days: 9, tracks_done: 1},
   {title: "Rent paid last month", days: -20, tracks_done: 1, done: true}
 ].each do |attrs|
