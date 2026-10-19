@@ -38,7 +38,7 @@
           <li class="grid grid-rows-subgrid gap-x-0.5 row-start-<%= cluster.first_row %> row-span-<%= cluster.rows %> grid-cols-<%= cluster.columns %>">
             <ul class="contents">
               <% cluster.placements.each do |placement| %>
-                <li class="<%= entry_classes(cluster, placement) %>"><%= render_entry(placement.entry.attributes) %></li>
+                <li class="<%= entry_classes(cluster, placement) %>"><%= render_entry(placement.entry.attributes, compact: compact?(placement)) %></li>
               <% end %>
             </ul>
           </li>

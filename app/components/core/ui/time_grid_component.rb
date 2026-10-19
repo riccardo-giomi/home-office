@@ -73,8 +73,14 @@ class Core::UI::TimeGridComponent < ApplicationComponent
       "row-start-#{slot_from(placement) - cluster.first_row + 2} row-span-#{rows} col-start-#{placement.column + 1}"].join(" ")
   end
 
-  def render_entry(attributes)
-    render(Core::UI::CalendarEntryComponent.new(**attributes.except(:check, :from, :to), compact: !single_day?)) do |entry|
+  # Under 45 minutes (fewer than three rows) a card has no room for the time
+  # above the title: the title comes first and the time is what gets clipped.
+  #
+  # A seven-day grid is always compact.
+  def compact?(placement) = !single_day? || slot_to(placement) - slot_from(placement) < 3
+
+  def render_entry(attributes, compact: !single_day?)
+    render(Core::UI::CalendarEntryComponent.new(**attributes.except(:check, :from, :to), compact:)) do |entry|
       entry.with_check { attributes[:check] } if attributes[:check]
     end
   end

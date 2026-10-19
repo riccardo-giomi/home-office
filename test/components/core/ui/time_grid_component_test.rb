@@ -71,6 +71,14 @@ describe Core::UI::TimeGridComponent do
     assert_selector "li.col-start-2", text: "After"
   end
 
+  it "puts the title before the time in a card shorter than 45 minutes, even in a single day" do
+    day = {date: tuesday, entries: [entry("Standup", 540, 570, starts_at: Time.utc(2026, 10, 6, 9), ends_at: Time.utc(2026, 10, 6, 9, 30), time_zone: "UTC"), entry("Review", 600, 660, starts_at: Time.utc(2026, 10, 6, 10), ends_at: Time.utc(2026, 10, 6, 11), time_zone: "UTC")]}
+    render_inline(Core::UI::TimeGridComponent.new(days: [day], today: tuesday, agenda_href: ->(_) { "/a" }))
+    short, long = page.find("li.rounded", text: "Standup").native.to_html, page.find("li.rounded", text: "Review").native.to_html
+    assert_operator short.index("Standup"), :<, short.index("<time")
+    assert_operator long.index("<time"), :<, long.index("Review")
+  end
+
   it "draws an entry shorter than 30 minutes two rows tall" do
     render_inline(grid({tuesday => [entry("Quick", 600, 605)]}))
     assert_selector "li.row-start-41.row-span-2", text: "Quick"

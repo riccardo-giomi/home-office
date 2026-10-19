@@ -36,11 +36,31 @@ class Core::UI::TimeGridComponentPreview < ViewComponent::Preview
     render(grid({day => [entry("Standup", 9 * 60, 9 * 60 + 15), entry("Design review", 9 * 60, 10 * 60 + 30), entry("Pairing", 9 * 60 + 30, 11 * 60), entry("Bank holiday")]}, days: [day]))
   end
 
+  # The worst case for the space in a card: the shortest cards (drawn 30 minutes tall) with a check, a long title and a neighbor.
+  # Anything added to the card of an event is to be tried here first.
+  def short_cards
+    render(grid({WEEK[2] => short_entries}, days: [WEEK[2]]))
+  end
+
+  # The same in a week, where a column is narrow and the check goes above the text.
+  def short_cards_in_a_week
+    render(grid({WEEK[2] => short_entries, WEEK[3] => short_entries}))
+  end
+
   def five_at_once
     render(grid({WEEK[4] => (1..5).map { |i| entry("Parallel #{i}", 9 * 60, 10 * 60) }}))
   end
 
   private
+
+  def short_entries
+    [entry("Quick call", 9 * 60, 9 * 60 + 15, check: check("Quick call", 1)),
+      entry("A title long enough to need more than one line of the card", 9 * 60 + 30, 10 * 60, check: check("Long title", 2)),
+      entry("Done and short", 9 * 60 + 30, 10 * 60, done: true, check: check("Done and short", 3)),
+      entry("Short, no check", 10 * 60 + 15, 10 * 60 + 30)]
+  end
+
+  def check(title, id) = ApplicationController.render(Core::UI::CheckboxComponent.new(name: "done", checked: false, label: "Done: #{title}", id: "short-check-#{id}"), layout: false).html_safe
 
   def entry(title, from = nil, to = nil, **attrs)
     zone = ActiveSupport::TimeZone["UTC"]
