@@ -19,13 +19,34 @@ it:
               after_start: deve essere dopo l'ora di inizio
               same_day: deve essere nello stesso giorno dell'inizio
   planner:
+    agendas:
+      show:
+        empty:
+          day: Nessun evento oggi.
+          month: Nessun evento questo mese.
+          week: Nessun evento questa settimana.
+        in_calendar: Mostra nel calendario
+        nav: Navigazione dell'agenda
+        new: Nuovo evento
+        title: Agenda
+        title_with_period: 'Agenda: %{period}'
+    calendars:
+      show:
+        done_label: 'Fatto: %{title}'
+        in_agenda: Mostra in Agenda
+        nav: Navigazione del calendario
+        new: Nuovo evento
+        title: Calendario
+        title_with_period: 'Calendario: %{period}'
     completions:
       update:
         done: 'Segnato come fatto: %{title}'
         not_done: 'Segnato come non fatto: %{title}'
     events:
-      back: Torna agli eventi
-      back_to_event: Torna all'evento
+      back:
+        agenda: Torna all'agenda
+        calendar: Torna al calendario
+        event: Torna all'evento
       create:
         created: Evento creato.
       destroy:
@@ -39,22 +60,6 @@ it:
       form:
         submit: Salva evento
         times_hint: Lascia vuote entrambe le ore per un evento di tutto il giorno.
-      index:
-        all_day: Tutto il giorno
-        caption_past: Eventi passati, dal più recente
-        caption_upcoming: Eventi in arrivo, dal più vicino
-        done: Fatto
-        done_label: 'Fatto: %{title}'
-        edit: Modifica
-        new: Nuovo evento
-        none_past: Nessun evento passato.
-        none_upcoming: Nessun evento in arrivo.
-        pages: Pagine degli eventi
-        past: Passati
-        title: Eventi
-        upcoming: In arrivo
-        views: Scegli quali eventi elencare
-        when: Quando
       new:
         title: Nuovo evento
       show:
@@ -62,8 +67,27 @@ it:
         done_at_html: Fatto il %{time}
         edit: Modifica evento
         notes: Note
+        title: 'Evento: %{title}'
         when: Quando
       update:
         updated: Evento aggiornato.
     nav:
+      agenda: Agenda
+      calendar: Calendario
       events: Eventi
+      groups:
+        planner: Planner
+    periods:
+      next:
+        day: Giorno successivo
+        month: Mese successivo
+        week: Settimana successiva
+      previous:
+        day: Giorno precedente
+        month: Mese precedente
+        week: Settimana precedente
+      views:
+        day: Giorno
+        month: Mese
+        week: Settimana
+      week_of: Settimana del %{date}

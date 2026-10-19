@@ -1,14 +1,7 @@
 class Planner::EventsController < ApplicationController
-  include Pagy::Method
-
-  PAGE_SIZE = 25
+  include Planner::EventPages
 
   before_action :set_event, only: %i[show edit update destroy]
-
-  def index
-    @when = (params[:when] == "past") ? :past : :upcoming
-    @pagy, @events = pagy(:offset, listing, limit: PAGE_SIZE)
-  end
 
   def show
   end
@@ -20,7 +13,7 @@ class Planner::EventsController < ApplicationController
   def create
     @event = Planner::Event.new(event_params.merge(user: Current.user))
     if @event.save
-      redirect_to planner_events_path, notice: t(".created")
+      redirect_to back_path_or_day(@event), notice: t(".created")
     else
       render :new, status: :unprocessable_content
     end
@@ -31,7 +24,7 @@ class Planner::EventsController < ApplicationController
 
   def update
     if @event.update(event_params)
-      redirect_to planner_events_path, notice: t(".updated")
+      redirect_to planner_event_path(@event, back: back_param), notice: t(".updated")
     else
       render :edit, status: :unprocessable_content
     end
@@ -40,7 +33,7 @@ class Planner::EventsController < ApplicationController
   # Permanent until the trash exists
   def destroy
     @event.destroy!
-    redirect_to planner_events_path, notice: t(".deleted"), status: :see_other
+    redirect_to back_path_or_day(@event), notice: t(".deleted"), status: :see_other
   end
 
   private
@@ -51,17 +44,11 @@ class Planner::EventsController < ApplicationController
     @event = events.find(params[:id])
   end
 
-  # Never user_id, state, time_zone or done_at: those are not the form's to set
+  # Never user_id, state, time_zone or done_at: those are not for the form to
+  # set.
   def event_params
     params.expect(planner_event: [:title, :notes, :day, :start_time, :end_time, :tracks_done])
   end
 
-  # Both orders walk index_planner_items_on_day, forwards or backwards
-  def listing
-    if @when == :past
-      events.where(day: ...Date.current).order(day: :desc, starts_at: :desc)
-    else
-      events.where(day: Date.current..).order(:day, :starts_at)
-    end
-  end
+  def back_path_or_day(event) = back_location&.path || planner_calendar_path(date: event.day&.iso8601)
 end

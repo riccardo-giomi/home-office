@@ -1,0 +1,28 @@
+<% content_for :title, t(".title_with_period", period: calendar_title(@period)) %>
+<%# A tick saves and redirects back here: morphing keeps focus on the checkbox %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<%# Under 640 px only the day is shown; the month and the week are for wider screens (and the agenda page) %>
+<div class="w-full" <%= tag.attributes(data: {controller: ("narrow-day" unless @period.view == :day), narrow_day_href_value: planner_calendar_path(**@period.with_view(:day).to_params)}) %>>
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title")) %>
+  <%= render(Core::UI::PageToolbarComponent.new) do |toolbar| %>
+    <% toolbar.with_leading do %>
+      <%= render(Core::UI::ButtonComponent.new(href: new_planner_event_path(back: request.fullpath))) { t(".new") } %>
+    <% end %>
+    <% toolbar.with_trailing do %>
+      <%= render(Core::UI::ButtonComponent.new(variant: :secondary, href: planner_agenda_path(**@period.to_params))) { t(".in_agenda") } %>
+    <% end %>
+  <% end %>
+  <%= render period_nav(@period, label: t(".nav"), path: ->(**params) { planner_calendar_path(**params) }) %>
+  <% case @period.view %>
+  <% when :month %>
+    <%= render Core::UI::MonthGridComponent.new(
+          weeks: @period.grid_range.each_slice(7).to_a, month: @period.date, today: Date.current, caption: calendar_title(@period),
+          day_href: ->(date) { planner_calendar_path(view: "day", date: date.iso8601) }, entries_by_day: calendar_entries_by_day(@events_by_day)
+        ) %>
+  <% else %>
+    <%= render Core::UI::TimeGridComponent.new(
+          days: ((@period.view == :week) ? @period.days_of_week : [@period.date]).map { |date| {date:, entries: calendar_entries_by_day(@events_by_day).fetch(date, [])} }, today: Date.current,
+          agenda_href: ->(date) { planner_agenda_path(view: "day", date: date.iso8601) }, now: Time.current
+        ) %>
+  <% end %>
+</div>

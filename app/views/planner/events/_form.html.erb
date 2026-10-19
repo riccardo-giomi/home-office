@@ -1,5 +1,6 @@
 <%# time-offset: typing a start fills the end 30 minutes later until the end is typed by hand %>
 <%= form_with model: event, id: "event-form", data: {controller: "time-offset", time_offset_minutes_value: Planner::Event::DEFAULT_DURATION.in_minutes.to_i} do |form| %>
+  <%= hidden_field_tag :back, back_param if back_param %>
   <%= render Core::UI::ErrorSummaryComponent.new(record: event) %>
   <%= render Core::UI::FieldComponent.new(form:, attribute: :title, label: Planner::Event.human_attribute_name(:title), required: true, autocomplete: "off") %>
   <%= render Core::UI::FieldComponent.new(form:, attribute: :day, label: Planner::Event.human_attribute_name(:day), as: :date_field, required: true) %>

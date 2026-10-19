@@ -1,0 +1,19 @@
+<% content_for :title, t(".title_with_period", period: calendar_title(@period)) %>
+<%# A tick saves and redirects back here: morphing keeps focus on the checkbox %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<div class="w-full">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title")) %>
+  <%= render(Core::UI::PageToolbarComponent.new) do |toolbar| %>
+    <% toolbar.with_leading do %>
+      <%= render(Core::UI::ButtonComponent.new(href: new_planner_event_path(back: request.fullpath))) { t(".new") } %>
+    <% end %>
+    <% toolbar.with_trailing do %>
+      <%= render(Core::UI::ButtonComponent.new(variant: :secondary, href: planner_calendar_path(**@period.to_params))) { t(".in_calendar") } %>
+    <% end %>
+  <% end %>
+  <%= render period_nav(@period, label: t(".nav"), path: ->(**params) { planner_agenda_path(**params) }) %>
+  <%= render Core::UI::AgendaListComponent.new(
+        days: @period.range.map { |date| {date:, entries: calendar_entries_by_day(@events_by_day).fetch(date, [])} },
+        today: Date.current, now: (Time.current if @period.range.cover?(Date.current)), empty_text: t(".empty.#{@period.view}")
+      ) %>
+</div>

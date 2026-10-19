@@ -1,6 +1,8 @@
-<% content_for :title, @event.title %>
+<% content_for :title, t(".title", title: @event.title) %>
+<%# A tick saves and redirects back here: morphing keeps focus on the checkbox %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
 <div class="w-full max-w-2xl">
-  <%= render Core::UI::PageHeaderComponent.new(title: @event.title, back_href: planner_events_path, back_label: t("planner.events.back")) %>
+  <%= render Core::UI::PageHeaderComponent.new(title: @event.title, back_href: event_back_href(@event), back_label: event_back_label) %>
   <dl class="grid gap-x-6 gap-y-4 sm:grid-cols-[8rem_1fr]">
     <dt class="font-semibold"><%= t(".when") %></dt>
     <dd>
@@ -8,15 +10,13 @@
       <% if @event.starts_at %>
         <br><%= format_time(@event.starts_at, zone: @event.time_zone) %>&ndash;<%= format_time(@event.ends_at, zone: @event.time_zone) %>
       <% else %>
-        <br><%= t("planner.events.index.all_day") %>
+        <br><%= t("core.ui.calendar_entry.all_day") %>
       <% end %>
     </dd>
     <% if @event.tracks_done? %>
       <dt class="font-semibold"><%= t(".done") %></dt>
       <dd class="flex items-center gap-2">
-        <%= form_with url: planner_event_completion_path(@event), method: :patch, data: {controller: "auto-submit"} do %>
-          <%= render Core::UI::CheckboxComponent.new(name: "done", checked: @event.done?, label: t("planner.events.index.done_label", title: @event.title), id: "done_event_#{@event.id}", data: {action: "auto-submit#submit"}) %>
-        <% end %>
+        <%= completion_check(@event) %>
         <% if @event.done? %><span><%= t(".done_at_html", time: format_datetime(@event.done_at)) %></span><% end %>
       </dd>
     <% end %>
@@ -25,7 +25,7 @@
       <dd class="whitespace-pre-line wrap-anywhere"><%= @event.notes %></dd>
     <% end %>
   </dl>
-  <div class="mt-8 flex flex-wrap gap-2">
-    <%= render(Core::UI::ButtonComponent.new(href: edit_planner_event_path(@event))) { t(".edit") } %>
+  <div class="mt-8">
+    <%= render(Core::UI::ButtonComponent.new(href: edit_planner_event_path(@event, back: back_param))) { t(".edit") } %>
   </div>
 </div>

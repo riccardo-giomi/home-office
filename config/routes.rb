@@ -4,7 +4,9 @@ Rails.application.routes.draw do
   resource :theme, only: :update
 
   namespace :planner do
-    resources :events do
+    resource :calendar, only: :show
+    resource :agenda, only: :show
+    resources :events, except: :index do
       resource :completion, only: :update
     end
   end

@@ -19,13 +19,34 @@ en:
               after_start: must be after the start time
               same_day: must be on the same day as the start
   planner:
+    agendas:
+      show:
+        empty:
+          day: No events this day.
+          month: No events this month.
+          week: No events this week.
+        in_calendar: Show in calendar
+        nav: Agenda navigation
+        new: New event
+        title: Agenda
+        title_with_period: 'Agenda: %{period}'
+    calendars:
+      show:
+        done_label: 'Done: %{title}'
+        in_agenda: Show in Agenda
+        nav: Calendar navigation
+        new: New event
+        title: Calendar
+        title_with_period: 'Calendar: %{period}'
     completions:
       update:
         done: 'Marked done: %{title}'
         not_done: 'Marked not done: %{title}'
     events:
-      back: Back to events
-      back_to_event: Back to the event
+      back:
+        agenda: Back to agenda
+        calendar: Back to calendar
+        event: Back to event
       create:
         created: Event created.
       destroy:
@@ -39,31 +60,34 @@ en:
       form:
         submit: Save event
         times_hint: Leave both times empty for an all-day event.
-      index:
-        all_day: All day
-        caption_past: Past events, latest first
-        caption_upcoming: Upcoming events, earliest first
-        done: Done
-        done_label: 'Done: %{title}'
-        edit: Edit
-        new: New event
-        none_past: No past events.
-        none_upcoming: No upcoming events.
-        pages: Pages of events
-        past: Past
-        title: Events
-        upcoming: Upcoming
-        views: Choose which events to list
-        when: When
       new:
         title: New event
       show:
         done: Done
-        done_at_html: Done at %{time}
+        done_at_html: Done on %{time}
         edit: Edit event
         notes: Notes
+        title: 'Event: %{title}'
         when: When
       update:
         updated: Event updated.
     nav:
+      agenda: Agenda
+      calendar: Calendar
       events: Events
+      groups:
+        planner: Planner
+    periods:
+      next:
+        day: Next day
+        month: Next month
+        week: Next week
+      previous:
+        day: Previous day
+        month: Previous month
+        week: Previous week
+      views:
+        day: Day
+        month: Month
+        week: Week
+      week_of: Week of %{date}

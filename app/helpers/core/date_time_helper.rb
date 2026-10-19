@@ -1,7 +1,11 @@
 module Core::DateTimeHelper
   def format_date(date)
-    tag.time(date.strftime(date_pattern), datetime: date.iso8601)
+    tag.time(format_date_text(date), datetime: date.iso8601)
   end
+
+  # Plain text, for page titles and labels where a <time> element does not
+  # belong.
+  def format_date_text(date) = date.strftime(date_pattern)
 
   # Zone: for a time that belongs to a place (an event keeps its own timezone),
   # not to the viewer.

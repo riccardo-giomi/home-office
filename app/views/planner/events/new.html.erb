@@ -1,6 +1,6 @@
 <% content_for :title, t(".title") %>
 <div class="w-full max-w-md">
-  <%= render Core::UI::PageHeaderComponent.new(title: t(".title"), back_href: planner_events_path, back_label: t("planner.events.back")) %>
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title"), back_href: event_back_href(@event), back_label: event_back_label) %>
   <%= render "form", event: @event %>
   <%= render(Core::UI::FormActionsComponent.new) do |actions| %>
     <% actions.with_primary do %>

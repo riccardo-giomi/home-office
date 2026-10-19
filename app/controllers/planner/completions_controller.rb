@@ -6,6 +6,6 @@ class Planner::CompletionsController < ApplicationController
       event.save!
       flash[:notice] = event.done? ? t(".done", title: event.title) : t(".not_done", title: event.title)
     end
-    redirect_back_or_to planner_events_path, status: :see_other
+    redirect_back_or_to planner_calendar_path, status: :see_other
   end
 end

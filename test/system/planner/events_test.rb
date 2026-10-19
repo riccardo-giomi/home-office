@@ -15,14 +15,14 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
   end
 
   it "creates an all-day event and lists it" do
-    visit planner_events_path
-    click_link I18n.t("planner.events.index.new")
+    visit planner_calendar_path
+    click_link I18n.t("planner.calendars.show.new")
     fill_in field(:title), with: "Dentist"
     fill_in field(:day), with: Date.current + 3
     click_button I18n.t("planner.events.form.submit")
     assert_text I18n.t("planner.events.create.created")
     assert_selector "td", text: "Dentist"
-    assert_selector "td", text: I18n.t("planner.events.index.all_day")
+    assert_selector "td", text: I18n.t("core.ui.calendar_entry.all_day")
   end
 
   it "fills the end 30 minutes after the start until the end is typed" do
@@ -45,8 +45,8 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
   end
 
   it "keeps the keyboard on the checkbox while ticking done" do
-    make_event "Pay the rent", tracks_done: 1
-    visit planner_events_path
+    make_event "Pay the rent", days_ahead: 0, tracks_done: 1
+    visit planner_calendar_path(view: "agenda")
     id = "done_event_#{Planner::Event.find_by!(title: "Pay the rent").id}"
     find("##{id}").send_keys(:space)
     assert_text I18n.t("planner.completions.update.done", title: "Pay the rent")
@@ -57,13 +57,64 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
     assert_no_selector "s", text: "Pay the rent"
   end
 
+  it "opens an event page directly, edits it and finds the way back to the agenda" do
+    event = make_event "Standup", days_ahead: 0, notes: "Bring the laptop\nand the charger"
+    visit planner_event_path(event, back: planner_agenda_path(view: "week"))
+    assert_selector "h1", text: "Standup"
+    assert_text "Bring the laptop"
+    click_link I18n.t("planner.events.show.edit")
+    assert_selector "h1", text: I18n.t("planner.events.edit.title", title: "Standup")
+    fill_in field(:title), with: "Standup (moved)"
+    click_button I18n.t("planner.events.form.submit")
+    assert_text I18n.t("planner.events.update.updated")
+    assert_selector "h1", text: "Standup (moved)"
+    click_link I18n.t("planner.events.back.agenda")
+    assert_current_path(/\A#{Regexp.escape(planner_agenda_path)}\?view=week/)
+    assert_text "Standup (moved)"
+    assert event.reload.title == "Standup (moved)"
+  end
+
+  it "returns to the agenda after deleting an event that was opened directly from it" do
+    event = make_event "Old appointment", days_ahead: 0
+    visit planner_event_path(event, back: planner_agenda_path(view: "day"))
+    click_link I18n.t("planner.events.show.edit")
+    click_button I18n.t("planner.events.edit.delete")
+    within("#delete-event") { click_button I18n.t("planner.events.edit.delete_confirm") }
+    assert_text I18n.t("planner.events.destroy.deleted")
+    assert_current_path(/\A#{Regexp.escape(planner_agenda_path)}\?view=day/)
+  end
+
+  describe "the buttons at the end of the edit form" do
+    def rect(selector) = evaluate_script("(() => { const r = document.querySelector(#{selector.to_json}).getBoundingClientRect(); return {left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width} })()").transform_keys(&:to_sym)
+
+    it "keep Save and Delete at opposite ends of one line, Delete drawn as dangerous" do
+      visit edit_planner_event_path(make_event("Edit me"))
+      save = rect("button[type=submit][form=event-form]")
+      delete = rect("[data-controller=modal] > button")
+      assert_in_delta save[:top], delete[:top], 2, "not on one line"
+      assert_operator delete[:left] - save[:right], :>=, 150, "too close together"
+      assert_selector "[data-controller=modal] > button.btn-error"
+    end
+
+    it "stack on a phone, stretched, with room between them" do
+      page.current_window.resize_to(320, 800)
+      visit edit_planner_event_path(make_event("Edit me"))
+      save = rect("button[type=submit][form=event-form]")
+      delete = rect("[data-controller=modal] > button")
+      assert_operator delete[:top] - save[:bottom], :>=, 24, "Delete is #{delete[:top] - save[:bottom]}px under Save"
+      assert_in_delta save[:left], delete[:left], 1
+      assert_in_delta save[:width], delete[:width], 1
+      assert_operator save[:width], :>=, 250
+    end
+  end
+
   it "deletes an event after a confirmation" do
     event = make_event "Old appointment"
     visit edit_planner_event_path(event)
     click_button I18n.t("planner.events.edit.delete")
     within("#delete-event") { click_button I18n.t("planner.events.edit.delete_confirm") }
     assert_text I18n.t("planner.events.destroy.deleted")
-    assert_no_selector "td", text: "Old appointment"
+    assert_no_text "Old appointment"
   end
 
   it "moves focus to the error summary and from there to the field" do
@@ -85,14 +136,8 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
   %w[light dark].each do |theme|
     it "has no axe violations in the #{theme} theme" do
       admin.update!(theme:)
-      make_event "Pay the rent", tracks_done: 1, done_at: Time.current
-      make_event "Standup", start_time: "09:00", end_time: "09:30"
-      26.times { |i| make_event "Bulk #{i}", days_ahead: 5 + i }
-      visit planner_events_path
-      assert_selector "nav[aria-label] a[aria-current=page]"
-      assert_accessible
-      visit planner_events_path(page: 2)
-      assert_accessible
+      make_event "Pay the rent", days_ahead: 0, tracks_done: 1, done_at: Time.current
+      make_event "Standup", days_ahead: 0, start_time: "09:00", end_time: "09:30"
       visit new_planner_event_path
       assert_accessible
       fill_in field(:title), with: "Meeting"
@@ -101,9 +146,8 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
       click_button I18n.t("planner.events.form.submit")
       assert_selector "#error-summary"
       assert_accessible
-      shown = make_event("Show me", notes: "Bring the files", tracks_done: 1)
-      visit planner_event_path(shown)
-      assert_selector "h1", text: "Show me"
+      with_notes = make_event("Has notes", notes: "A line\nanother line", tracks_done: 1)
+      visit planner_event_path(with_notes)
       assert_accessible
       visit edit_planner_event_path(make_event("Edit me"))
       assert_accessible
@@ -113,28 +157,20 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
     end
   end
 
-  it "draws the current page at full strength, not as a disabled control" do
-    26.times { |i| make_event "Bulk #{i}", days_ahead: 5 + i }
-    visit planner_events_path(page: 2)
+  it "draws the current page of a pagination at full strength, not as a disabled control" do
+    visit admin_theme_path
     # axe leaves aria-disabled links out of its contrast check, so look at the color itself
-    color = evaluate_script("getComputedStyle(document.querySelector(\"nav[aria-label='#{I18n.t("planner.events.index.pages")}'] a[aria-current=page]\")).color")
+    color = evaluate_script("getComputedStyle(document.querySelector(\"nav[aria-label='Pages of results, middle'] a[aria-current=page]\")).color")
     refute_match %r{/}, color, "the current page link is drawn translucent: #{color}"
   end
 
   it "fits a 320 px screen with touch-sized targets" do
-    make_event "A very long title that has to wrap instead of pushing the page sideways at 320 pixels wide", tracks_done: 1
-    26.times { |i| make_event "Bulk #{i}", days_ahead: 5 + i }
     page.current_window.resize_to(320, 640)
-    visit planner_events_path
-    assert_selector "nav[aria-label] a[aria-current=page]"
-    assert_fits_small_screen
-    visit planner_events_path(page: 2)
-    assert_fits_small_screen
     visit new_planner_event_path
     assert_fits_small_screen
     visit edit_planner_event_path(make_event("Edit me"))
     assert_fits_small_screen
-    visit planner_event_path(make_event("Show me", notes: "Bring the files", tracks_done: 1))
+    visit planner_event_path(make_event("A long one " + "x" * 120, notes: "y" * 200, tracks_done: 1))
     assert_fits_small_screen
   end
 end

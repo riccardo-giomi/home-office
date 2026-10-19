@@ -1,8 +1,12 @@
-# Navigation, trash and more arrive with the features that build them
+# Navigation, trash and more arrive with the features that build them.
 Planner::Manifest = Core::ModuleManifest.new(
   name: "planner",
   navigation: [
-    Core::NavItem.new(label_key: "planner.nav.events",
-      route: :planner_events_path, icon: :calendar)
+    Core::NavItem.new(label_key: "planner.nav.calendar",
+      route: :planner_calendar_path, icon: :calendar,
+      group_key: "planner.nav.groups.planner"),
+    Core::NavItem.new(label_key: "planner.nav.agenda",
+      route: :planner_agenda_path, icon: :list,
+      group_key: "planner.nav.groups.planner")
   ]
 )

@@ -8,122 +8,6 @@ class Planner::EventsControllerTest < ActionDispatch::IntegrationTest
     travel_to Time.utc(2026, 10, 5, 12)
   end
 
-  describe "index" do
-    it "sends anonymous visitors to sign in" do
-      get planner_events_path
-      assert_redirected_to new_session_path
-    end
-
-    it "lists the upcoming events of the signed-in user only, earliest first" do
-      sign_in_as admin
-      get planner_events_path
-      assert_response :success
-      assert_select "title", "Events | Home Office"
-      titles = css_select("tbody tr").map { |row| row.text.squish }
-      assert_equal ["Dentist", "Bank holiday", "Rent November"], titles.map { |t| t[/Dentist|Bank holiday|Rent November/] }
-      assert_no_match(/Rent October|Someone else/, response.body)
-    end
-
-    it "shows the time in the user's zone and says all day for untimed events" do
-      sign_in_as admin
-      get planner_events_path
-      assert_select "time[datetime='2026-10-07T09:30:00+02:00']", text: "09:30"
-      assert_select "tbody tr", text: /Bank holiday.*All day|All day.*Bank holiday/m
-    end
-
-    it "shows an event's time in the event's own zone, matching its day, whatever zone the viewer is in" do
-      admin.update!(time_zone: "America/Los_Angeles")
-      Planner::Event.create!(user: admin, title: "Night shift", day: Date.new(2026, 10, 9), time_zone: "Europe/Rome",
-        starts_at: Time.utc(2026, 10, 8, 22, 30), ends_at: Time.utc(2026, 10, 8, 23, 0))
-      sign_in_as admin
-      get planner_events_path
-      assert_select "tr", text: /Night shift/ do
-        assert_select "time[datetime='2026-10-09T00:30:00+02:00']", text: "00:30"
-      end
-    end
-
-    it "lists past events, latest first, with when=past" do
-      sign_in_as admin
-      get planner_events_path(when: "past")
-      assert_select "tbody tr", count: 1
-      assert_match(/Rent October/, response.body)
-      assert_no_match(/Dentist/, response.body)
-    end
-
-    it "treats an unknown when as upcoming" do
-      sign_in_as admin
-      get planner_events_path(when: "whenever")
-      assert_match(/Dentist/, response.body)
-    end
-
-    it "paginates and marks the current page" do
-      sign_in_as admin
-      26.times { |i| Planner::Event.create!(user: admin, title: "Bulk #{i}", day: Date.new(2026, 12, 1) + i) }
-      get planner_events_path(page: 2)
-      assert_response :success
-      assert_select "nav[aria-label] a[aria-current=page]", text: "2"
-    end
-
-    it "keeps the page tolerant of junk page numbers" do
-      sign_in_as admin
-      ["99", "abc", "-1", "0"].each do |page|
-        get planner_events_path(page:)
-        assert_response :success, "page=#{page}"
-      end
-    end
-
-    it "does not show the pagination nav for a single page" do
-      sign_in_as admin
-      get planner_events_path
-      assert_select "nav[aria-label='Pages']", count: 0
-    end
-
-    it "shows who has done what: a done event is marked with text and strike-through" do
-      sign_in_as admin
-      get planner_events_path(when: "past")
-      assert_select "tr", text: /Rent October/ do
-        assert_select "s", text: "Rent October"
-        assert_select ".sr-only", text: "Done"
-      end
-    end
-  end
-
-  describe "navigation" do
-    it "adds Events to the sidebar of a plain user" do
-      sign_in_as users(:member)
-      get root_path
-      assert_select "nav a[href='#{planner_events_path}']", text: "Events"
-    end
-  end
-  describe "showing" do
-    it "shows an event's details in its own zone, with the notes and a way to edit it" do
-      event = planner_items(:dentist)
-      event.update!(notes: "Bring the X-rays")
-      sign_in_as admin
-      get planner_event_path(event)
-      assert_response :success
-      assert_select "h1", text: "Dentist"
-      assert_select "dd", text: /09:30/
-      assert_select "dd", text: /Bring the X-rays/
-      assert_select "a[href='#{edit_planner_event_path(event)}']"
-      assert_select "a[href='#{planner_events_path}']", text: I18n.t("planner.events.back")
-    end
-
-    it "offers the done checkbox only when the event tracks done" do
-      sign_in_as admin
-      get planner_event_path(planner_items(:rent_open))
-      assert_select "input[type=checkbox][name=done]"
-      get planner_event_path(planner_items(:dentist))
-      assert_select "input[type=checkbox][name=done]", 0
-    end
-
-    it "is not found for someone else's event" do
-      sign_in_as admin
-      get planner_event_path(planner_items(:other_users_event))
-      assert_response :not_found
-    end
-  end
-
   describe "creating" do
     before { sign_in_as admin }
 
@@ -144,7 +28,7 @@ class Planner::EventsControllerTest < ActionDispatch::IntegrationTest
       end
       event = Planner::Event.order(:id).last
       assert_equal [admin.id, "Standup", Date.new(2026, 10, 9), nil], [event.user_id, event.title, event.day, event.starts_at]
-      assert_redirected_to planner_events_path
+      assert_redirected_to planner_calendar_path(date: "2026-10-09")
     end
 
     it "creates a timed event in the user's zone with the default end" do
@@ -183,9 +67,9 @@ class Planner::EventsControllerTest < ActionDispatch::IntegrationTest
 
     it "updates the event" do
       patch planner_event_path(planner_items(:dentist)), params: {planner_event: {title: "Dentist (moved)", start_time: "11:00", end_time: ""}}
-      assert_redirected_to planner_events_path
       event = planner_items(:dentist).reload
       assert_equal ["Dentist (moved)", "11:00", "11:30"], [event.title, event.start_time, event.end_time]
+      assert_redirected_to planner_event_path(event)
     end
 
     it "makes an event all-day when both times are cleared" do
@@ -204,7 +88,102 @@ class Planner::EventsControllerTest < ActionDispatch::IntegrationTest
       assert_difference "Planner::Event.count", -1 do
         delete planner_event_path(planner_items(:dentist))
       end
-      assert_redirected_to planner_events_path
+      assert_redirected_to planner_calendar_path(date: "2026-10-07")
+    end
+  end
+
+  describe "showing" do
+    before { sign_in_as admin }
+
+    it "sends anonymous visitors to sign in" do
+      sign_out
+      get planner_event_path(planner_items(:dentist))
+      assert_redirected_to new_session_path
+    end
+
+    it "shows the event with its day, its times in its own zone and its notes as plain text" do
+      planner_items(:dentist).update!(notes: "Bring the X-rays\n<script>alert(1)</script>")
+      get planner_event_path(planner_items(:dentist))
+      assert_response :success
+      assert_select "title", "Event: Dentist | Home Office"
+      assert_select "h1", "Dentist"
+      assert_select "dd time[datetime='2026-10-07']"
+      assert_select "dd time[datetime='2026-10-07T09:30:00+02:00']"
+      assert_select "dd", text: /Bring the X-rays/
+      assert_select "script", text: /alert/, count: 0
+      assert_match(/&lt;script&gt;/, response.body)
+    end
+
+    it "says all day for an event without times, and shows no notes section without notes" do
+      get planner_event_path(planner_items(:holiday))
+      assert_select "dd", text: /All day/
+      assert_select "dt", text: "Notes", count: 0
+    end
+
+    it "says when a done event was done with a time element, not with its markup as text" do
+      get planner_event_path(planner_items(:rent_paid))
+      assert_select "dd time[datetime^='2026-10-01']"
+      assert_select "dd", text: /<time/, count: 0
+      assert_select "dd", text: /Done on 10\/01\/2026/
+    end
+
+    it "offers the done checkbox only to events that track it" do
+      get planner_event_path(planner_items(:rent_open))
+      assert_select "input[type=checkbox][aria-label='Done: Rent November']", 1
+      get planner_event_path(planner_items(:holiday))
+      assert_select "input[type=checkbox]", 0
+    end
+
+    it "links back to the calendar of the event's day by default, and on to the edit form" do
+      get planner_event_path(planner_items(:dentist))
+      assert_select "a[href='#{planner_calendar_path(date: "2026-10-07")}']", text: "Back to calendar"
+      assert_select "a[href='#{edit_planner_event_path(planner_items(:dentist))}']", text: "Edit event"
+    end
+
+    it "links back to the agenda or calendar page it came from, and carries that on" do
+      back = planner_agenda_path(view: "week", date: "2026-10-07")
+      get planner_event_path(planner_items(:dentist), back:)
+      assert_select "a[href='#{back}']", text: "Back to agenda"
+      assert_select "a[href='#{edit_planner_event_path(planner_items(:dentist), back:)}']", text: "Edit event"
+      back = planner_calendar_path(view: "day", date: "2026-10-07")
+      get planner_event_path(planner_items(:dentist), back:)
+      assert_select "a[href='#{back}']", text: "Back to calendar"
+    end
+
+    it "ignores a back address that is not a calendar or agenda page of this app" do
+      ["https://evil.example/", "//evil.example", "/admin/users", "/planner/calendar/../../session", "javascript:alert(1)", "/planner/calendar?x=<b>", "/planner/calendarx"].each do |back|
+        get planner_event_path(planner_items(:dentist), back:)
+        assert_response :success, back
+        assert_select "a[href='#{planner_calendar_path(date: "2026-10-07")}']", text: "Back to calendar"
+        assert_select "main a[href='#{back}']", count: 0
+        assert_select "main a[href*='back=']", count: 0
+      end
+    end
+  end
+
+  describe "going back after a change" do
+    before { sign_in_as admin }
+
+    let(:back) { planner_agenda_path(view: "week", date: "2026-10-07") }
+
+    it "returns to the page the visit began on after creating or deleting, and to the event after updating" do
+      post planner_events_path, params: {back:, planner_event: {title: "Standup", day: "2026-10-09", start_time: "", end_time: "", notes: "", tracks_done: "0"}}
+      assert_redirected_to back
+      patch planner_event_path(planner_items(:dentist)), params: {back:, planner_event: {title: "Dentist 2"}}
+      assert_redirected_to planner_event_path(planner_items(:dentist), back:)
+      delete planner_event_path(planner_items(:dentist)), params: {back:}
+      assert_redirected_to back
+    end
+
+    it "carries the back address through a form that is shown again after errors" do
+      post planner_events_path, params: {back:, planner_event: {title: " ", day: "2026-10-09"}}
+      assert_response :unprocessable_content
+      assert_select "input[type=hidden][name=back][value='#{back}']"
+    end
+
+    it "forgets an unsafe back address instead of redirecting to it" do
+      delete planner_event_path(planner_items(:dentist)), params: {back: "https://evil.example/"}
+      assert_redirected_to planner_calendar_path(date: "2026-10-07")
     end
   end
 
@@ -214,6 +193,8 @@ class Planner::EventsControllerTest < ActionDispatch::IntegrationTest
     let(:foreign) { planner_items(:other_users_event) }
 
     it "is not found to edit, update, delete or tick" do
+      get planner_event_path(foreign)
+      assert_response :not_found
       get edit_planner_event_path(foreign)
       assert_response :not_found
       patch planner_event_path(foreign), params: {planner_event: {title: "Mine now"}}
@@ -234,7 +215,7 @@ class Planner::EventsControllerTest < ActionDispatch::IntegrationTest
     it "sets and clears done_at on an event that tracks it" do
       event = planner_items(:rent_open)
       patch planner_event_completion_path(event), params: {done: "1"}
-      assert_redirected_to planner_events_path
+      assert_redirected_to planner_calendar_path
       assert event.reload.done?
       patch planner_event_completion_path(event), params: {done: "0"}
       assert_not event.reload.done?
@@ -250,14 +231,6 @@ class Planner::EventsControllerTest < ActionDispatch::IntegrationTest
     it "does nothing to an event that does not track done" do
       patch planner_event_completion_path(planner_items(:holiday)), params: {done: "1"}
       assert_nil planner_items(:holiday).reload.done_at
-    end
-
-    it "shows a labeled checkbox only for events that track done" do
-      get planner_events_path
-      assert_select "input[type=checkbox][aria-label='Done: Rent November']", 1
-      assert_select "input[type=checkbox]", 1
-      get planner_events_path(when: "past")
-      assert_select "input[type=checkbox][checked][aria-label='Done: Rent October']", 1
     end
   end
 end

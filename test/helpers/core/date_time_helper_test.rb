@@ -19,6 +19,12 @@ class Core::DateTimeHelperTest < ActionView::TestCase
     end
   end
 
+  it "formats a date as plain text, for titles, in the user's date format" do
+    with_preferences(date_format: "ymd") do
+      assert_equal "2026-12-31", format_date_text(Date.new(2026, 12, 31))
+    end
+  end
+
   it "formats a time in the user's zone, in 24-hour and 12-hour clocks" do
     time = Time.utc(2026, 10, 6, 11, 30)
     with_preferences(time_zone: "Europe/Rome", time_format: "24h") do
