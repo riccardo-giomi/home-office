@@ -1,10 +1,12 @@
 <% content_for :title, t(".title") %>
-<div class="w-full max-w-md">
-  <%= render Core::UI::PageHeaderComponent.new(title: t(".title"), back_href: event_back_href(@event), back_label: event_back_label) %>
-  <%= render "form", event: @event %>
-  <%= render(Core::UI::FormActionsComponent.new) do |actions| %>
-    <% actions.with_primary do %>
-      <%= render(Core::UI::ButtonComponent.new(type: :submit, form: "event-form")) { t("planner.events.form.submit") } %>
+<%= event_frame do %>
+  <div class="w-full max-w-md">
+    <%= render Core::UI::PageHeaderComponent.new(id: "dialog-title", title: t(".title"), back_href: (event_back_href(@event) unless in_dialog?), back_label: event_back_label) %>
+    <%= render "form", event: @event %>
+    <%= render(Core::UI::FormActionsComponent.new) do |actions| %>
+      <% actions.with_primary do %>
+        <%= render(Core::UI::ButtonComponent.new(type: :submit, form: "event-form")) { t("planner.events.form.submit") } %>
+      <% end %>
     <% end %>
-  <% end %>
-</div>
+  </div>
+<% end %>

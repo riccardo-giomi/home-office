@@ -1,31 +1,6 @@
 <% content_for :title, t(".title", title: @event.title) %>
 <%# A tick saves and redirects back here: morphing keeps focus on the checkbox %>
 <% turbo_refreshes_with method: :morph, scroll: :preserve %>
-<div class="w-full max-w-2xl">
-  <%= render Core::UI::PageHeaderComponent.new(title: @event.title, back_href: event_back_href(@event), back_label: event_back_label) %>
-  <dl class="grid gap-x-6 gap-y-4 sm:grid-cols-[8rem_1fr]">
-    <dt class="font-semibold"><%= t(".when") %></dt>
-    <dd>
-      <%= format_date(@event.day) %>
-      <% if @event.starts_at %>
-        <br><%= format_time(@event.starts_at, zone: @event.time_zone) %>&ndash;<%= format_time(@event.ends_at, zone: @event.time_zone) %>
-      <% else %>
-        <br><%= t("core.ui.calendar_entry.all_day") %>
-      <% end %>
-    </dd>
-    <% if @event.tracks_done? %>
-      <dt class="font-semibold"><%= t(".done") %></dt>
-      <dd class="flex items-center gap-2">
-        <%= completion_check(@event) %>
-        <% if @event.done? %><span><%= t(".done_at_html", time: format_datetime(@event.done_at)) %></span><% end %>
-      </dd>
-    <% end %>
-    <% if @event.notes.present? %>
-      <dt class="font-semibold"><%= t(".notes") %></dt>
-      <dd class="whitespace-pre-line wrap-anywhere"><%= @event.notes %></dd>
-    <% end %>
-  </dl>
-  <div class="mt-8">
-    <%= render(Core::UI::ButtonComponent.new(href: edit_planner_event_path(@event, back: back_param))) { t(".edit") } %>
-  </div>
-</div>
+<%= event_frame do %>
+  <%= render "show_content", event: @event %>
+<% end %>

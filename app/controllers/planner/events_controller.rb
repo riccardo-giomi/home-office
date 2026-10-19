@@ -13,6 +13,8 @@ class Planner::EventsController < ApplicationController
   def create
     @event = Planner::Event.new(event_params.merge(user: Current.user))
     if @event.save
+      return dialog_done(t(".created")) if in_dialog?
+
       redirect_to back_path_or_day(@event), notice: t(".created")
     else
       render :new, status: :unprocessable_content
@@ -24,15 +26,19 @@ class Planner::EventsController < ApplicationController
 
   def update
     if @event.update(event_params)
+      return dialog_done(t(".updated")) if in_dialog?
+
       redirect_to planner_event_path(@event, back: back_param), notice: t(".updated")
     else
       render :edit, status: :unprocessable_content
     end
   end
 
-  # Permanent until the trash exists
+  # Permanent until the trash exists.
   def destroy
     @event.destroy!
+    return dialog_done(t(".deleted")) if in_dialog?
+
     redirect_to back_path_or_day(@event), notice: t(".deleted"), status: :see_other
   end
 

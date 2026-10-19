@@ -16,6 +16,7 @@ module Planner::CalendarHelper
       title: event.title,
       href: planner_event_path(event, back: request.fullpath),
       done: event.done?,
+      link_data: {turbo_frame: Planner::EventDialog::FRAME_ID},
       starts_at: event.starts_at,
       ends_at: event.ends_at,
       time_zone: event.time_zone,

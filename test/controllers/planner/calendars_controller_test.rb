@@ -108,6 +108,29 @@ class Planner::CalendarsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  describe "the dialog" do
+    before { sign_in_as admin }
+
+    it "is on every view, and the entries and New event open their pages in it" do
+      %w[month week day].each do |view|
+        get planner_calendar_path(view:, date: "2026-10-07")
+        assert_select "dialog#event-dialog turbo-frame#event-dialog-frame", 1
+        assert_select "a[data-turbo-frame=event-dialog-frame][href^='#{planner_event_path(planner_items(:dentist))}']", text: "Dentist" if view != "month"
+        assert_select "a[data-turbo-frame=event-dialog-frame][href^='#{new_planner_event_path}']", text: "New event"
+      end
+    end
+
+    it "offers New event as the page's main action: a link, drawn as a button, that opens the dialog" do
+      get planner_calendar_path
+      assert_select "a.btn.btn-primary[href^='#{new_planner_event_path}'][data-turbo-frame=event-dialog-frame]", text: "New event"
+    end
+
+    it "opens the month's entries in it too" do
+      get planner_calendar_path
+      assert_select "td a[data-turbo-frame=event-dialog-frame]", text: "Dentist"
+    end
+  end
+
   describe "the list alternative" do
     before { sign_in_as admin }
 

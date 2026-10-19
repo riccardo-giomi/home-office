@@ -161,6 +161,70 @@ class Planner::EventsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  describe "in the dialog of the calendar and the agenda" do
+    before { sign_in_as admin }
+
+    let(:frame) { {"Turbo-Frame" => "event-dialog-frame"} }
+
+    it "answers a frame request with just the page, in the frame the dialog holds, without the way back" do
+      get planner_event_path(planner_items(:dentist), back: planner_agenda_path), headers: frame
+      assert_response :success
+      assert_select "turbo-frame#event-dialog-frame h1#dialog-title", "Dentist"
+      assert_select "nav#sidebar", count: 0
+      assert_select "a", text: "Back to agenda", count: 0
+      assert_select "a", text: "Edit event"
+    end
+
+    it "keeps the full page free of the frame, so its own forms and links behave as usual" do
+      get planner_event_path(planner_items(:dentist))
+      assert_select "turbo-frame", count: 0
+      assert_select "h1#dialog-title", "Dentist"
+      get edit_planner_event_path(planner_items(:dentist))
+      assert_select "turbo-frame", count: 0
+    end
+
+    it "shows the new and edit forms in the frame, the edit form with its way back to the event" do
+      get new_planner_event_path, headers: frame
+      assert_select "turbo-frame#event-dialog-frame form#event-form"
+      assert_select "a", text: "Back to calendar", count: 0
+      get edit_planner_event_path(planner_items(:dentist)), headers: frame
+      assert_select "turbo-frame#event-dialog-frame form#event-form"
+      assert_select "a[href='#{planner_event_path(planner_items(:dentist))}']", text: "Back to event"
+    end
+
+    it "answers a successful change by refreshing the page behind and closing the dialog, and says so after the refresh" do
+      post planner_events_path, headers: frame, params: {planner_event: {title: "Standup", day: "2026-10-09", start_time: "", end_time: "", notes: "", tracks_done: "0"}}
+      assert_response :success
+      assert_equal "text/vnd.turbo-stream.html", response.media_type
+      assert_select "turbo-stream[action=refresh]:not([request-id])", 1
+      assert_select "turbo-stream[action=close_dialog][target=event-dialog]", 1
+      assert_equal "Event created.", flash[:notice]
+      assert Planner::Event.exists?(title: "Standup")
+    end
+
+    it "does the same for an update and a delete" do
+      patch planner_event_path(planner_items(:dentist)), headers: frame, params: {planner_event: {title: "Dentist 2"}}
+      assert_select "turbo-stream[action=close_dialog]", 1
+      assert_equal "Dentist 2", planner_items(:dentist).reload.title
+      assert_equal "Event updated.", flash[:notice]
+      delete planner_event_path(planner_items(:dentist)), headers: frame
+      assert_select "turbo-stream[action=refresh]", 1
+      assert_nil Planner::Event.find_by(id: planner_items(:dentist).id)
+    end
+
+    it "shows the errors inside the dialog, keeping what was typed" do
+      post planner_events_path, headers: frame, params: {planner_event: {title: " ", day: "2026-10-09", notes: "Bring the file"}}
+      assert_response :unprocessable_content
+      assert_select "turbo-frame#event-dialog-frame #error-summary"
+      assert_select "textarea", text: /Bring the file/
+    end
+
+    it "keeps someone else's event out of the dialog too" do
+      get planner_event_path(planner_items(:other_users_event)), headers: frame
+      assert_response :not_found
+    end
+  end
+
   describe "going back after a change" do
     before { sign_in_as admin }
 
@@ -211,6 +275,16 @@ class Planner::EventsControllerTest < ActionDispatch::IntegrationTest
 
   describe "ticking done" do
     before { sign_in_as admin }
+
+    it "in the dialog, refreshes the page behind and redraws the details inside the dialog, keeping it open" do
+      patch planner_event_completion_path(planner_items(:rent_open)), headers: {"Turbo-Frame" => "event-dialog-frame"}, params: {done: "1"}
+      assert_equal "text/vnd.turbo-stream.html", response.media_type
+      assert_select "turbo-stream[action=refresh]:not([request-id])", 1
+      assert_select "turbo-stream[action=update][target=event-dialog-frame][method=morph] input[type=checkbox][checked]", 1
+      assert_select "turbo-stream[action=update] template dd time", minimum: 2
+      assert_select "turbo-stream[action=close_dialog]", 0
+      assert planner_items(:rent_open).reload.done?
+    end
 
     it "sets and clears done_at on an event that tracks it" do
       event = planner_items(:rent_open)

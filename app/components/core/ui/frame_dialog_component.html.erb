@@ -1,0 +1,15 @@
+<%# turbo:before-cache closes it, so a cached page never comes back with a plain open dialog. %>
+<%# Permanent (data-turbo-permanent), so a refresh of the page behind (after a change made in the dialog) neither closes it nor empties its frame %>
+<div id="<%= @id %>-host" data-turbo-permanent data-controller="frame-dialog" data-action="turbo:before-cache@document->frame-dialog#close">
+  <dialog id="<%= @id %>" class="modal" aria-labelledby="dialog-title" <%= "open" if @open %>
+    data-frame-dialog-target="dialog" data-action="close->frame-dialog#emptied click->frame-dialog#backdrop">
+    <%# Fills a phone; a box of its own from sm up %>
+    <div class="modal-box relative h-full [&_h1]:pe-10 max-h-none w-full max-w-none rounded-none sm:h-auto sm:max-h-[90vh] sm:max-w-2xl sm:rounded-box">
+      <turbo-frame id="<%= @frame_id %>" data-frame-dialog-target="frame" data-action="turbo:frame-load->frame-dialog#open"><%= content %></turbo-frame>
+      <%# After the frame in the order, so the first field of the page gets the focus; drawn at the corner %>
+      <form method="dialog" class="absolute end-2 top-2">
+        <button class="btn btn-ghost btn-sm btn-circle" aria-label="<%= t("core.ui.modal.close") %>"><%= render Core::UI::IconComponent.new(name: :x_mark) %></button>
+      </form>
+    </div>
+  </dialog>
+</div>
