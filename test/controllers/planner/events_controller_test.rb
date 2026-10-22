@@ -1,8 +1,10 @@
 require "test_helper"
 require_relative "shared_item_pages"
+require_relative "shared_timed_item_pages"
 
 class Planner::EventsControllerTest < ActionDispatch::IntegrationTest
   include SharedItemPages
+  include SharedTimedItemPages
 
   let(:item_class) { Planner::Event }
   let(:kind) { "event" }

@@ -16,6 +16,7 @@ module Planner::Timed
     before_validation :assemble_times, if: :times_given?
     before_validation :fill_end
 
+    validates :day, presence: true
     validate :times_are_consistent
   end
 

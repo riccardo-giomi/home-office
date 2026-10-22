@@ -1,8 +1,7 @@
 # The pages every item type has (new, create, show, edit, update, delete, the dialog, going back, other users).
-# The including test says which type it is by defining:
+# What only items with a day and times have is in SharedTimedItemPages. The including test says which type it is by defining:
 #   item_class, kind          the model and its lower-case name ("event", "task")
-#   sample                    a timed item of admin, on 2026-10-07 at 09:30 in Europe/Rome
-#   all_day_sample            an all-day item of admin
+#   sample                    an item of admin
 #   foreign                   an item of another user
 #   default_back(item)        where "Back" goes when the visit did not begin on a listed page
 module SharedItemPages
@@ -13,7 +12,7 @@ module SharedItemPages
       let(:collection_path) { polymorphic_path(item_class) }
       let(:copy) { ->(key, **options) { I18n.t("planner.kinds.#{kind}.#{key}", **options) } }
 
-      def item_params(**overrides) = {param_key => {title: "Standup", day: "2026-10-09", start_time: "", end_time: "", notes: ""}.merge(overrides)}
+      def item_params(**overrides) = {param_key => {title: "Standup", notes: ""}.merge(overrides)}
 
       before do
         admin.update!(time_zone: "Europe/Rome", time_format: "24h", locale: "en")
@@ -27,23 +26,15 @@ module SharedItemPages
           get new_polymorphic_path(item_class)
           assert_response :success
           assert_select "title", "#{copy.call("new_title")} | Home Office"
-          assert_select "input[type=time]", 2
         end
 
-        it "creates an all-day item for the signed-in user" do
+        it "creates an item for the signed-in user" do
           assert_difference "item_class.count", 1 do
             post collection_path, params: item_params
           end
           item = item_class.order(:id).last
-          assert_equal [admin.id, "Standup", Date.new(2026, 10, 9), nil], [item.user_id, item.title, item.day, item.starts_at]
+          assert_equal [admin.id, "Standup"], [item.user_id, item.title]
           assert_redirected_to default_back(item)
-        end
-
-        it "creates a timed item in the user's zone with the default end" do
-          post collection_path, params: item_params(start_time: "09:30")
-          item = item_class.order(:id).last
-          assert_equal "Europe/Rome", item.time_zone
-          assert_equal %w[09:30 10:00], [item.start_time, item.end_time]
         end
 
         it "never lets the request choose the owner, the state or the zone" do
@@ -54,12 +45,10 @@ module SharedItemPages
 
         it "keeps what was typed and answers 422 on errors" do
           assert_no_difference "item_class.count" do
-            post collection_path, params: item_params(title: " ", start_time: "10:00", end_time: "09:00", notes: "Bring the file")
+            post collection_path, params: item_params(title: " ", notes: "Bring the file")
           end
           assert_response :unprocessable_content
           assert_select "#error-summary"
-          assert_select "input[name='#{param_key}[start_time]'][value='10:00']"
-          assert_select "input[name='#{param_key}[end_time]'][value='09:00']"
           assert_select "textarea", text: /Bring the file/
         end
       end
@@ -67,29 +56,18 @@ module SharedItemPages
       describe "editing" do
         before { sign_in_as admin }
 
-        it "shows the stored values in local time" do
-          get edit_polymorphic_path(sample)
-          assert_select "input[name='#{param_key}[start_time]'][value='#{sample.start_time}']"
-          assert_select "input[name='#{param_key}[day]'][value='2026-10-07']"
-        end
-
         it "updates the item" do
-          patch polymorphic_path(sample), params: {param_key => {title: "Moved", start_time: "11:00", end_time: ""}}
+          patch polymorphic_path(sample), params: {param_key => {title: "Moved"}}
           item = sample.reload
-          assert_equal ["Moved", "11:00", "11:30"], [item.title, item.start_time, item.end_time]
+          assert_equal "Moved", item.title
           assert_redirected_to polymorphic_path(item)
-        end
-
-        it "makes an item all-day when both times are cleared" do
-          patch polymorphic_path(sample), params: {param_key => {start_time: "", end_time: ""}}
-          assert_nil sample.reload.starts_at
         end
 
         it "answers 422 and keeps the typed values on errors" do
           title = sample.title
-          patch polymorphic_path(sample), params: {param_key => {title: "", start_time: "10:15"}}
+          patch polymorphic_path(sample), params: {param_key => {title: "", notes: "Kept"}}
           assert_response :unprocessable_content
-          assert_select "input[name='#{param_key}[start_time]'][value='10:15']"
+          assert_select "textarea", text: /Kept/
           assert_equal title, sample.reload.title
         end
 
@@ -110,34 +88,21 @@ module SharedItemPages
           assert_redirected_to new_session_path
         end
 
-        it "shows the item with its day, its times in its own zone and its notes as plain text" do
+        it "shows the item with its notes as plain text" do
           sample.update!(notes: "Bring the X-rays\n<script>alert(1)</script>")
           get polymorphic_path(sample)
           assert_response :success
           assert_select "title", "#{copy.call("show_title", title: sample.title)} | Home Office"
           assert_select "h1", sample.title
-          assert_select "dd time[datetime='2026-10-07']"
-          assert_select "dd time[datetime='#{sample.starts_at.in_time_zone("Europe/Rome").iso8601}']"
           assert_select "dd", text: /Bring the X-rays/
           assert_select "script", text: /alert/, count: 0
           assert_match(/&lt;script&gt;/, response.body)
         end
 
-        it "says all day for an item without times, and shows no notes section without notes" do
-          get polymorphic_path(all_day_sample)
-          assert_select "dd", text: /All day/
+        it "shows no notes section without notes" do
+          sample.update!(notes: nil)
+          get polymorphic_path(sample)
           assert_select "dt", text: "Notes", count: 0
-        end
-
-        it "offers the state changes the item can have, and a reopen once it has changed" do
-          get polymorphic_path(sample)
-          assert_select "form[action='#{planner_item_state_path(sample)}'] button", text: copy.call("abandon")
-          assert_select "form[action='#{planner_item_state_path(sample)}'] button", text: copy.call("reopen"), count: 0
-          sample.update!(state: "abandoned")
-          get polymorphic_path(sample)
-          assert_select "form[action='#{planner_item_state_path(sample)}'] button", text: copy.call("reopen")
-          assert_select "form[action='#{planner_item_state_path(sample)}'] button", text: copy.call("abandon"), count: 0
-          assert_select "dd", text: "Abandoned"
         end
 
         it "links back to the default page by default, and on to the edit form" do
