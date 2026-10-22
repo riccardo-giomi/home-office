@@ -16,10 +16,11 @@ class Planner::Todo < Planner::Item
 
   def timed? = false
 
-  # where: :up, :down, :top, :bottom, or {before: todo} / {after: todo}.
+  # Moves the todo within its user's list. `where` is :up, :down, :top, :bottom,
+  # {before: todo} or {after: todo}. Returns false when nothing moves.
   #
-  # The neighbors are read now, from this user's list, so a page that has gone
-  # stale cannot scramble the order. False when nothing moves.
+  # The neighbors are read from the database, not from this record, so a page
+  # that has gone stale cannot scramble the order.
   def move(where)
     list = self.class.where(user_id:).in_order.to_a
     index = list.index { |todo| todo.id == id }

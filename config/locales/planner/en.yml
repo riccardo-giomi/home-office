@@ -151,6 +151,17 @@ en:
         month: Month
         week: Week
       week_of: Week of %{date}
+    positions:
+      labels:
+        bottom: 'Move to bottom: %{title}'
+        down: 'Move down: %{title}'
+        group: Move %{title}
+        top: 'Move to top: %{title}'
+        up: 'Move up: %{title}'
+      update:
+        moved: "“%{title}” moved to position %{position} of %{count}."
+        refused: That move is not possible.
+        unchanged: "“%{title}” is already there."
     schedules:
       show:
         nav: Schedule navigation
@@ -163,5 +174,6 @@ en:
     todos:
       index:
         empty: No todos. Add the first one.
+        list: Todo list
         new: New todo
         title: Todos

@@ -151,6 +151,17 @@ it:
         month: Mese
         week: Settimana
       week_of: Settimana del %{date}
+    positions:
+      labels:
+        bottom: 'Sposta in fondo: %{title}'
+        down: 'Sposta giù: %{title}'
+        group: Sposta %{title}
+        top: 'Sposta in cima: %{title}'
+        up: 'Sposta su: %{title}'
+      update:
+        moved: "«%{title}» spostato in posizione %{position} di %{count}."
+        refused: Questo spostamento non è possibile.
+        unchanged: "«%{title}» è già al suo posto."
     schedules:
       show:
         nav: Navigazione del programma
@@ -163,5 +174,6 @@ it:
     todos:
       index:
         empty: La lista è vuota. Aggiungi il primo.
+        list: Da fare
         new: Nuovo da fare
         title: Da fare

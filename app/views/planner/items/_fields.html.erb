@@ -1,4 +1,4 @@
-<%# What every item has; the day and times come from the schedule fields of its type %>
+<%# Fields every item has. The day and times are in the schedule fields, which a type can override %>
 <%= render Core::UI::FieldComponent.new(form:, attribute: :title, label: item.class.human_attribute_name(:title), required: true, autocomplete: "off") %>
 <%= render "schedule_fields", form:, item: %>
 <%= render Core::UI::FieldComponent.new(form:, attribute: :priority, label: item.class.human_attribute_name(:priority), as: :select, choices: priority_choices) %>

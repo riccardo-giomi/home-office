@@ -23,8 +23,8 @@ module Planner::CalendarHelper
       starts_at: item.starts_at,
       ends_at: item.ends_at,
       time_zone: item.time_zone,
-      from: clock_minutes(item.start_time),
-      to: clock_minutes(item.end_time),
+      from: (clock_minutes(item.start_time) if item.timed?),
+      to: (clock_minutes(item.end_time) if item.timed?),
       check: (completion_check(item) if item.tracks_done? && item.active?),
       state_label: (kind_t(item, "state_#{item.state}") unless item.active?),
       priority: {level: item.priority.to_sym, label: priority_name(item.priority)}

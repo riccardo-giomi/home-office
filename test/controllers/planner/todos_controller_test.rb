@@ -73,11 +73,60 @@ class Planner::TodosControllerTest < ActionDispatch::IntegrationTest
     describe "signed in" do
       before { sign_in_as admin }
 
+      it "lists the user's todos in their own order, and no one else's" do
+        get planner_todos_path
+        assert_response :success
+        assert_select "title", "Todos | Home Office"
+        assert_select "h1", "Todos"
+        assert_equal ["Water the plants", "Call mom", "Finish the book Done", "Renew the license"], css_select("main ol > li a").map { |link| link.text.strip }
+        assert_no_match(/Someone else/, response.body)
+      end
+
+      it "follows a move: the next one is the next in line" do
+        planner_items(:renew_license_todo).move(:top)
+        get planner_todos_path
+        assert_equal "Renew the license", css_select("main ol > li a").first.text.strip
+      end
+
+      it "marks priority for a reader and a done todo as done, with no time line" do
+        get planner_todos_path
+        assert_select "li", text: /Call mom/ do
+          assert_select "span.badge[aria-label='High priority']"
+        end
+        assert_select "li", text: /Renew the license/ do
+          assert_select "span.badge[aria-label='Low priority']"
+        end
+        assert_select "li", text: /Finish the book/ do
+          assert_select "s", text: "Finish the book"
+        end
+        assert_no_match(/All day/, css_select("main").text)
+      end
+
+      it "has a tick box on each todo and a way to add one" do
+        get planner_todos_path
+        assert_select "main ol input[type=checkbox]", 4
+        assert_select "a[href^='#{new_planner_todo_path}']", text: "New todo"
+      end
+
+      it "highlights the todo that was just moved, once" do
+        patch planner_todo_position_path(planner_items(:call_mom_todo)), params: {move: "top"}
+        follow_redirect!
+        assert_select "li[data-controller=highlight]", 1
+        assert_select "li[data-controller=highlight]", text: /Call mom/
+        get planner_todos_path
+        assert_select "li[data-controller=highlight]", 0
+      end
+
       it "says so when there are none" do
         Planner::Todo.owned_by(admin).delete_all
         get planner_todos_path
         assert_select "main", text: /No todos\. Add the first one\./
         assert_select "ol", 0
+      end
+
+      it "opens a todo in the dialog, and goes back to this page from it" do
+        get planner_todos_path
+        assert_select "li a[data-turbo-frame='item-dialog-frame'][href*='back=%2Fplanner%2Ftodos']", text: "Call mom"
       end
     end
   end
@@ -108,6 +157,12 @@ class Planner::TodosControllerTest < ActionDispatch::IntegrationTest
       get planner_todo_path(planner_items(:water_plants_todo))
       assert_select "title", "Da fare: Water the plants | Home Office"
       assert_select "a", text: "Modifica da fare"
+    end
+
+    it "names the priority in full for a reader" do
+      get planner_todos_path
+      assert_select "span.badge[aria-label='Priorità alta']"
+      assert_select "span.badge[aria-label='Priorità bassa']"
     end
   end
 end

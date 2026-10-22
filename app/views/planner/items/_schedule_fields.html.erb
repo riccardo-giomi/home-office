@@ -1,4 +1,4 @@
-<%# The day and times, for the items that have them; a type without them overrides this in planner/<type>/ %>
+<%# The day and times fields. A type without them overrides this partial in planner/<type>/ %>
 <%= render Core::UI::FieldComponent.new(form:, attribute: :day, label: item.class.human_attribute_name(:day), as: :date_field, required: true) %>
 <%= render Core::UI::FieldComponent.new(form:, attribute: :start_time, label: item.class.human_attribute_name(:start_time), as: :time_field, hint: kind_t(item, "times_hint"), data: {time_offset_target: "source", action: "input->time-offset#fill change->time-offset#fill"}) %>
 <%= render Core::UI::FieldComponent.new(form:, attribute: :end_time, label: item.class.human_attribute_name(:end_time), as: :time_field, data: {time_offset_target: "target", action: "input->time-offset#markEdited"}) %>

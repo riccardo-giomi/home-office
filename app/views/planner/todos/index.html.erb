@@ -1,19 +1,19 @@
 <% content_for :title, t(".title") %>
-<div class="w-full">
+<%# Refresh by morphing, so a tick or a move keeps the scroll position and the focus %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<div class="w-full" data-controller="focus-fallback">
   <%= render Core::UI::PageHeaderComponent.new(title: t(".title")) %>
   <%= render(Core::UI::PageToolbarComponent.new) do |toolbar| %>
     <% toolbar.with_leading do %>
       <%= new_item_button(Planner::Todo, t(".new")) %>
     <% end %>
   <% end %>
-  <% if @todos.empty? %>
-    <p><%= t(".empty") %></p>
-  <% else %>
-    <ul>
-      <% @todos.each do |todo| %>
-        <li><%= todo.title %></li>
+  <%= render(Core::UI::ReorderableListComponent.new(label: t(".list"), empty_text: t(".empty"))) do |list| %>
+    <% @todos.each_with_index do |todo, index| %>
+      <% list.with_row(**todo_row(todo, first: index.zero?, last: index == @todos.size - 1, moved_id: @moved_id)) do %>
+        <%= todo_entry(todo) %>
       <% end %>
-    </ul>
+    <% end %>
   <% end %>
   <%= item_dialog %>
 </div>
