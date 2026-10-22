@@ -1,0 +1,19 @@
+<% content_for :title, t(".title") %>
+<div class="w-full">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title")) %>
+  <%= render(Core::UI::PageToolbarComponent.new) do |toolbar| %>
+    <% toolbar.with_leading do %>
+      <%= new_item_button(Planner::Todo, t(".new")) %>
+    <% end %>
+  <% end %>
+  <% if @todos.empty? %>
+    <p><%= t(".empty") %></p>
+  <% else %>
+    <ul>
+      <% @todos.each do |todo| %>
+        <li><%= todo.title %></li>
+      <% end %>
+    </ul>
+  <% end %>
+  <%= item_dialog %>
+</div>

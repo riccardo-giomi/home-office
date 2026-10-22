@@ -50,6 +50,7 @@ it:
         agenda: Torna all'agenda
         calendar: Torna al calendario
         schedule: Torna al programma
+        todos: Torna a Da fare
       priorities:
         high: Alta
         low: Bassa
@@ -112,6 +113,22 @@ it:
         submit: Salva attività
         times_hint: Lascia vuote entrambe le ore per un'attività di tutto il giorno.
         updated: Attività aggiornata.
+      todo:
+        back_to_item: Torna al da fare
+        created: Da fare creato.
+        delete: Elimina da fare
+        delete_confirm: Elimina da fare
+        delete_title: Eliminare questo da fare?
+        delete_warning: "«%{title}» sarà eliminato definitivamente."
+        deleted: Da fare eliminato.
+        edit: Modifica da fare
+        edit_title: 'Modifica da fare: %{title}'
+        new_title: Nuovo da fare
+        show_title: 'Da fare: %{title}'
+        state_abandoned: Abbandonato
+        state_cancelled: Annullato
+        submit: Salva da fare
+        updated: Da fare aggiornato.
     nav:
       agenda: Agenda
       calendar: Calendario
@@ -119,6 +136,7 @@ it:
       groups:
         planner: Planner
       schedule: Programma
+      todos: Da fare
     periods:
       next:
         day: Giorno successivo
@@ -142,3 +160,8 @@ it:
     states:
       update:
         refused: Questa modifica non è possibile.
+    todos:
+      index:
+        empty: La lista è vuota. Aggiungi il primo.
+        new: Nuovo da fare
+        title: Da fare

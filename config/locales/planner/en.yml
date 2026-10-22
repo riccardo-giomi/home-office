@@ -50,6 +50,7 @@ en:
         agenda: Back to agenda
         calendar: Back to calendar
         schedule: Back to schedule
+        todos: Back to todos
       priorities:
         high: High
         low: Low
@@ -112,6 +113,22 @@ en:
         submit: Save task
         times_hint: Leave both times empty for an all-day task.
         updated: Task updated.
+      todo:
+        back_to_item: Back to todo
+        created: Todo created.
+        delete: Delete todo
+        delete_confirm: Delete todo
+        delete_title: Delete this todo?
+        delete_warning: "“%{title}” will be deleted for good."
+        deleted: Todo deleted.
+        edit: Edit todo
+        edit_title: 'Edit todo: %{title}'
+        new_title: New todo
+        show_title: 'Todo: %{title}'
+        state_abandoned: Abandoned
+        state_cancelled: Cancelled
+        submit: Save todo
+        updated: Todo updated.
     nav:
       agenda: Agenda
       calendar: Calendar
@@ -119,6 +136,7 @@ en:
       groups:
         planner: Planner
       schedule: Schedule
+      todos: Todos
     periods:
       next:
         day: Next day
@@ -142,3 +160,8 @@ en:
     states:
       update:
         refused: That change is not possible.
+    todos:
+      index:
+        empty: No todos. Add the first one.
+        new: New todo
+        title: Todos

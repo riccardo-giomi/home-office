@@ -13,7 +13,7 @@ class Planner::ItemsController < ApplicationController
   end
 
   def new
-    @item = item_class.new(day: Date.current)
+    @item = item_class.new(initial_attributes)
   end
 
   def create
@@ -55,6 +55,10 @@ class Planner::ItemsController < ApplicationController
   def set_item
     @item = items.find(params[:id])
   end
+
+  # What a new item starts with. An item with no day of its own starts with
+  # nothing.
+  def initial_attributes = {day: Date.current}
 
   # What every kind may set; a kind adds its own.
   def permitted_attributes = %i[title notes priority]

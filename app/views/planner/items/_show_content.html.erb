@@ -3,15 +3,17 @@
 <div class="w-full max-w-2xl">
   <%= render Core::UI::PageHeaderComponent.new(id: "dialog-title", title: item.title, back_href: (item_back_href(item) unless in_dialog?), back_label: item_back_label(item)) %>
   <dl class="grid gap-x-6 gap-y-4 sm:grid-cols-[8rem_1fr]">
-    <dt class="font-semibold"><%= t("planner.items.show.when") %></dt>
-    <dd>
-      <%= format_date(item.day) %>
-      <% if item.starts_at %>
-        <br><%= format_time(item.starts_at, zone: item.time_zone) %>&ndash;<%= format_time(item.ends_at, zone: item.time_zone) %>
-      <% else %>
-        <br><%= t("core.ui.calendar_entry.all_day") %>
-      <% end %>
-    </dd>
+    <% if item.timed? %>
+      <dt class="font-semibold"><%= t("planner.items.show.when") %></dt>
+      <dd>
+        <%= format_date(item.day) %>
+        <% if item.starts_at %>
+          <br><%= format_time(item.starts_at, zone: item.time_zone) %>&ndash;<%= format_time(item.ends_at, zone: item.time_zone) %>
+        <% else %>
+          <br><%= t("core.ui.calendar_entry.all_day") %>
+        <% end %>
+      </dd>
+    <% end %>
     <dt class="font-semibold"><%= t("planner.items.show.priority") %></dt>
     <dd class="flex items-center gap-2">
       <%= render Core::UI::PriorityComponent.new(level: item.priority.to_sym, label: priority_name(item.priority), always: true) %>

@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     resource :schedule, only: :show
     resources :events, except: :index
     resources :tasks, except: :index
+    resources :todos
     resources :items, only: [] do
       resource :completion, only: :update
       resource :state, only: :update

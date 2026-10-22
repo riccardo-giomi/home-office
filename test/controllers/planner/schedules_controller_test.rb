@@ -127,10 +127,10 @@ class Planner::SchedulesControllerTest < ActionDispatch::IntegrationTest
   describe "in the sidebar" do
     before { sign_in_as admin }
 
-    it "is the third entry of the Planner group" do
+    it "is the third entry of the Planner group, before Todos" do
       get planner_schedule_path
       assert_select "nav#sidebar ul:has(a[href='#{planner_calendar_path}']) li a" do |links|
-        assert_equal %w[Calendar Agenda Schedule], links.map { |link| link.text.strip }
+        assert_equal %w[Calendar Agenda Schedule Todos], links.map { |link| link.text.strip }
       end
     end
   end

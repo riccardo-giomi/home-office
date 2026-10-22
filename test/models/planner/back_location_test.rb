@@ -15,6 +15,11 @@ describe Planner::BackLocation do
     _(Planner::BackLocation.parse("/planner/schedule").page).must_equal :schedule
   end
 
+  it "accepts the todos" do
+    _(Planner::BackLocation.parse("/planner/todos")&.page).must_equal :todos
+    assert_nil Planner::BackLocation.parse("/planner/todosx")
+  end
+
   it "does not accept the item pages themselves" do
     assert_nil Planner::BackLocation.parse("/planner/tasks/1")
   end
