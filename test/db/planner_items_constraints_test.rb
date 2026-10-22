@@ -34,9 +34,20 @@ describe "planner_items constraints" do
     end
   end
 
-  it "allows events and tasks, and nothing else yet" do
+  it "allows events, tasks and todos, and nothing else" do
     assert_nothing_raised { insert_item(type: "Planner::Task", tracks_done: 1) }
-    rejects "chk_planner_items_type", type: "Planner::Todo", tracks_done: 1
+    assert_nothing_raised { insert_item(type: "Planner::Todo", tracks_done: 1, day: "NULL") }
+    rejects "chk_planner_items_type", type: "Planner::Banana", tracks_done: 1
+  end
+
+  it "lets a todo hold a day and times it does not use" do
+    assert_nothing_raised do
+      insert_item(type: "Planner::Todo", tracks_done: 1, starts_at: "'2026-10-07 07:30:00'", ends_at: "'2026-10-07 08:00:00'", time_zone: "'Europe/Rome'")
+    end
+  end
+
+  it "requires a todo to track done" do
+    rejects "chk_planner_items_done_always", type: "Planner::Todo", tracks_done: 0, day: "NULL"
   end
 
   it "requires a task to track done" do

@@ -99,3 +99,41 @@ passport_task:
   day: 2026-10-05
   tracks_done: 1
   position: 5
+
+water_plants_todo:
+  user: admin
+  type: Planner::Todo
+  title: Water the plants
+  tracks_done: 1
+  position: 1
+
+call_mom_todo:
+  user: admin
+  type: Planner::Todo
+  title: Call mom
+  tracks_done: 1
+  priority: 2
+  position: 2
+
+read_book_todo:
+  user: admin
+  type: Planner::Todo
+  title: Finish the book
+  tracks_done: 1
+  done_at: 2026-10-06 20:00:00
+  position: 3
+
+renew_license_todo:
+  user: admin
+  type: Planner::Todo
+  title: Renew the license
+  tracks_done: 1
+  priority: 0
+  position: 4
+
+other_users_todo:
+  user: other_admin
+  type: Planner::Todo
+  title: Someone else's todo
+  tracks_done: 1
+  position: 1

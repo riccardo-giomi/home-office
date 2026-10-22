@@ -27,6 +27,9 @@ class Planner::Item < ApplicationRecord
 
   def done? = done_at.present?
 
+  # Whether the item has a day and times of its own to show.
+  def timed? = true
+
   def mark_done(done) = (self.done_at = (Time.current if done && tracks_done?))
 
   def state_changes = STATE_CHANGES.keys.select { |to| can_change_state_to?(to) }

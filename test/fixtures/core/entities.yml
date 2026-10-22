@@ -46,3 +46,23 @@ other_users_task:
 passport_task:
   user: admin
   record_type: Planner::Item
+
+water_plants_todo:
+  user: admin
+  record_type: Planner::Item
+
+call_mom_todo:
+  user: admin
+  record_type: Planner::Item
+
+read_book_todo:
+  user: admin
+  record_type: Planner::Item
+
+renew_license_todo:
+  user: admin
+  record_type: Planner::Item
+
+other_users_todo:
+  user: other_admin
+  record_type: Planner::Item
