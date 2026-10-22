@@ -106,6 +106,7 @@ en:
       events: Events
       groups:
         planner: Planner
+      schedule: Schedule
     periods:
       next:
         day: Next day
@@ -120,6 +121,12 @@ en:
         month: Month
         week: Week
       week_of: Week of %{date}
+    schedules:
+      show:
+        nav: Schedule navigation
+        new: New task
+        title: Schedule
+        title_with_period: 'Schedule: %{period}'
     states:
       update:
         refused: That change is not possible.

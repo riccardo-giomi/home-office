@@ -106,6 +106,7 @@ it:
       events: Eventi
       groups:
         planner: Planner
+      schedule: Programma
     periods:
       next:
         day: Giorno successivo
@@ -120,6 +121,12 @@ it:
         month: Mese
         week: Settimana
       week_of: Settimana del %{date}
+    schedules:
+      show:
+        nav: Navigazione del programma
+        new: Nuova attività
+        title: Programma
+        title_with_period: 'Programma: %{period}'
     states:
       update:
         refused: Questa modifica non è possibile.

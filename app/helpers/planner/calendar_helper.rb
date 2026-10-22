@@ -2,11 +2,11 @@
 # draw.
 module Planner::CalendarHelper
   # Built once per request: the views ask for it in more than one place.
-  # Sorted by the wall clock of each event's own zone (the query orders by
-  # instant, which differs when two events were made in two zones).
-  def calendar_entries_by_day(events_by_day)
-    @calendar_entries_by_day ||= events_by_day.transform_values do |events|
-      events.map { |event| calendar_entry(event) }.each_with_index.sort_by do |entry, index|
+  # Sorted by the wall clock of each item's own zone (the query orders by
+  # instant, which differs when two items were made in two zones).
+  def entries_by_day(items_by_day)
+    @entries_by_day ||= items_by_day.transform_values do |items|
+      items.map { |item| calendar_entry(item) }.each_with_index.sort_by do |entry, index|
         [entry[:from] || -1, entry[:to] || -1, index]
       end.map(&:first)
     end

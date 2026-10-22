@@ -13,7 +13,7 @@
   <% end %>
   <%= render period_nav(@period, label: t(".nav"), path: ->(**params) { planner_agenda_path(**params) }) %>
   <%= render Core::UI::AgendaListComponent.new(
-        days: @period.range.map { |date| {date:, entries: calendar_entries_by_day(@events_by_day).fetch(date, [])} },
+        days: @period.range.map { |date| {date:, entries: entries_by_day(@events_by_day).fetch(date, [])} },
         today: Date.current, now: (Time.current if @period.range.cover?(Date.current)), empty_text: t(".empty.#{@period.view}")
       ) %>
   <%= item_dialog %>

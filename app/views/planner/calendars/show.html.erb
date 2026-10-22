@@ -17,13 +17,10 @@
   <% when :month %>
     <%= render Core::UI::MonthGridComponent.new(
           weeks: @period.grid_range.each_slice(7).to_a, month: @period.date, today: Date.current, caption: calendar_title(@period),
-          day_href: ->(date) { planner_calendar_path(view: "day", date: date.iso8601) }, entries_by_day: calendar_entries_by_day(@events_by_day)
+          day_href: ->(date) { planner_calendar_path(view: "day", date: date.iso8601) }, entries_by_day: entries_by_day(@events_by_day)
         ) %>
   <% else %>
-    <%= render Core::UI::TimeGridComponent.new(
-          days: ((@period.view == :week) ? @period.days_of_week : [@period.date]).map { |date| {date:, entries: calendar_entries_by_day(@events_by_day).fetch(date, [])} }, today: Date.current,
-          agenda_href: ->(date) { planner_agenda_path(view: "day", date: date.iso8601) }, now: Time.current
-        ) %>
+    <%= render "planner/time_grid", period: @period, entries_by_day: entries_by_day(@events_by_day), more_href: ->(date) { planner_agenda_path(view: "day", date: date.iso8601) } %>
   <% end %>
   <%= item_dialog %>
 </div>

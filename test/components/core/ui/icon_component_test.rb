@@ -9,7 +9,7 @@ describe Core::UI::IconComponent do
   end
 
   it "has a path for every name it is asked for" do
-    %i[home cog users swatch sun moon bars x_mark check warning].each { |name| render_inline(Core::UI::IconComponent.new(name:)) }
+    %i[home cog users swatch sun moon bars x_mark check warning checklist].each { |name| render_inline(Core::UI::IconComponent.new(name:)) }
     assert_raises(KeyError) { render_inline(Core::UI::IconComponent.new(name: :nope)) }
   end
 

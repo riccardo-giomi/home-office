@@ -1,0 +1,15 @@
+<% content_for :title, t(".title_with_period", period: calendar_title(@period)) %>
+<%# A tick saves and redirects back here: morphing keeps focus on the checkbox %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<%# Under 640 px only the day is shown, as in the calendar; the week needs more room %>
+<div class="w-full" <%= tag.attributes(data: {controller: ("narrow-day" unless @period.view == :day), narrow_day_href_value: planner_schedule_path(**@period.with_view(:day).to_params)}) %>>
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title")) %>
+  <%= render(Core::UI::PageToolbarComponent.new) do |toolbar| %>
+    <% toolbar.with_leading do %>
+      <%= new_item_button(Planner::Task, t(".new")) %>
+    <% end %>
+  <% end %>
+  <%= render period_nav(@period, label: t(".nav"), path: ->(**params) { planner_schedule_path(**params) }) %>
+  <%= render "planner/time_grid", period: @period, entries_by_day: entries_by_day(@tasks_by_day), more_href: ->(date) { planner_schedule_path(view: "day", date: date.iso8601) } %>
+  <%= item_dialog %>
+</div>

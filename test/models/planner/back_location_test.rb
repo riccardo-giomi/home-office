@@ -8,6 +8,17 @@ describe Planner::BackLocation do
     end
   end
 
+  it "accepts the schedule too" do
+    ["/planner/schedule?view=week&date=2026-10-07"].each do |path|
+      _(Planner::BackLocation.parse(path)&.path).must_equal path
+    end
+    _(Planner::BackLocation.parse("/planner/schedule").page).must_equal :schedule
+  end
+
+  it "does not accept the item pages themselves" do
+    assert_nil Planner::BackLocation.parse("/planner/tasks/1")
+  end
+
   it "knows which page it is, to name the way back" do
     _(Planner::BackLocation.parse("/planner/agenda?view=day").page).must_equal :agenda
     _(Planner::BackLocation.parse("/planner/calendar").page).must_equal :calendar

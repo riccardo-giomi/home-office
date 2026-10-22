@@ -49,6 +49,9 @@ class Planner::TasksControllerTest < ActionDispatch::IntegrationTest
 
     it "says abandoned the way a task takes it, in the schedule and on the page" do
       task = planner_items(:abandoned_task)
+      get planner_schedule_path(date: task.day.iso8601)
+      assert_select "li", text: /Abbandonata/
+      assert_select "li", text: /Abbandonato/, count: 0
       get planner_task_path(task)
       assert_select "dd", text: "Abbandonata"
     end
