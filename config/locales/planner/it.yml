@@ -53,10 +53,15 @@ it:
         done: Fatto
         done_at_html: Fatto il %{time}
         notes: Note
+        state: Stato
         when: Quando
     kinds:
       event:
+        abandon: Abbandona evento
+        abandoned: Evento abbandonato.
         back_to_item: Torna all'evento
+        cancel: Annulla evento
+        cancelled: Evento annullato.
         created: Evento creato.
         delete: Elimina evento
         delete_confirm: Elimina evento
@@ -66,11 +71,17 @@ it:
         edit: Modifica evento
         edit_title: 'Modifica evento: %{title}'
         new_title: Nuovo evento
+        reopen: Riapri evento
+        reopened: Evento riaperto.
         show_title: 'Evento: %{title}'
+        state_abandoned: Abbandonato
+        state_cancelled: Annullato
         submit: Salva evento
         times_hint: Lascia vuote entrambe le ore per un evento di tutto il giorno.
         updated: Evento aggiornato.
       task:
+        abandon: Abbandona attività
+        abandoned: Attività abbandonata.
         back_to_item: Torna all'attività
         created: Attività creata.
         delete: Elimina attività
@@ -81,7 +92,11 @@ it:
         edit: Modifica attività
         edit_title: 'Modifica attività: %{title}'
         new_title: Nuova attività
+        reopen: Riapri attività
+        reopened: Attività riaperta.
         show_title: 'Attività: %{title}'
+        state_abandoned: Abbandonata
+        state_cancelled: Annullata
         submit: Salva attività
         times_hint: Lascia vuote entrambe le ore per un'attività di tutto il giorno.
         updated: Attività aggiornata.
@@ -105,3 +120,6 @@ it:
         month: Mese
         week: Settimana
       week_of: Settimana del %{date}
+    states:
+      update:
+        refused: Questa modifica non è possibile.

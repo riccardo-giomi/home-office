@@ -129,4 +129,18 @@ class Planner::AgendasControllerTest < ActionDispatch::IntegrationTest
     get planner_agenda_path(view: "month", date: "2026-12-15")
     assert_select "[data-controller=agenda-scroll]", 0
   end
+
+  describe "entries that are not active" do
+    before { sign_in_as admin }
+
+    it "say so in words and have no done box, even when the event tracks done" do
+      planner_items(:cancelled_event).update_columns(tracks_done: 1)
+      get planner_agenda_path(view: "day", date: "2026-10-08")
+      assert_select "li", text: /Cancelled workshop/ do |entries|
+        assert_match(/Cancelled/, entries.first.text)
+      end
+      assert_select "li", text: /All day · Cancelled/
+      assert_select "input[type=checkbox][aria-label='Done: Cancelled workshop']", 0
+    end
+  end
 end

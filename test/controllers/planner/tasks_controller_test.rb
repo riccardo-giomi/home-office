@@ -41,6 +41,26 @@ class Planner::TasksControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  describe "in Italian" do
+    before do
+      admin.update!(locale: "it")
+      sign_in_as admin
+    end
+
+    it "says abandoned the way a task takes it, in the schedule and on the page" do
+      task = planner_items(:abandoned_task)
+      get planner_task_path(task)
+      assert_select "dd", text: "Abbandonata"
+    end
+
+    it "says an event abandoned the way an event takes it" do
+      event = planner_items(:dentist)
+      event.update!(state: "abandoned")
+      get planner_event_path(event)
+      assert_select "dd", text: "Abbandonato"
+    end
+  end
+
   describe "the hint under the times" do
     before { sign_in_as admin }
 

@@ -1,12 +1,10 @@
-# The pages every item type has (new, create, show, edit, update, delete, the
-# dialog, going back, other users).
-#
-# this test says which type it is by defining:
-#   item_class, kind   the model and its lower-case name ("event", "task")
-#   sample             a timed item of admin, on 2026-10-07 at 09:30 in Europe/Rome
-#   all_day_sample     an all-day item of admin
-#   foreign            an item of another user
-#   default_back(item) where "Back" goes when the visit did not begin on a listed page
+# The pages every item type has (new, create, show, edit, update, delete, the dialog, going back, other users).
+# The including test says which type it is by defining:
+#   item_class, kind          the model and its lower-case name ("event", "task")
+#   sample                    a timed item of admin, on 2026-10-07 at 09:30 in Europe/Rome
+#   all_day_sample            an all-day item of admin
+#   foreign                   an item of another user
+#   default_back(item)        where "Back" goes when the visit did not begin on a listed page
 module SharedItemPages
   def self.included(base)
     base.class_eval do
@@ -129,6 +127,17 @@ module SharedItemPages
           get polymorphic_path(all_day_sample)
           assert_select "dd", text: /All day/
           assert_select "dt", text: "Notes", count: 0
+        end
+
+        it "offers the state changes the item can have, and a reopen once it has changed" do
+          get polymorphic_path(sample)
+          assert_select "form[action='#{planner_item_state_path(sample)}'] button", text: copy.call("abandon")
+          assert_select "form[action='#{planner_item_state_path(sample)}'] button", text: copy.call("reopen"), count: 0
+          sample.update!(state: "abandoned")
+          get polymorphic_path(sample)
+          assert_select "form[action='#{planner_item_state_path(sample)}'] button", text: copy.call("reopen")
+          assert_select "form[action='#{planner_item_state_path(sample)}'] button", text: copy.call("abandon"), count: 0
+          assert_select "dd", text: "Abandoned"
         end
 
         it "links back to the default page by default, and on to the edit form" do

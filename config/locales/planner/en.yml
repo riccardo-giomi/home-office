@@ -53,10 +53,15 @@ en:
         done: Done
         done_at_html: Done on %{time}
         notes: Notes
+        state: State
         when: When
     kinds:
       event:
+        abandon: Abandon event
+        abandoned: Event abandoned.
         back_to_item: Back to event
+        cancel: Cancel event
+        cancelled: Event cancelled.
         created: Event created.
         delete: Delete event
         delete_confirm: Delete event
@@ -66,11 +71,17 @@ en:
         edit: Edit event
         edit_title: 'Edit event: %{title}'
         new_title: New event
+        reopen: Reopen event
+        reopened: Event reopened.
         show_title: 'Event: %{title}'
+        state_abandoned: Abandoned
+        state_cancelled: Cancelled
         submit: Save event
         times_hint: Leave both times empty for an all-day event.
         updated: Event updated.
       task:
+        abandon: Abandon task
+        abandoned: Task abandoned.
         back_to_item: Back to task
         created: Task created.
         delete: Delete task
@@ -81,7 +92,11 @@ en:
         edit: Edit task
         edit_title: 'Edit task: %{title}'
         new_title: New task
+        reopen: Reopen task
+        reopened: Task reopened.
         show_title: 'Task: %{title}'
+        state_abandoned: Abandoned
+        state_cancelled: Cancelled
         submit: Save task
         times_hint: Leave both times empty for an all-day task.
         updated: Task updated.
@@ -105,3 +120,6 @@ en:
         month: Month
         week: Week
       week_of: Week of %{date}
+    states:
+      update:
+        refused: That change is not possible.

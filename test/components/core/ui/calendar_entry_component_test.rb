@@ -30,6 +30,20 @@ describe Core::UI::CalendarEntryComponent do
     assert_no_selector ".sr-only", text: I18n.t("core.ui.calendar_entry.done")
   end
 
+  it "says the state in words beside the time, and dims the title, for an abandoned or cancelled entry" do
+    render_inline(entry(starts_at: Time.utc(2026, 10, 7, 7, 30), ends_at: Time.utc(2026, 10, 7, 8, 0), time_zone: "UTC", state_label: "Abandoned"))
+    assert_text "Abandoned"
+    assert_selector "a.opacity-70", text: "Dentist"
+  end
+
+  it "says the state on an all-day entry too, and shows nothing extra for an active one" do
+    render_inline(entry(state_label: "Cancelled"))
+    assert_text "#{I18n.t("core.ui.calendar_entry.all_day")} · Cancelled"
+    render_inline(entry)
+    assert_no_text "·"
+    assert_no_selector "a.opacity-70"
+  end
+
   it "renders the check slot before the title" do
     render_inline(entry) { |component| component.with_check { "<input type=checkbox id=tick>".html_safe } }
     assert_selector "input#tick"

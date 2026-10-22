@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     resources :tasks, except: :index
     resources :items, only: [] do
       resource :completion, only: :update
+      resource :state, only: :update
     end
   end
 

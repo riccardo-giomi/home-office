@@ -13,6 +13,19 @@ module Planner::ItemsHelper
   # never name a type.
   def kind_t(item, key, **options) = t("planner.kinds.#{item.class.kind}.#{key}", **options)
 
+  STATE_BUTTONS = {"abandoned" => "abandon", "cancelled" => "cancel", "active" => "reopen"}.freeze
+
+  # One small form per state the item can move to (abandon, cancel, reopen).
+  def state_button(item, to)
+    form_with url: planner_item_state_path(item), method: :patch do
+      safe_join([
+        (hidden_field_tag(:back, back_param) if back_param),
+        hidden_field_tag(:state, to, id: "state_#{item.id}_#{to}"),
+        render(Core::UI::ButtonComponent.new(type: :submit, variant: :secondary)) { kind_t(item, STATE_BUTTONS.fetch(to)) }
+      ].compact)
+    end
+  end
+
   # The page's main action: opens the new-item form in the dialog over the page.
   def new_item_button(item_class, label)
     render(Core::UI::ButtonComponent.new(href: new_polymorphic_path(item_class, back: request.fullpath), data: {turbo_frame: Planner::ItemDialog::FRAME_ID})) { label }

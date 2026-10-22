@@ -1,6 +1,9 @@
 class Planner::Item < ApplicationRecord
   include Core::EntityRecord
 
+  # The states an item can be moved to, from the state it is in.
+  STATE_CHANGES = {"abandoned" => %w[active], "cancelled" => %w[active], "active" => %w[abandoned cancelled]}.freeze
+
   belongs_to :user
   enum :state, {active: "active", abandoned: "abandoned", cancelled: "cancelled"}, default: :active, validate: true
 
@@ -20,4 +23,18 @@ class Planner::Item < ApplicationRecord
   def done? = done_at.present?
 
   def mark_done(done) = (self.done_at = (Time.current if done && tracks_done?))
+
+  def state_changes = STATE_CHANGES.keys.select { |to| can_change_state_to?(to) }
+
+  # Abandon (tasks, events), cancel (events), reopen.
+  def change_state(to)
+    to = to.to_s
+    can_change_state_to?(to) && update(state: to)
+  end
+
+  private
+
+  def can_change_state_to?(to)
+    STATE_CHANGES.fetch(to, []).include?(state) && (to != "cancelled" || is_a?(Planner::Event))
+  end
 end

@@ -12,6 +12,8 @@ module Planner::CalendarHelper
     end
   end
 
+  # A box only for an item that can still be ticked; one that was abandoned or
+  # cancelled says so instead.
   def calendar_entry(item)
     {
       title: item.title,
@@ -23,7 +25,8 @@ module Planner::CalendarHelper
       time_zone: item.time_zone,
       from: clock_minutes(item.start_time),
       to: clock_minutes(item.end_time),
-      check: (completion_check(item) if item.tracks_done?)
+      check: (completion_check(item) if item.tracks_done? && item.active?),
+      state_label: (kind_t(item, "state_#{item.state}") unless item.active?)
     }
   end
 
@@ -45,7 +48,7 @@ module Planner::CalendarHelper
       today_href: path.call(view:),
       previous_link: [t("planner.periods.previous.#{view}"), path.call(**period.previous.to_params)],
       next_link: [t("planner.periods.next.#{view}"), path.call(**period.next.to_params)],
-      views: Planner::Calendar::Period::VIEWS.map do |candidate|
+      views: period.views.map do |candidate|
         [t("planner.periods.views.#{candidate}"), path.call(**period.with_view(candidate).to_params), view == candidate]
       end
     )

@@ -67,4 +67,30 @@ describe Planner::Calendar::Period do
     again = period(view: week.to_params[:view], date: week.to_params[:date])
     _(again.date).must_equal week.date
   end
+
+  describe "with its own list of views (the schedule)" do
+    def schedule_period(view: nil, date: nil) = Planner::Calendar::Period.new(view:, date:, first_weekday: 0, today:, views: %i[day week], default: :day)
+
+    it "knows its views and defaults to the first" do
+      _(schedule_period.views).must_equal %i[day week]
+      _(schedule_period.view).must_equal :day
+      _(schedule_period(view: "week").view).must_equal :week
+    end
+
+    it "falls back to the default for a view it does not offer, or junk" do
+      ["month", "banana", "", nil].each { |view| _(schedule_period(view:).view).must_equal :day, view.inspect }
+    end
+
+    it "keeps its views when it moves or changes view" do
+      _(schedule_period(view: "week").next.views).must_equal %i[day week]
+      _(schedule_period.previous.view).must_equal :day
+      _(schedule_period.with_view(:week).views).must_equal %i[day week]
+      _(schedule_period.with_view(:month).view).must_equal :day
+    end
+  end
+
+  it "is the month, week and day calendar unless told otherwise" do
+    _(period.views).must_equal %i[month week day]
+    _(period(view: "week").next.views).must_equal %i[month week day]
+  end
 end

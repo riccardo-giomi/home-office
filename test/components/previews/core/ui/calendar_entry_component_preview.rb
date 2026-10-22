@@ -11,6 +11,14 @@ class Core::UI::CalendarEntryComponentPreview < ViewComponent::Preview
     render(entry(done: true, starts_at: Time.utc(2026, 10, 1, 9), ends_at: Time.utc(2026, 10, 1, 9, 30), time_zone: "UTC", title: "Pay the rent"))
   end
 
+  def abandoned
+    render(entry(title: "Sort the attic", state_label: "Abandoned"))
+  end
+
+  def cancelled
+    render(entry(title: "Workshop", starts_at: Time.utc(2026, 10, 9, 13), ends_at: Time.utc(2026, 10, 9, 15), time_zone: "Europe/Rome", state_label: "Cancelled"))
+  end
+
   def with_check
     render(entry(title: "Pay the rent", starts_at: Time.utc(2026, 11, 1, 9), ends_at: Time.utc(2026, 11, 1, 9, 30), time_zone: "UTC")) do |component|
       component.with_check { checkbox }

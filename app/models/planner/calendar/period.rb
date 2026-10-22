@@ -7,10 +7,14 @@ class Planner::Calendar::Period
   WEEKDAYS = %i[sunday monday tuesday wednesday thursday friday saturday].freeze
   BOUNDS = Date.new(1900, 1, 1)..Date.new(2200, 12, 31)
 
-  attr_reader :view, :date, :first_weekday
+  attr_reader :view, :views, :date, :first_weekday
 
-  def initialize(view:, date:, first_weekday:, today:)
-    @view = VIEWS.find { |candidate| candidate.to_s == view.to_s } || :month
+  # views: the views this page offers (the schedule has two); default: the one
+  # used for anything else.
+  def initialize(view:, date:, first_weekday:, today:, views: VIEWS, default: :month)
+    @views = views
+    @default = default
+    @view = views.find { |candidate| candidate.to_s == view.to_s } || default
     @date = parse(date) || today
     @first_weekday = first_weekday
     freeze
@@ -38,7 +42,7 @@ class Planner::Calendar::Period
 
   def next = shifted(1)
 
-  def with_view(new_view) = self.class.new(view: new_view, date:, first_weekday:, today: date)
+  def with_view(new_view) = self.class.new(view: new_view, date:, first_weekday:, today: date, views:, default: @default)
 
   def to_params = {view: view.to_s, date: date.iso8601}
 
@@ -54,7 +58,7 @@ class Planner::Calendar::Period
     when :day then date + step
     else date.advance(months: step)
     end
-    self.class.new(view:, date: moved, first_weekday:, today: date)
+    self.class.new(view:, date: moved, first_weekday:, today: date, views:, default: @default)
   end
 
   def parse(value)

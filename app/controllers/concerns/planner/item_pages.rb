@@ -40,6 +40,9 @@ module Planner::ItemPages
     ]
   end
 
+  # Copy that differs by type, for an item already loaded.
+  def item_copy(item, key, **options) = t("planner.kinds.#{item.class.kind}.#{key}", **options)
+
   # Where "Back" goes when the visit did not begin on one of the listing pages:
   # the page that lists this kind of item, around the item's day.
   def default_back_page(item) = item.class.listing_page

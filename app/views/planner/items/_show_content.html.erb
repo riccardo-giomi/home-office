@@ -12,6 +12,10 @@
         <br><%= t("core.ui.calendar_entry.all_day") %>
       <% end %>
     </dd>
+    <% unless item.active? %>
+      <dt class="font-semibold"><%= t("planner.items.show.state") %></dt>
+      <dd><%= kind_t(item, "state_#{item.state}") %></dd>
+    <% end %>
     <% if item.tracks_done? %>
       <dt class="font-semibold"><%= t("planner.items.show.done") %></dt>
       <dd class="flex items-center gap-2">
@@ -24,7 +28,10 @@
       <dd class="whitespace-pre-line wrap-anywhere"><%= item.notes %></dd>
     <% end %>
   </dl>
-  <div class="mt-8">
+  <div class="mt-8 flex flex-wrap gap-2">
     <%= render(Core::UI::ButtonComponent.new(href: polymorphic_path([:edit, item], back: back_param))) { kind_t(item, "edit") } %>
+    <% item.state_changes.each do |to| %>
+      <%= state_button(item, to) %>
+    <% end %>
   </div>
 </div>
