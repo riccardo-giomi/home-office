@@ -4,18 +4,21 @@ describe "planner_items constraints" do
   let(:connection) { ActiveRecord::Base.connection }
   let(:user) { users(:member) }
 
-  # Raw SQL on purpose: the model validations must not be what rejects the row. An item needs its entity first.
+  # Raw SQL on purpose: the model validations must not be what rejects the row.
+  # An item needs its entity first, and a position that is free for its user
+  # and type: a high one by default.
   def insert_entity(user_id: user.id, record_type: "Planner::Item")
     connection.execute("INSERT INTO core_entities (user_id, record_type, created_at, updated_at) VALUES (#{user_id}, '#{record_type}', '2026-01-01', '2026-01-01')")
     connection.select_value("SELECT last_insert_rowid()")
   end
 
   def insert_item(type: "Planner::Event", title: "Dentist", day: "'2026-10-07'", starts_at: "NULL", ends_at: "NULL",
-    time_zone: "NULL", state: "active", tracks_done: 0, done_at: "NULL", user_id: user.id, id: nil, record_type: "Planner::Item")
+    time_zone: "NULL", state: "active", tracks_done: 0, done_at: "NULL", user_id: user.id, id: nil, record_type: "Planner::Item",
+    priority: 1, position: @next_position = (@next_position || 1000) + 1)
     id ||= insert_entity(user_id:)
     connection.execute(<<~SQL)
-      INSERT INTO planner_items (id, user_id, record_type, type, title, day, starts_at, ends_at, time_zone, state, tracks_done, done_at, created_at, updated_at)
-      VALUES (#{id}, #{user_id}, '#{record_type}', '#{type}', '#{title}', #{day}, #{starts_at}, #{ends_at}, #{time_zone}, '#{state}', #{tracks_done}, #{done_at}, '2026-01-01', '2026-01-01')
+      INSERT INTO planner_items (id, user_id, record_type, type, title, day, starts_at, ends_at, time_zone, state, tracks_done, done_at, priority, position, created_at, updated_at)
+      VALUES (#{id}, #{user_id}, '#{record_type}', '#{type}', '#{title}', #{day}, #{starts_at}, #{ends_at}, #{time_zone}, '#{state}', #{tracks_done}, #{done_at}, #{priority}, #{position}, '2026-01-01', '2026-01-01')
     SQL
   end
 
@@ -117,5 +120,18 @@ describe "planner_items constraints" do
       _(connection.select_value("SELECT COUNT(*) FROM core_entities WHERE user_id = #{user.id}")).must_equal 0
       _(connection.select_all("PRAGMA foreign_key_check")).must_be_empty
     end
+  end
+
+  it "keeps the priority between 0 and 3" do
+    [0, 3].each { |level| assert_nothing_raised { insert_item(priority: level) } }
+    rejects "chk_planner_items_priority", priority: 4
+    rejects "chk_planner_items_priority", priority: -1
+  end
+
+  it "gives each user and type a position only once" do
+    insert_item(position: 5)
+    rejects "planner_items.position", position: 5
+    assert_nothing_raised { insert_item(type: "Planner::Task", tracks_done: 1, position: 5) }
+    assert_nothing_raised { insert_item(user_id: users(:other_admin).id, position: 5) }
   end
 end

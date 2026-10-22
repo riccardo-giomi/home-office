@@ -37,4 +37,40 @@ describe Planner::Item do
       _(planner_items(:abandoned_task).state_changes).must_equal %w[active]
     end
   end
+
+  describe "priority" do
+    let(:user) { users(:member) }
+
+    def build(**attrs) = Planner::Event.new({user:, title: "Dentist", day: Date.new(2026, 10, 7)}.merge(attrs))
+
+    it "is normal by default" do
+      _(build.priority).must_equal "normal"
+    end
+
+    it "takes low, high and urgent" do
+      %w[low high urgent].each { |level| _(build(priority: level).tap(&:save!).reload.priority).must_equal level }
+    end
+
+    it "is invalid, not an exception, when unknown" do
+      item = build(priority: "9")
+      _(item.valid?).must_equal false
+      _(item.errors[:priority]).wont_be_empty
+    end
+  end
+
+  describe "position" do
+    let(:user) { users(:member) }
+    let(:other) { users(:other_admin) }
+
+    def create(klass, owner, title) = klass.create!(user: owner, title:, day: Date.new(2026, 10, 7))
+
+    it "counts from 1 for each user and each type, new items at the end" do
+      Planner::Item.where(user: [user, other]).delete_all
+      first = create(Planner::Event, user, "One")
+      second = create(Planner::Event, user, "Two")
+      task = create(Planner::Task, user, "Task")
+      foreign = create(Planner::Event, other, "Foreign")
+      _([first, second, task, foreign].map(&:position)).must_equal [1, 2, 1, 1]
+    end
+  end
 end

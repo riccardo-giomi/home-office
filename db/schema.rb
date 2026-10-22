@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_22_101355) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_22_120000) do
   create_table "core_entities", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "record_type", null: false
@@ -36,13 +36,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_101355) do
     t.datetime "done_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "priority", default: 1, null: false
+    t.integer "position", null: false
     t.index ["user_id", "type", "day", "starts_at"], name: "index_planner_items_on_day"
+    t.index ["user_id", "type", "position"], name: "index_planner_items_position", unique: true
     t.check_constraint "(starts_at IS NULL) = (ends_at IS NULL) AND (starts_at IS NULL) = (time_zone IS NULL)", name: "chk_planner_items_times_paired"
     t.check_constraint "day IS NOT NULL OR type = 'Planner::Todo'", name: "chk_planner_items_day_required"
     t.check_constraint "day IS NULL OR day = date(day)", name: "chk_planner_items_day_format"
     t.check_constraint "done_at IS NULL OR tracks_done = 1", name: "chk_planner_items_done_tracked"
     t.check_constraint "ends_at > starts_at", name: "chk_planner_items_window_order"
     t.check_constraint "length(trim(title)) BETWEEN 1 AND 255", name: "chk_planner_items_title"
+    t.check_constraint "priority BETWEEN 0 AND 3", name: "chk_planner_items_priority"
     t.check_constraint "record_type = 'Planner::Item'", name: "chk_planner_items_record_type"
     t.check_constraint "state <> 'cancelled' OR type = 'Planner::Event'", name: "chk_planner_items_cancelled_events"
     t.check_constraint "state IN ('active', 'abandoned', 'cancelled')", name: "chk_planner_items_state"

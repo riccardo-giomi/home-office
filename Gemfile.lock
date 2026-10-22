@@ -263,6 +263,9 @@ GEM
     parser (3.3.12.0)
       ast (~> 2.4.1)
       racc
+    positioning (0.4.8)
+      activerecord (>= 6.1)
+      activesupport (>= 6.1)
     pp (0.6.4)
       prettyprint
     prettyprint (0.2.1)
@@ -481,6 +484,7 @@ DEPENDENCIES
   lookbook (~> 2.3)
   minitest-spec-rails (~> 7.4)
   pagy (~> 43.7)
+  positioning (~> 0.4.8)
   propshaft
   puma (>= 5.0)
   rails (~> 8.1.4)
@@ -591,6 +595,7 @@ CHECKSUMS
   pagy (43.7.1) sha256=f6f2498132bcbfb08741a3771373c9bb9dd252086a306f0302cb325e1a04202d
   parallel (2.3.0) sha256=f75a3e904101ce6a1ccb6b8dc800cbafd42166d83330192438dcf29395167a6f
   parser (3.3.12.0) sha256=21a6d7f755d5a24dfbdc6e6b772e4e879a52e7631a88bc5a3a134606052c9828
+  positioning (0.4.8) sha256=c758c061d4121fa6a1051a7fe04e75c5f59982e3dc9c6418e74441a0058ea16e
   pp (0.6.4) sha256=dfcb0fce700c41456265922884f9fe195d7fbb0674a3578e6c0f69588e82b570
   prettyprint (0.2.1) sha256=d555d57ea6d7cf001d4774b693546a6bd88bec1e778ddffb5c60b68ceec4b7d4
   prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85

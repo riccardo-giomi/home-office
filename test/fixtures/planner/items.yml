@@ -6,12 +6,14 @@ dentist:
   starts_at: 2026-10-07 07:30:00
   ends_at: 2026-10-07 08:00:00
   time_zone: Europe/Rome
+  position: 1
 
 holiday:
   user: admin
   type: Planner::Event
   title: Bank holiday
   day: 2026-10-08
+  position: 2
 
 rent_paid:
   user: admin
@@ -20,6 +22,7 @@ rent_paid:
   day: 2026-10-01
   tracks_done: 1
   done_at: 2026-10-01 09:00:00
+  position: 3
 
 rent_open:
   user: admin
@@ -27,12 +30,14 @@ rent_open:
   title: Rent November
   day: 2026-11-01
   tracks_done: 1
+  position: 4
 
 other_users_event:
   user: other_admin
   type: Planner::Event
   title: Someone else's secret
   day: 2026-10-07
+  position: 1
 
 pay_rent_task:
   user: admin
@@ -43,6 +48,7 @@ pay_rent_task:
   ends_at: 2026-10-07 08:30:00
   time_zone: Europe/Rome
   tracks_done: 1
+  position: 1
 
 buy_stamps_task:
   user: admin
@@ -50,6 +56,7 @@ buy_stamps_task:
   title: Buy stamps
   day: 2026-10-08
   tracks_done: 1
+  position: 2
 
 done_task:
   user: admin
@@ -58,6 +65,7 @@ done_task:
   day: 2026-10-06
   tracks_done: 1
   done_at: 2026-10-06 10:00:00
+  position: 3
 
 abandoned_task:
   user: admin
@@ -66,6 +74,7 @@ abandoned_task:
   day: 2026-10-03
   state: abandoned
   tracks_done: 1
+  position: 4
 
 cancelled_event:
   user: admin
@@ -73,6 +82,7 @@ cancelled_event:
   title: Cancelled workshop
   day: 2026-10-08
   state: cancelled
+  position: 5
 
 other_users_task:
   user: other_admin
@@ -80,6 +90,7 @@ other_users_task:
   title: Someone else's chore
   day: 2026-10-07
   tracks_done: 1
+  position: 1
 
 passport_task:
   user: admin
@@ -87,3 +98,4 @@ passport_task:
   title: Renew the passport
   day: 2026-10-05
   tracks_done: 1
+  position: 5

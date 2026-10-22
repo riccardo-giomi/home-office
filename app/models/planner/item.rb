@@ -7,6 +7,12 @@ class Planner::Item < ApplicationRecord
   belongs_to :user
   enum :state, {active: "active", abandoned: "abandoned", cancelled: "cancelled"}, default: :active, validate: true
 
+  # Importance of an Item, controls how it looks.
+  enum :priority, {low: 0, normal: 1, high: 2, urgent: 3}, default: :normal, validate: true
+  # The position of the item relative to the others of the same type.
+  # Controls the order the items appear in.
+  positioned on: [:user_id, :type]
+
   normalizes :title, with: ->(title) { title.strip }
 
   validates :title, presence: true, length: {maximum: 255}
