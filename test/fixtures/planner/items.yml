@@ -33,3 +33,57 @@ other_users_event:
   type: Planner::Event
   title: Someone else's secret
   day: 2026-10-07
+
+pay_rent_task:
+  user: admin
+  type: Planner::Task
+  title: Pay the rent
+  day: 2026-10-07
+  starts_at: 2026-10-07 08:00:00
+  ends_at: 2026-10-07 08:30:00
+  time_zone: Europe/Rome
+  tracks_done: 1
+
+buy_stamps_task:
+  user: admin
+  type: Planner::Task
+  title: Buy stamps
+  day: 2026-10-08
+  tracks_done: 1
+
+done_task:
+  user: admin
+  type: Planner::Task
+  title: Call the bank
+  day: 2026-10-06
+  tracks_done: 1
+  done_at: 2026-10-06 10:00:00
+
+abandoned_task:
+  user: admin
+  type: Planner::Task
+  title: Sort the attic
+  day: 2026-10-03
+  state: abandoned
+  tracks_done: 1
+
+cancelled_event:
+  user: admin
+  type: Planner::Event
+  title: Cancelled workshop
+  day: 2026-10-08
+  state: cancelled
+
+other_users_task:
+  user: other_admin
+  type: Planner::Task
+  title: Someone else's chore
+  day: 2026-10-07
+  tracks_done: 1
+
+passport_task:
+  user: admin
+  type: Planner::Task
+  title: Renew the passport
+  day: 2026-10-05
+  tracks_done: 1

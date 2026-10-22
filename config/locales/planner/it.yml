@@ -3,18 +3,19 @@ it:
   activerecord:
     attributes:
       planner/event:
+        tracks_done: Mostra una casella "fatto"
+      planner/item:
         day: Giorno
         end_time: Ora di fine
         notes: Note
         start_time: Ora di inizio
         title: Titolo
-        tracks_done: Mostra una casella "fatto"
     errors:
       models:
-        planner/event:
+        planner/item:
           attributes:
             day:
-              not_start_day: deve essere il giorno in cui inizia l'evento
+              not_start_day: deve essere il giorno in cui inizia
             end_time:
               after_start: deve essere dopo l'ora di inizio
               same_day: deve essere nello stesso giorno dell'inizio

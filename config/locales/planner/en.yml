@@ -3,18 +3,19 @@ en:
   activerecord:
     attributes:
       planner/event:
+        tracks_done: Show a done checkbox
+      planner/item:
         day: Day
         end_time: End time
         notes: Notes
         start_time: Start time
         title: Title
-        tracks_done: Show a done checkbox
     errors:
       models:
-        planner/event:
+        planner/item:
           attributes:
             day:
-              not_start_day: must be the day the event starts
+              not_start_day: must be the day it starts
             end_time:
               after_start: must be after the start time
               same_day: must be on the same day as the start

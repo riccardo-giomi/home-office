@@ -18,3 +18,31 @@ rent_open:
 other_users_event:
   user: other_admin
   record_type: Planner::Item
+
+pay_rent_task:
+  user: admin
+  record_type: Planner::Item
+
+buy_stamps_task:
+  user: admin
+  record_type: Planner::Item
+
+done_task:
+  user: admin
+  record_type: Planner::Item
+
+abandoned_task:
+  user: admin
+  record_type: Planner::Item
+
+cancelled_event:
+  user: admin
+  record_type: Planner::Item
+
+other_users_task:
+  user: other_admin
+  record_type: Planner::Item
+
+passport_task:
+  user: admin
+  record_type: Planner::Item

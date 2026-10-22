@@ -14,4 +14,10 @@ class Planner::Item < ApplicationRecord
   # Walks index_planner_items_on_day in order (user_id, type, day, starts_at);
   # every view places an item on its own local day.
   scope :on_days, ->(days) { where(day: days).order(:day, :starts_at) }
+
+  def self.kind = model_name.element
+
+  def done? = done_at.present?
+
+  def mark_done(done) = (self.done_at = (Time.current if done && tracks_done?))
 end
