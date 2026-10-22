@@ -1,6 +1,6 @@
-<% content_for :title, t(".title", title: @event.title) %>
+<% content_for :title, kind_t(@item, "show_title", title: @item.title) %>
 <%# A tick saves and redirects back here: morphing keeps focus on the checkbox %>
 <% turbo_refreshes_with method: :morph, scroll: :preserve %>
-<%= event_frame do %>
-  <%= render "show_content", event: @event %>
+<%= item_frame do %>
+  <%= render "show_content", item: @item %>
 <% end %>

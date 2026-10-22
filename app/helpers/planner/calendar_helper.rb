@@ -1,4 +1,5 @@
-# Turns events into the plain hashes the Core::UI calendar components draw.
+# Turns events and tasks into the plain hashes the Core::UI calendar components
+# draw.
 module Planner::CalendarHelper
   # Built once per request: the views ask for it in more than one place.
   # Sorted by the wall clock of each event's own zone (the query orders by
@@ -11,18 +12,18 @@ module Planner::CalendarHelper
     end
   end
 
-  def calendar_entry(event)
+  def calendar_entry(item)
     {
-      title: event.title,
-      href: planner_event_path(event, back: request.fullpath),
-      done: event.done?,
-      link_data: {turbo_frame: Planner::EventDialog::FRAME_ID},
-      starts_at: event.starts_at,
-      ends_at: event.ends_at,
-      time_zone: event.time_zone,
-      from: clock_minutes(event.start_time),
-      to: clock_minutes(event.end_time),
-      check: (completion_check(event) if event.tracks_done?)
+      title: item.title,
+      href: polymorphic_path(item, back: request.fullpath),
+      done: item.done?,
+      link_data: {turbo_frame: Planner::ItemDialog::FRAME_ID},
+      starts_at: item.starts_at,
+      ends_at: item.ends_at,
+      time_zone: item.time_zone,
+      from: clock_minutes(item.start_time),
+      to: clock_minutes(item.end_time),
+      check: (completion_check(item) if item.tracks_done?)
     }
   end
 
@@ -50,10 +51,10 @@ module Planner::CalendarHelper
     )
   end
 
-  def completion_check(event)
-    form_with url: planner_event_completion_path(event), method: :patch, data: {controller: "auto-submit"} do
-      render Core::UI::CheckboxComponent.new(name: "done", checked: event.done?, label: t("planner.calendars.show.done_label", title: event.title),
-        id: "done_event_#{event.id}", data: {action: "auto-submit#submit"})
+  def completion_check(item)
+    form_with url: planner_item_completion_path(item), method: :patch, data: {controller: "auto-submit"} do
+      render Core::UI::CheckboxComponent.new(name: "done", checked: item.done?, label: t("planner.calendars.show.done_label", title: item.title),
+        id: "done_item_#{item.id}", data: {action: "auto-submit#submit"})
     end
   end
 

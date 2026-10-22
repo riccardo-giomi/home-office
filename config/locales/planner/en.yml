@@ -43,35 +43,48 @@ en:
       update:
         done: 'Marked done: %{title}'
         not_done: 'Marked not done: %{title}'
-    events:
+        refused: That item cannot be ticked.
+    items:
       back:
         agenda: Back to agenda
         calendar: Back to calendar
-        event: Back to event
-      create:
+        schedule: Back to schedule
+      show:
+        done: Done
+        done_at_html: Done on %{time}
+        notes: Notes
+        when: When
+    kinds:
+      event:
+        back_to_item: Back to event
         created: Event created.
-      destroy:
-        deleted: Event deleted.
-      edit:
         delete: Delete event
         delete_confirm: Delete event
         delete_title: Delete this event?
         delete_warning: "“%{title}” will be deleted for good."
-        title: 'Edit event: %{title}'
-      form:
+        deleted: Event deleted.
+        edit: Edit event
+        edit_title: 'Edit event: %{title}'
+        new_title: New event
+        show_title: 'Event: %{title}'
         submit: Save event
         times_hint: Leave both times empty for an all-day event.
-      new:
-        title: New event
-      show:
-        done: Done
-        done_at_html: Done on %{time}
-        edit: Edit event
-        notes: Notes
-        title: 'Event: %{title}'
-        when: When
-      update:
         updated: Event updated.
+      task:
+        back_to_item: Back to task
+        created: Task created.
+        delete: Delete task
+        delete_confirm: Delete task
+        delete_title: Delete this task?
+        delete_warning: "“%{title}” will be deleted for good."
+        deleted: Task deleted.
+        edit: Edit task
+        edit_title: 'Edit task: %{title}'
+        new_title: New task
+        show_title: 'Task: %{title}'
+        submit: Save task
+        times_hint: Leave both times empty for an all-day task.
+        updated: Task updated.
     nav:
       agenda: Agenda
       calendar: Calendar

@@ -5,7 +5,7 @@
   <%= render Core::UI::PageHeaderComponent.new(title: t(".title")) %>
   <%= render(Core::UI::PageToolbarComponent.new) do |toolbar| %>
     <% toolbar.with_leading do %>
-      <%= render(Core::UI::ButtonComponent.new(href: new_planner_event_path(back: request.fullpath), data: {turbo_frame: Planner::EventDialog::FRAME_ID})) { t(".new") } %>
+      <%= new_item_button(Planner::Event, t(".new")) %>
     <% end %>
     <% toolbar.with_trailing do %>
       <%= render(Core::UI::ButtonComponent.new(variant: :secondary, href: planner_calendar_path(**@period.to_params))) { t(".in_calendar") } %>
@@ -16,5 +16,5 @@
         days: @period.range.map { |date| {date:, entries: calendar_entries_by_day(@events_by_day).fetch(date, [])} },
         today: Date.current, now: (Time.current if @period.range.cover?(Date.current)), empty_text: t(".empty.#{@period.view}")
       ) %>
-  <%= render Core::UI::FrameDialogComponent.new(id: Planner::EventDialog::ID, frame_id: Planner::EventDialog::FRAME_ID) %>
+  <%= item_dialog %>
 </div>

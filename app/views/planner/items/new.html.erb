@@ -1,0 +1,12 @@
+<% content_for :title, kind_t(@item, "new_title") %>
+<%= item_frame do %>
+  <div class="w-full max-w-md">
+    <%= render Core::UI::PageHeaderComponent.new(id: "dialog-title", title: kind_t(@item, "new_title"), back_href: (item_back_href(@item) unless in_dialog?), back_label: item_back_label(@item)) %>
+    <%= render "form", item: @item %>
+    <%= render(Core::UI::FormActionsComponent.new) do |actions| %>
+      <% actions.with_primary do %>
+        <%= render(Core::UI::ButtonComponent.new(type: :submit, form: "item-form")) { kind_t(@item, "submit") } %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

@@ -118,7 +118,7 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
       make_event "Pay the rent", tracks_done: 1
       visit_calendar :week
       sleep 0.3
-      id = "done_event_#{Planner::Event.find_by!(title: "Pay the rent").id}"
+      id = "done_item_#{Planner::Event.find_by!(title: "Pay the rent").id}"
       execute_script("window.scrollTo(0, 0)")
       before = scroll_room.first
       find("##{id}").send_keys(:space)
@@ -191,7 +191,7 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
       make_event "Pay the rent", tracks_done: 1
       visit planner_agenda_path(view: "month")
       sleep 0.3
-      id = "done_event_#{Planner::Event.find_by!(title: "Pay the rent").id}"
+      id = "done_item_#{Planner::Event.find_by!(title: "Pay the rent").id}"
       # Selenium scrolls a field into view before typing in it: do that first, then compare the place before and after
       execute_script("document.getElementById('#{id}').scrollIntoView({block: 'start'}); window.scrollBy(0, -80)")
       # Where the box sits in the window (the browser's scroll anchoring moves scrollY when the notice appears above)
@@ -301,7 +301,7 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
     }.each do |name, path|
       it "keeps focus on the checkbox and stays on the #{name}" do
         visit instance_exec(&path)
-        id = "done_event_#{Planner::Event.find_by!(title: "Pay the rent").id}"
+        id = "done_item_#{Planner::Event.find_by!(title: "Pay the rent").id}"
         find("##{id}").send_keys(:space)
         assert_text I18n.t("planner.completions.update.done", title: "Pay the rent")
         assert_selector "s", text: "Pay the rent"

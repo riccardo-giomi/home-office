@@ -1,6 +1,6 @@
 require "application_system_test_case"
 
-class Planner::EventDialogSystemTest < ApplicationSystemTestCase
+class Planner::ItemDialogSystemTest < ApplicationSystemTestCase
   let(:admin) { users(:admin) }
 
   def make_event(title, **attrs) = Planner::Event.create!(user: admin, title:, day: Date.current, **attrs)
@@ -48,7 +48,7 @@ class Planner::EventDialogSystemTest < ApplicationSystemTestCase
       find("body").send_keys(:escape)
       assert_no_selector "dialog[open]"
       assert_equal "Standup", evaluate_script("document.activeElement.textContent.trim()")
-      assert_selector "#event-dialog turbo-frame:empty", visible: :all
+      assert_selector "#item-dialog turbo-frame:empty", visible: :all
     end
 
     it "closes with the close button and with a click on the backdrop" do
@@ -92,12 +92,12 @@ class Planner::EventDialogSystemTest < ApplicationSystemTestCase
       execute_script("window.scrollTo(0, 120)")
       before_top = grid_top
       click_link "Standup"
-      click_link I18n.t("planner.events.show.edit")
-      assert_selector "dialog[open] h1", text: I18n.t("planner.events.edit.title", title: "Standup")
+      click_link I18n.t("planner.kinds.event.edit")
+      assert_selector "dialog[open] h1", text: I18n.t("planner.kinds.event.edit_title", title: "Standup")
       fill_in field(:title), with: "Standup (moved)"
-      click_button I18n.t("planner.events.form.submit")
+      click_button I18n.t("planner.kinds.event.submit")
       assert_no_selector "dialog[open]"
-      assert_text I18n.t("planner.events.update.updated")
+      assert_text I18n.t("planner.kinds.event.updated")
       assert_selector "td a", text: "Standup (moved)"
       # The browser's scroll anchoring moves the page in two steps (the notice appears; the page settles): measure
       # once it has settled. In Chrome the grid then sits about the height of the notice higher than before.
@@ -109,12 +109,12 @@ class Planner::EventDialogSystemTest < ApplicationSystemTestCase
     it "makes a new event from New event, in the dialog" do
       visit planner_agenda_path(view: "day")
       click_link I18n.t("planner.agendas.show.new")
-      assert_selector "dialog[open] h1", text: I18n.t("planner.events.new.title")
-      assert_no_link I18n.t("planner.events.back.agenda")
+      assert_selector "dialog[open] h1", text: I18n.t("planner.kinds.event.new_title")
+      assert_no_link I18n.t("planner.items.back.agenda")
       fill_in field(:title), with: "Made in the dialog"
-      click_button I18n.t("planner.events.form.submit")
+      click_button I18n.t("planner.kinds.event.submit")
       assert_no_selector "dialog[open]"
-      assert_text I18n.t("planner.events.create.created")
+      assert_text I18n.t("planner.kinds.event.created")
       assert_selector "li a", text: "Made in the dialog"
     end
 
@@ -124,7 +124,7 @@ class Planner::EventDialogSystemTest < ApplicationSystemTestCase
       fill_in field(:title), with: "Meeting"
       fill_in field(:start_time), with: Time.utc(2000, 1, 1, 10, 0)
       fill_in field(:end_time), with: Time.utc(2000, 1, 1, 9, 0)
-      click_button I18n.t("planner.events.form.submit")
+      click_button I18n.t("planner.kinds.event.submit")
       assert_selector "dialog[open] #error-summary"
       assert_selector "#error-summary:focus" # Turbo focuses it after two repaints
       assert_equal "Meeting", find_field(field(:title)).value
@@ -136,11 +136,11 @@ class Planner::EventDialogSystemTest < ApplicationSystemTestCase
       make_event "Old appointment"
       visit planner_agenda_path(view: "day")
       click_link "Old appointment"
-      click_link I18n.t("planner.events.show.edit")
-      click_button I18n.t("planner.events.edit.delete")
-      within("#delete-event") { click_button I18n.t("planner.events.edit.delete_confirm") }
+      click_link I18n.t("planner.kinds.event.edit")
+      click_button I18n.t("planner.kinds.event.delete")
+      within("#delete-item") { click_button I18n.t("planner.kinds.event.delete_confirm") }
       assert_no_selector "dialog[open]"
-      assert_text I18n.t("planner.events.destroy.deleted")
+      assert_text I18n.t("planner.kinds.event.deleted")
       assert_no_selector "li a", text: "Old appointment"
     end
 
@@ -148,7 +148,7 @@ class Planner::EventDialogSystemTest < ApplicationSystemTestCase
       make_event "Pay the rent", tracks_done: 1
       visit planner_agenda_path(view: "day")
       click_link "Pay the rent"
-      id = "done_event_#{Planner::Event.find_by!(title: "Pay the rent").id}"
+      id = "done_item_#{Planner::Event.find_by!(title: "Pay the rent").id}"
       find("dialog[open] ##{id}").send_keys(:space)
       assert_selector "dialog[open] input[type=checkbox][checked]"
       assert_selector "dialog[open] h1", text: "Pay the rent"
@@ -181,10 +181,10 @@ class Planner::EventDialogSystemTest < ApplicationSystemTestCase
       click_link "Standup"
       assert_selector "dialog[open] h1", text: "Standup"
       sleep 0.3
-      assert_accessible(within: "#event-dialog")
-      click_link I18n.t("planner.events.show.edit")
-      assert_selector "dialog[open] form#event-form"
-      assert_accessible(within: "#event-dialog")
+      assert_accessible(within: "#item-dialog")
+      click_link I18n.t("planner.kinds.event.edit")
+      assert_selector "dialog[open] form#item-form"
+      assert_accessible(within: "#item-dialog")
     end
   end
 end

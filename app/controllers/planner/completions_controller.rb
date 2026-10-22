@@ -1,26 +1,17 @@
 class Planner::CompletionsController < ApplicationController
-  include Planner::EventPages
+  include Planner::ItemPages
 
   def update
-    event = Planner::Event.owned_by(Current.user).find(params[:event_id])
-    if event.tracks_done?
-      event.mark_done(params[:done] == "1")
-      event.save!
-      flash[:notice] = event.done? ? t(".done", title: event.title) : t(".not_done", title: event.title)
+    item = Planner::Item.owned_by(Current.user).find(params[:item_id])
+    if item.tracks_done? && item.active?
+      item.mark_done(params[:done] == "1")
+      item.save!
+      flash[:notice] = item.done? ? t(".done", title: item.title) : t(".not_done", title: item.title)
+    else
+      flash[:alert] = t(".refused")
     end
-    return redraw_dialog(event) if in_dialog?
+    return redraw_dialog(item) if in_dialog?
 
-    redirect_back_or_to planner_calendar_path, status: :see_other
-  end
-
-  private
-
-  # Ticked in the dialog: the page behind refreshes, the details in the dialog are redrawn (morphed, so the
-  # focus stays on the checkbox) and the dialog stays open
-  def redraw_dialog(event)
-    render turbo_stream: [
-      turbo_stream.refresh(request_id: nil),
-      turbo_stream.update(Planner::EventDialog::FRAME_ID, partial: "planner/events/show_content", locals: {event:}, method: :morph)
-    ]
+    redirect_back_or_to default_back_path(item), status: :see_other
   end
 end

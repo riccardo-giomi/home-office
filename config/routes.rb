@@ -6,7 +6,10 @@ Rails.application.routes.draw do
   namespace :planner do
     resource :calendar, only: :show
     resource :agenda, only: :show
-    resources :events, except: :index do
+    resource :schedule, only: :show
+    resources :events, except: :index
+    resources :tasks, except: :index
+    resources :items, only: [] do
       resource :completion, only: :update
     end
   end

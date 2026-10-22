@@ -1,0 +1,30 @@
+<%# The details of an item: a full page, or the content of the dialog. %>
+<%# In the dialog there is no way back to draw (the dialog closes), and a tick redraws this part. %>
+<div class="w-full max-w-2xl">
+  <%= render Core::UI::PageHeaderComponent.new(id: "dialog-title", title: item.title, back_href: (item_back_href(item) unless in_dialog?), back_label: item_back_label(item)) %>
+  <dl class="grid gap-x-6 gap-y-4 sm:grid-cols-[8rem_1fr]">
+    <dt class="font-semibold"><%= t("planner.items.show.when") %></dt>
+    <dd>
+      <%= format_date(item.day) %>
+      <% if item.starts_at %>
+        <br><%= format_time(item.starts_at, zone: item.time_zone) %>&ndash;<%= format_time(item.ends_at, zone: item.time_zone) %>
+      <% else %>
+        <br><%= t("core.ui.calendar_entry.all_day") %>
+      <% end %>
+    </dd>
+    <% if item.tracks_done? %>
+      <dt class="font-semibold"><%= t("planner.items.show.done") %></dt>
+      <dd class="flex items-center gap-2">
+        <%= completion_check(item) %>
+        <% if item.done? %><span><%= t("planner.items.show.done_at_html", time: format_datetime(item.done_at)) %></span><% end %>
+      </dd>
+    <% end %>
+    <% if item.notes.present? %>
+      <dt class="font-semibold"><%= t("planner.items.show.notes") %></dt>
+      <dd class="whitespace-pre-line wrap-anywhere"><%= item.notes %></dd>
+    <% end %>
+  </dl>
+  <div class="mt-8">
+    <%= render(Core::UI::ButtonComponent.new(href: polymorphic_path([:edit, item], back: back_param))) { kind_t(item, "edit") } %>
+  </div>
+</div>

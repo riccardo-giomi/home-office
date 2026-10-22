@@ -43,35 +43,48 @@ it:
       update:
         done: 'Segnato come fatto: %{title}'
         not_done: 'Segnato come non fatto: %{title}'
-    events:
+        refused: Questo elemento non può essere spuntato.
+    items:
       back:
         agenda: Torna all'agenda
         calendar: Torna al calendario
-        event: Torna all'evento
-      create:
+        schedule: Torna al programma
+      show:
+        done: Fatto
+        done_at_html: Fatto il %{time}
+        notes: Note
+        when: Quando
+    kinds:
+      event:
+        back_to_item: Torna all'evento
         created: Evento creato.
-      destroy:
-        deleted: Evento eliminato.
-      edit:
         delete: Elimina evento
         delete_confirm: Elimina evento
         delete_title: Eliminare questo evento?
         delete_warning: "«%{title}» verrà eliminato definitivamente."
-        title: 'Modifica evento: %{title}'
-      form:
+        deleted: Evento eliminato.
+        edit: Modifica evento
+        edit_title: 'Modifica evento: %{title}'
+        new_title: Nuovo evento
+        show_title: 'Evento: %{title}'
         submit: Salva evento
         times_hint: Lascia vuote entrambe le ore per un evento di tutto il giorno.
-      new:
-        title: Nuovo evento
-      show:
-        done: Fatto
-        done_at_html: Fatto il %{time}
-        edit: Modifica evento
-        notes: Note
-        title: 'Evento: %{title}'
-        when: Quando
-      update:
         updated: Evento aggiornato.
+      task:
+        back_to_item: Torna all'attività
+        created: Attività creata.
+        delete: Elimina attività
+        delete_confirm: Elimina attività
+        delete_title: Eliminare questa attività?
+        delete_warning: "«%{title}» sarà eliminata definitivamente."
+        deleted: Attività eliminata.
+        edit: Modifica attività
+        edit_title: 'Modifica attività: %{title}'
+        new_title: Nuova attività
+        show_title: 'Attività: %{title}'
+        submit: Salva attività
+        times_hint: Lascia vuote entrambe le ore per un'attività di tutto il giorno.
+        updated: Attività aggiornata.
     nav:
       agenda: Agenda
       calendar: Calendario

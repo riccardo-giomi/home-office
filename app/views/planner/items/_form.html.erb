@@ -1,0 +1,7 @@
+<%# time-offset: typing a start fills the end 30 minutes later until the end is typed by hand %>
+<%= form_with model: item, id: "item-form", data: {controller: "time-offset", time_offset_minutes_value: Planner::Timed::DEFAULT_DURATION.in_minutes.to_i} do |form| %>
+  <%= hidden_field_tag :back, back_param if back_param %>
+  <%= render Core::UI::ErrorSummaryComponent.new(record: item) %>
+  <%= render "fields", form:, item: %>
+  <%= render "extra_fields", form:, item: %>
+<% end %>

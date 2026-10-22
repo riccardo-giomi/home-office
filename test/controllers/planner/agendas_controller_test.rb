@@ -117,9 +117,9 @@ class Planner::AgendasControllerTest < ActionDispatch::IntegrationTest
   it "has the dialog, and the entries and New event open their pages in it" do
     sign_in_as admin
     get planner_agenda_path
-    assert_select "dialog#event-dialog turbo-frame#event-dialog-frame", 1
-    assert_select "li a[data-turbo-frame=event-dialog-frame][href^='#{planner_event_path(planner_items(:dentist))}']", text: "Dentist"
-    assert_select "a.btn.btn-primary[data-turbo-frame=event-dialog-frame][href^='#{new_planner_event_path}']", text: "New event"
+    assert_select "dialog#item-dialog turbo-frame#item-dialog-frame", 1
+    assert_select "li a[data-turbo-frame=item-dialog-frame][href^='#{planner_event_path(planner_items(:dentist))}']", text: "Dentist"
+    assert_select "a.btn.btn-primary[data-turbo-frame=item-dialog-frame][href^='#{new_planner_event_path}']", text: "New event"
   end
 
   it "opens on what is next only when the period includes today" do

@@ -114,20 +114,20 @@ class Planner::CalendarsControllerTest < ActionDispatch::IntegrationTest
     it "is on every view, and the entries and New event open their pages in it" do
       %w[month week day].each do |view|
         get planner_calendar_path(view:, date: "2026-10-07")
-        assert_select "dialog#event-dialog turbo-frame#event-dialog-frame", 1
-        assert_select "a[data-turbo-frame=event-dialog-frame][href^='#{planner_event_path(planner_items(:dentist))}']", text: "Dentist" if view != "month"
-        assert_select "a[data-turbo-frame=event-dialog-frame][href^='#{new_planner_event_path}']", text: "New event"
+        assert_select "dialog#item-dialog turbo-frame#item-dialog-frame", 1
+        assert_select "a[data-turbo-frame=item-dialog-frame][href^='#{planner_event_path(planner_items(:dentist))}']", text: "Dentist" if view != "month"
+        assert_select "a[data-turbo-frame=item-dialog-frame][href^='#{new_planner_event_path}']", text: "New event"
       end
     end
 
     it "offers New event as the page's main action: a link, drawn as a button, that opens the dialog" do
       get planner_calendar_path
-      assert_select "a.btn.btn-primary[href^='#{new_planner_event_path}'][data-turbo-frame=event-dialog-frame]", text: "New event"
+      assert_select "a.btn.btn-primary[href^='#{new_planner_event_path}'][data-turbo-frame=item-dialog-frame]", text: "New event"
     end
 
     it "opens the month's entries in it too" do
       get planner_calendar_path
-      assert_select "td a[data-turbo-frame=event-dialog-frame]", text: "Dentist"
+      assert_select "td a[data-turbo-frame=item-dialog-frame]", text: "Dentist"
     end
   end
 
@@ -173,13 +173,13 @@ class Planner::CalendarsControllerTest < ActionDispatch::IntegrationTest
 
     it "goes back to the page it was ticked on" do
       back = planner_calendar_url(view: "week", date: "2026-11-01")
-      patch planner_event_completion_path(planner_items(:rent_open)), params: {done: "1"}, headers: {"Referer" => back}
+      patch planner_item_completion_path(planner_items(:rent_open)), params: {done: "1"}, headers: {"Referer" => back}
       assert_redirected_to back
     end
 
-    it "goes to the calendar without a referer" do
-      patch planner_event_completion_path(planner_items(:rent_open)), params: {done: "1"}
-      assert_redirected_to planner_calendar_path
+    it "goes to the calendar around the event without a referer" do
+      patch planner_item_completion_path(planner_items(:rent_open)), params: {done: "1"}
+      assert_redirected_to planner_calendar_path(date: "2026-11-01")
     end
   end
 

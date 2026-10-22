@@ -19,8 +19,8 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
     click_link I18n.t("planner.calendars.show.new")
     fill_in field(:title), with: "Dentist"
     fill_in field(:day), with: Date.current + 3
-    click_button I18n.t("planner.events.form.submit")
-    assert_text I18n.t("planner.events.create.created")
+    click_button I18n.t("planner.kinds.event.submit")
+    assert_text I18n.t("planner.kinds.event.created")
     assert_selector "td", text: "Dentist"
     assert_selector "td", text: I18n.t("core.ui.calendar_entry.all_day")
   end
@@ -47,7 +47,7 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
   it "keeps the keyboard on the checkbox while ticking done" do
     make_event "Pay the rent", days_ahead: 0, tracks_done: 1
     visit planner_calendar_path(view: "agenda")
-    id = "done_event_#{Planner::Event.find_by!(title: "Pay the rent").id}"
+    id = "done_item_#{Planner::Event.find_by!(title: "Pay the rent").id}"
     find("##{id}").send_keys(:space)
     assert_text I18n.t("planner.completions.update.done", title: "Pay the rent")
     assert_selector "s", text: "Pay the rent"
@@ -62,13 +62,13 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
     visit planner_event_path(event, back: planner_agenda_path(view: "week"))
     assert_selector "h1", text: "Standup"
     assert_text "Bring the laptop"
-    click_link I18n.t("planner.events.show.edit")
-    assert_selector "h1", text: I18n.t("planner.events.edit.title", title: "Standup")
+    click_link I18n.t("planner.kinds.event.edit")
+    assert_selector "h1", text: I18n.t("planner.kinds.event.edit_title", title: "Standup")
     fill_in field(:title), with: "Standup (moved)"
-    click_button I18n.t("planner.events.form.submit")
-    assert_text I18n.t("planner.events.update.updated")
+    click_button I18n.t("planner.kinds.event.submit")
+    assert_text I18n.t("planner.kinds.event.updated")
     assert_selector "h1", text: "Standup (moved)"
-    click_link I18n.t("planner.events.back.agenda")
+    click_link I18n.t("planner.items.back.agenda")
     assert_current_path(/\A#{Regexp.escape(planner_agenda_path)}\?view=week/)
     assert_text "Standup (moved)"
     assert event.reload.title == "Standup (moved)"
@@ -77,10 +77,10 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
   it "returns to the agenda after deleting an event that was opened directly from it" do
     event = make_event "Old appointment", days_ahead: 0
     visit planner_event_path(event, back: planner_agenda_path(view: "day"))
-    click_link I18n.t("planner.events.show.edit")
-    click_button I18n.t("planner.events.edit.delete")
-    within("#delete-event") { click_button I18n.t("planner.events.edit.delete_confirm") }
-    assert_text I18n.t("planner.events.destroy.deleted")
+    click_link I18n.t("planner.kinds.event.edit")
+    click_button I18n.t("planner.kinds.event.delete")
+    within("#delete-item") { click_button I18n.t("planner.kinds.event.delete_confirm") }
+    assert_text I18n.t("planner.kinds.event.deleted")
     assert_current_path(/\A#{Regexp.escape(planner_agenda_path)}\?view=day/)
   end
 
@@ -89,7 +89,7 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
 
     it "keep Save and Delete at opposite ends of one line, Delete drawn as dangerous" do
       visit edit_planner_event_path(make_event("Edit me"))
-      save = rect("button[type=submit][form=event-form]")
+      save = rect("button[type=submit][form=item-form]")
       delete = rect("[data-controller=modal] > button")
       assert_in_delta save[:top], delete[:top], 2, "not on one line"
       assert_operator delete[:left] - save[:right], :>=, 150, "too close together"
@@ -99,7 +99,7 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
     it "stack on a phone, stretched, with room between them" do
       page.current_window.resize_to(320, 800)
       visit edit_planner_event_path(make_event("Edit me"))
-      save = rect("button[type=submit][form=event-form]")
+      save = rect("button[type=submit][form=item-form]")
       delete = rect("[data-controller=modal] > button")
       assert_operator delete[:top] - save[:bottom], :>=, 24, "Delete is #{delete[:top] - save[:bottom]}px under Save"
       assert_in_delta save[:left], delete[:left], 1
@@ -111,9 +111,9 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
   it "deletes an event after a confirmation" do
     event = make_event "Old appointment"
     visit edit_planner_event_path(event)
-    click_button I18n.t("planner.events.edit.delete")
-    within("#delete-event") { click_button I18n.t("planner.events.edit.delete_confirm") }
-    assert_text I18n.t("planner.events.destroy.deleted")
+    click_button I18n.t("planner.kinds.event.delete")
+    within("#delete-item") { click_button I18n.t("planner.kinds.event.delete_confirm") }
+    assert_text I18n.t("planner.kinds.event.deleted")
     assert_no_text "Old appointment"
   end
 
@@ -122,7 +122,7 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
     fill_in field(:title), with: "Meeting"
     fill_in field(:start_time), with: Time.utc(2000, 1, 1, 10, 0)
     fill_in field(:end_time), with: Time.utc(2000, 1, 1, 9, 0)
-    click_button I18n.t("planner.events.form.submit")
+    click_button I18n.t("planner.kinds.event.submit")
     assert_selector "#error-summary"
     assert_equal "error-summary", evaluate_script("document.activeElement.id")
     # a plain left-aligned list: no bullets, no centered text
@@ -143,7 +143,7 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
       fill_in field(:title), with: "Meeting"
       fill_in field(:start_time), with: Time.utc(2000, 1, 1, 10, 0)
       fill_in field(:end_time), with: Time.utc(2000, 1, 1, 9, 0)
-      click_button I18n.t("planner.events.form.submit")
+      click_button I18n.t("planner.kinds.event.submit")
       assert_selector "#error-summary"
       assert_accessible
       with_notes = make_event("Has notes", notes: "A line\nanother line", tracks_done: 1)
@@ -151,9 +151,9 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
       assert_accessible
       visit edit_planner_event_path(make_event("Edit me"))
       assert_accessible
-      click_button I18n.t("planner.events.edit.delete")
+      click_button I18n.t("planner.kinds.event.delete")
       sleep 0.4
-      assert_accessible(within: "#delete-event")
+      assert_accessible(within: "#delete-item")
     end
   end
 
