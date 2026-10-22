@@ -9,7 +9,7 @@ end
 
 demo_user = User.find_by!(email_address: "demo-user@example.com")
 # The demo records are made again on every run, so their dates stay around today. Anything else the demo user made goes too.
-Planner::Event.owned_by(demo_user).destroy_all
+Planner::Item.owned_by(demo_user).destroy_all
 
 # A few events around today so the list has something to show
 [
@@ -26,5 +26,24 @@ Planner::Event.owned_by(demo_user).destroy_all
     event.assign_attributes(day: Date.current + attrs[:days], tracks_done: attrs.fetch(:tracks_done, 0))
     event.start_time, event.end_time = attrs[:times] if attrs[:times]
     event.mark_done(true) if attrs[:done]
+  end
+end
+
+# Tasks around today: timed, all-day, done, abandoned (one of them short and
+# overlapping, the worst case for a card) and older ones.
+[
+  {title: "Write the report", days: 0, times: %w[09:00 10:30]},
+  {title: "Water the plants", days: 0, times: %w[09:30 09:45], state: "abandoned"},
+  {title: "Buy stamps", days: 0},
+  {title: "Call the bank", days: 0, done: true},
+  {title: "Book the train", days: 1, times: %w[14:00 14:30]},
+  {title: "Sort the attic", days: -3, state: "abandoned"},
+  {title: "Renew the passport", days: -5},
+  {title: "Return the library book", days: -12}
+].each do |attrs|
+  Planner::Task.create!(user: demo_user, title: attrs[:title]) do |task|
+    task.assign_attributes(day: Date.current + attrs[:days], state: attrs.fetch(:state, "active"))
+    task.start_time, task.end_time = attrs[:times] if attrs[:times]
+    task.mark_done(true) if attrs[:done]
   end
 end

@@ -40,6 +40,16 @@ describe "db/seeds.rb" do
     _(today.count { |event| event.starts_at < today.first.ends_at }).must_be :>=, 3
   end
 
+  it "gives the demo user tasks around today, to try the schedule" do
+    load_seed_as_development
+    demo = User.find_by!(email_address: "demo-user@example.com")
+    tasks = Planner::Task.owned_by(demo)
+    _(tasks.count).must_equal 8
+    _(tasks.where(day: Date.current).count).must_equal 4
+    _(tasks.where(state: "abandoned").count).must_equal 2
+    _(tasks.where.not(done_at: nil)).wont_be_empty
+  end
+
   it "creates demo events for the demo user only, one set however often it runs" do
     load_seed_as_development
     load_seed_as_development
