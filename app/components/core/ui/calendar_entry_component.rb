@@ -6,7 +6,7 @@
 class Core::UI::CalendarEntryComponent < ApplicationComponent
   renders_one :check
 
-  def initialize(title:, href:, starts_at: nil, ends_at: nil, time_zone: nil, done: false, compact: false, link_data: {}, state_label: nil)
+  def initialize(title:, href:, starts_at: nil, ends_at: nil, time_zone: nil, done: false, compact: false, link_data: {}, state_label: nil, priority: nil, show_time: true)
     @title = title
     @href = href
     @starts_at = starts_at
@@ -16,6 +16,8 @@ class Core::UI::CalendarEntryComponent < ApplicationComponent
     @compact = compact
     @link_data = link_data
     @state_label = state_label
+    @priority = priority
+    @show_time = show_time
   end
 
   def call
@@ -30,15 +32,26 @@ class Core::UI::CalendarEntryComponent < ApplicationComponent
   private
 
   def time_and_title
-    time = tag.span(time_text, class: ["block text-base-content/80", (@compact ? "text-xs" : "text-sm")])
+    time = tag.span(time_text, class: ["block text-base-content/80", (@compact ? "text-xs" : "text-sm")]) if time_text.present?
     # Compact: inside a short card the title matters more than the time, so the
     # time is what gets clipped.
-    safe_join(@compact ? [title_link, time] : [time, title_link])
+    safe_join((@compact ? [title_link, time, priority_badge] : [time, title_link, priority_badge]).compact)
+  end
+
+  # Under the title in a full entry, beside it in a compact one (icon only
+  # there).
+  def priority_badge
+    return unless @priority
+
+    badge = render(Core::UI::PriorityComponent.new(**@priority, compact: @compact))
+    (@compact || badge.blank?) ? badge : tag.div(badge, class: "mt-1")
   end
 
   # The state (abandoned, cancelled) is said in words after the time, never by
   # the dimming alone.
   def time_text
+    return @state_label unless @show_time
+
     range = if @starts_at
       safe_join([helpers.format_time(@starts_at, zone: @time_zone), "–", helpers.format_time(@ends_at, zone: @time_zone)])
     else

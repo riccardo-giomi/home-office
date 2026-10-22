@@ -33,6 +33,15 @@ class Planner::AgendasControllerTest < ActionDispatch::IntegrationTest
       assert_no_match(/Rent November|Someone else/, response.body)
     end
 
+    it "marks an event that is not of normal priority, for a reader, and leaves the others alone" do
+      planner_items(:dentist).update!(priority: "urgent")
+      get planner_agenda_path
+      assert_select "li", text: /Dentist/ do
+        assert_select "span.badge[role=img][aria-label='Urgent priority']"
+      end
+      assert_select "main span.badge", count: 1
+    end
+
     it "says so when the month is empty" do
       get planner_agenda_path(view: "month", date: "2027-03-01")
       assert_select "p", text: "No events this month."

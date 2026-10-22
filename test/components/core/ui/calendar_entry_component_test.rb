@@ -70,4 +70,34 @@ describe Core::UI::CalendarEntryComponent do
     render_inline(entry(title: "x" * 255))
     assert_selector "a.wrap-anywhere"
   end
+
+  describe "priority" do
+    it "shows the marker after the title" do
+      render_inline(entry(priority: {level: :urgent, label: "Urgent priority"}))
+      assert_selector "span.badge[role=img][aria-label='Urgent priority']"
+    end
+
+    it "shows a smaller pill in a compact entry" do
+      render_inline(entry(priority: {level: :high, label: "High priority"}, compact: true))
+      assert_selector "span.badge-sm[aria-label='High priority']"
+    end
+
+    it "shows nothing for a normal one" do
+      render_inline(entry(priority: {level: :normal, label: "Normal"}))
+      assert_no_selector "span.badge"
+    end
+  end
+
+  describe "without a time line" do
+    it "draws no time and no all-day text" do
+      render_inline(entry(show_time: false))
+      assert_no_text I18n.t("core.ui.calendar_entry.all_day")
+      assert_selector "a", text: "Dentist"
+    end
+
+    it "still says the state in words" do
+      render_inline(entry(show_time: false, state_label: "Abandoned"))
+      assert_text "Abandoned"
+    end
+  end
 end

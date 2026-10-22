@@ -13,6 +13,14 @@ module Planner::ItemsHelper
   # never name a type.
   def kind_t(item, key, **options) = t("planner.kinds.#{item.class.kind}.#{key}", **options)
 
+  # The short word (the select, beside the pill on the item's page) and the full
+  # name (the pill's accessible name).
+  def priority_label(priority) = t("planner.items.priorities.#{priority}")
+
+  def priority_name(priority) = t("planner.items.priority_names.#{priority}")
+
+  def priority_choices = Planner::Item.priorities.keys.map { |priority| [priority_label(priority), priority] }
+
   STATE_BUTTONS = {"abandoned" => "abandon", "cancelled" => "cancel", "active" => "reopen"}.freeze
 
   # One small form per state the item can move to (abandon, cancel, reopen).

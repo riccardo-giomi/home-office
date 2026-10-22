@@ -53,6 +53,45 @@ module SharedItemPages
         end
       end
 
+      describe "priority" do
+        before { sign_in_as admin }
+
+        it "offers the four levels on the new form, normal chosen" do
+          get new_polymorphic_path(item_class)
+          assert_select "select[name='#{param_key}[priority]'] option", 4
+          assert_select "select[name='#{param_key}[priority]'] option[selected][value=normal]"
+        end
+
+        it "saves the level chosen" do
+          post collection_path, params: item_params(priority: "urgent")
+          assert_equal "urgent", item_class.order(:id).last.priority
+        end
+
+        it "answers 422 with an error, not a crash, for a level it does not know" do
+          assert_no_difference "item_class.count" do
+            post collection_path, params: item_params(priority: "9")
+          end
+          assert_response :unprocessable_content
+          assert_select "#error-summary"
+        end
+
+        it "shows the stored level on the edit form and on the page, as a pill and a word" do
+          sample.update!(priority: "high")
+          get edit_polymorphic_path(sample)
+          assert_select "select[name='#{param_key}[priority]'] option[selected][value=high]"
+          get polymorphic_path(sample)
+          assert_select "dt", text: "Priority"
+          assert_select "dd span.badge[aria-label='High priority']"
+          assert_select "dd", text: /High/
+        end
+
+        it "shows normal on the page too" do
+          get polymorphic_path(sample)
+          assert_select "dd span.badge[aria-label='Normal priority']"
+          assert_select "dd", text: /Normal/
+        end
+      end
+
       describe "editing" do
         before { sign_in_as admin }
 

@@ -3,5 +3,5 @@ class Planner::TasksController < Planner::ItemsController
 
   def item_class = Planner::Task
 
-  def permitted_attributes = [:title, :notes, :day, :start_time, :end_time]
+  def permitted_attributes = super + [:day, :start_time, :end_time]
 end

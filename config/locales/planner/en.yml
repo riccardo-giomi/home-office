@@ -8,6 +8,7 @@ en:
         day: Day
         end_time: End time
         notes: Notes
+        priority: Priority
         start_time: Start time
         title: Title
     errors:
@@ -49,10 +50,21 @@ en:
         agenda: Back to agenda
         calendar: Back to calendar
         schedule: Back to schedule
+      priorities:
+        high: High
+        low: Low
+        normal: Normal
+        urgent: Urgent
+      priority_names:
+        high: High priority
+        low: Low priority
+        normal: Normal priority
+        urgent: Urgent priority
       show:
         done: Done
         done_at_html: Done on %{time}
         notes: Notes
+        priority: Priority
         state: State
         when: When
     kinds:

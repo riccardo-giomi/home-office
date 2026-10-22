@@ -12,6 +12,11 @@
         <br><%= t("core.ui.calendar_entry.all_day") %>
       <% end %>
     </dd>
+    <dt class="font-semibold"><%= t("planner.items.show.priority") %></dt>
+    <dd class="flex items-center gap-2">
+      <%= render Core::UI::PriorityComponent.new(level: item.priority.to_sym, label: priority_name(item.priority), always: true) %>
+      <span><%= priority_label(item.priority) %></span>
+    </dd>
     <% unless item.active? %>
       <dt class="font-semibold"><%= t("planner.items.show.state") %></dt>
       <dd><%= kind_t(item, "state_#{item.state}") %></dd>

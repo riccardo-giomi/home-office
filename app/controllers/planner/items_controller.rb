@@ -56,6 +56,9 @@ class Planner::ItemsController < ApplicationController
     @item = items.find(params[:id])
   end
 
+  # What every kind may set; a kind adds its own.
+  def permitted_attributes = %i[title notes priority]
+
   # Never user_id, state, time_zone or done_at: those are not for the form to
   # set.
   def item_params = params.expect(item_class.model_name.param_key => permitted_attributes)

@@ -8,6 +8,7 @@ it:
         day: Giorno
         end_time: Ora di fine
         notes: Note
+        priority: Priorità
         start_time: Ora di inizio
         title: Titolo
     errors:
@@ -49,10 +50,21 @@ it:
         agenda: Torna all'agenda
         calendar: Torna al calendario
         schedule: Torna al programma
+      priorities:
+        high: Alta
+        low: Bassa
+        normal: Normale
+        urgent: Urgente
+      priority_names:
+        high: Priorità alta
+        low: Priorità bassa
+        normal: Priorità normale
+        urgent: Priorità urgente
       show:
         done: Fatto
         done_at_html: Fatto il %{time}
         notes: Note
+        priority: Priorità
         state: Stato
         when: Quando
     kinds:

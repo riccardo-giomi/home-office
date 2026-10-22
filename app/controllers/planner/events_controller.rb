@@ -3,5 +3,5 @@ class Planner::EventsController < Planner::ItemsController
 
   def item_class = Planner::Event
 
-  def permitted_attributes = [:title, :notes, :day, :start_time, :end_time, :tracks_done]
+  def permitted_attributes = super + [:day, :start_time, :end_time, :tracks_done]
 end

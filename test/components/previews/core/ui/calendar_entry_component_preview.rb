@@ -29,6 +29,19 @@ class Core::UI::CalendarEntryComponentPreview < ViewComponent::Preview
     render(entry(title: "A" * 120, starts_at: Time.utc(2026, 10, 7, 9), ends_at: Time.utc(2026, 10, 7, 10), time_zone: "UTC"))
   end
 
+  def urgent
+    render(entry(title: "Submit the tax form", priority: {level: :urgent, label: "Urgent priority"}, starts_at: Time.utc(2026, 10, 7, 9), ends_at: Time.utc(2026, 10, 7, 10), time_zone: "UTC"))
+  end
+
+  def low_priority_compact
+    render(entry(title: "Tidy the desk", priority: {level: :low, label: "Low priority"}, compact: true, starts_at: Time.utc(2026, 10, 7, 9), ends_at: Time.utc(2026, 10, 7, 10), time_zone: "UTC"))
+  end
+
+  # A todo has no moment of its own: no time line at all
+  def without_time
+    render(entry(title: "Water the plants", show_time: false, priority: {level: :high, label: "High priority"}))
+  end
+
   private
 
   # `render` inside a preview builds a preview request, so slot content is rendered to a string here
