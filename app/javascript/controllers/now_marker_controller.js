@@ -20,23 +20,38 @@ export default class extends Controller {
       if (!document.hidden) this.place()
     }
     document.addEventListener("visibilitychange", this.onVisible)
+    // A refresh in place (morph) gives the element back the server's state,
+    // and does not connect it again
+    this.onRender = (event) => {
+      if (event.detail?.renderMethod === "morph") this.draw()
+    }
+    document.addEventListener("turbo:render", this.onRender)
   }
 
   disconnect() {
     clearInterval(this.timer)
     document.removeEventListener("visibilitychange", this.onVisible)
+    document.removeEventListener("turbo:render", this.onRender)
   }
 
   place() {
-    const minutes =
-      this.minutesValue + (Date.now() - this.renderedAtValue) / 60000
-    if (minutes >= 1440) {
+    if (this.minutesNow() >= 1440) {
       clearInterval(this.timer)
       Turbo.visit(location.href, { action: "replace" })
       return
     }
-    this.move(minutes)
+    this.draw()
+  }
+
+  // Also after a refresh in place, which gives the element the server's state
+  // again (invisible, no position)
+  draw() {
+    this.move(this.minutesNow())
     this.element.classList.remove("invisible")
+  }
+
+  minutesNow() {
+    return this.minutesValue + (Date.now() - this.renderedAtValue) / 60000
   }
 
   // A line at that height of the day column (the column is as tall as the day).
