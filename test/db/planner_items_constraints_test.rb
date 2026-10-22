@@ -31,8 +31,18 @@ describe "planner_items constraints" do
     end
   end
 
-  it "only allows events for now" do
-    rejects "chk_planner_items_type", type: "Planner::Task"
+  it "allows events and tasks, and nothing else yet" do
+    assert_nothing_raised { insert_item(type: "Planner::Task", tracks_done: 1) }
+    rejects "chk_planner_items_type", type: "Planner::Todo", tracks_done: 1
+  end
+
+  it "requires a task to track done" do
+    rejects "chk_planner_items_done_always", type: "Planner::Task", tracks_done: 0
+    assert_nothing_raised { insert_item(type: "Planner::Event", tracks_done: 0) }
+  end
+
+  it "keeps cancelled for events" do
+    rejects "chk_planner_items_cancelled_events", type: "Planner::Task", tracks_done: 1, state: "cancelled"
   end
 
   it "rejects a blank or too long title" do

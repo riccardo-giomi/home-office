@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_16_143544) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_22_101355) do
   create_table "core_entities", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "record_type", null: false
@@ -47,7 +47,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_16_143544) do
     t.check_constraint "state <> 'cancelled' OR type = 'Planner::Event'", name: "chk_planner_items_cancelled_events"
     t.check_constraint "state IN ('active', 'abandoned', 'cancelled')", name: "chk_planner_items_state"
     t.check_constraint "tracks_done IN (0, 1)", name: "chk_planner_items_tracks_done"
-    t.check_constraint "type IN ('Planner::Event')", name: "chk_planner_items_type"
+    t.check_constraint "type = 'Planner::Event' OR tracks_done = 1", name: "chk_planner_items_done_always"
+    t.check_constraint "type IN ('Planner::Event', 'Planner::Task')", name: "chk_planner_items_type"
   end
 
   create_table "sessions", force: :cascade do |t|
