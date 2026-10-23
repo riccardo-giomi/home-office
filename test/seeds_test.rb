@@ -59,4 +59,21 @@ describe "db/seeds.rb" do
     _(Planner::Event.owned_by(demo).where(tracks_done: 1)).wont_be_empty
     _(Planner::Event.where.not(user: demo).count).must_equal Planner::Event.where(user_id: users(:admin).id).count + Planner::Event.where(user_id: users(:other_admin).id).count
   end
+
+  it "gives the demo user a todo list in order, with a priority mix and one done, one set however often it runs" do
+    load_seed_as_development
+    load_seed_as_development
+    demo = User.find_by!(email_address: "demo-user@example.com")
+    todos = Planner::Todo.owned_by(demo).in_order
+    _(todos.map(&:position)).must_equal (1..6).to_a
+    _(todos.first.title).must_equal "Fix the leaking tap"
+    _(todos.map(&:priority).uniq).must_include "urgent"
+    _(todos.count(&:done?)).must_equal 1
+  end
+
+  it "marks a few demo events and tasks with a priority" do
+    load_seed_as_development
+    demo = User.find_by!(email_address: "demo-user@example.com")
+    _(Planner::Item.owned_by(demo).where.not(priority: 1).count).must_be :>=, 4
+  end
 end

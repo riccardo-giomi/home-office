@@ -8,7 +8,10 @@ return unless Rails.env.development?
 end
 
 demo_user = User.find_by!(email_address: "demo-user@example.com")
-# The demo records are made again on every run, so their dates stay around today. Anything else the demo user made goes too.
+# The demo records are made again on every run, so their dates stay around
+# today.
+#
+# Important: anything else the demo user made goes too.
 Planner::Item.owned_by(demo_user).destroy_all
 
 # A few events around today so the list has something to show
@@ -46,4 +49,25 @@ end
     task.start_time, task.end_time = attrs[:times] if attrs[:times]
     task.mark_done(true) if attrs[:done]
   end
+end
+
+# Todos: the urgent and high ones are put on top of the list as they are
+# created, the rest at the bottom.
+[
+  {title: "Water the plants"},
+  {title: "Call mom", priority: :high},
+  {title: "Finish the book", done: true},
+  {title: "Renew the license", priority: :low},
+  {title: "Fix the leaking tap", priority: :urgent},
+  {title: "Sort the photos", notes: "From the summer trip."}
+].each do |attrs|
+  Planner::Todo.create!(user: demo_user, title: attrs[:title]) do |todo|
+    todo.assign_attributes(attrs.slice(:priority, :notes))
+    todo.mark_done(true) if attrs[:done]
+  end
+end
+
+# A few priorities on the events and tasks too, so the lists show the markers.
+{Planner::Event => {"Dentist" => :high, "Planning" => :urgent}, Planner::Task => {"Write the report" => :high, "Renew the passport" => :urgent}}.each do |type, priorities|
+  priorities.each { |title, priority| type.owned_by(demo_user).find_by(title:)&.update!(priority:) }
 end
