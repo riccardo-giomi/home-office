@@ -59,9 +59,10 @@ describe Core::UI::CalendarEntryComponent do
     assert_operator html.index("Dentist"), :<, html.index("<time")
   end
 
-  it "drops the check above the text when the card is too narrow for both, so the title keeps a usable width" do
+  it "puts the check line above the title, whatever the width, so every entry has the same shape" do
     render_inline(entry) { |component| component.with_check { "<input type=checkbox id=tick>".html_safe } }
-    assert_selector "div.flex.flex-wrap > div.basis-16.grow"
+    assert_selector "div.relative > div.flex-nowrap input#tick"
+    assert_no_selector "div.flex-wrap"
   end
 
   it "puts extra data on its link, for a link that opens in a dialog" do
@@ -74,9 +75,10 @@ describe Core::UI::CalendarEntryComponent do
     assert_selector "a.wrap-anywhere"
   end
 
-  it "keeps its lines together at the top of a tall card, instead of spreading them" do
+  it "stacks its lines from the top of the card, instead of spreading them" do
     render_inline(entry)
-    assert_selector "div.flex-wrap.content-start"
+    assert_selector "div.relative.h-full"
+    assert_no_selector "div.flex-wrap"
   end
 
   describe "the whole entry as a link" do
@@ -131,6 +133,11 @@ describe Core::UI::CalendarEntryComponent do
     it "keeps the check and the statuses together on one line that does not break, in a compact entry" do
       render_inline(entry(statuses: [abandoned, urgent], compact: true)) { |component| component.with_check { "<input type=checkbox id=tick>".html_safe } }
       assert_selector "div.flex-nowrap:has(input#tick):has(span[role=img][aria-label=Abandoned]):has(span.badge)"
+    end
+
+    it "keeps the check and the statuses together on one line that does not break, in a full entry too" do
+      render_inline(entry(statuses: [abandoned, urgent])) { |component| component.with_check { "<input type=checkbox id=tick>".html_safe } }
+      assert_selector "div.flex-nowrap:has(input#tick):has(span.badge)"
     end
 
     it "puts the title after that line, and the time after the title, in a compact entry" do

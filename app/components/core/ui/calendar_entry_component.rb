@@ -1,7 +1,8 @@
 # One entry of a list or a grid (an event, a task or a todo).
 #
-# From top to bottom: a strip of statuses (only when there are any), the title
-# as a link, and the time range. The optional done check is on the left.
+# Always the same shape, from top to bottom: a line with the done check and the
+# statuses (only when there is a check or a status), the title as a link, and
+# the time range.
 #
 # The "done" look is a struck-through title plus a hidden "Done", never color
 # alone.
@@ -30,35 +31,19 @@ class Core::UI::CalendarEntryComponent < ApplicationComponent
   end
 
   def call
-    tag.div(class: "relative flex h-full min-w-0 flex-wrap content-start items-start gap-x-2", title: tooltip) do
-      safe_join(@compact ? compact_parts : full_parts)
+    tag.div(class: "relative h-full min-w-0", title: tooltip) do
+      safe_join([lead, tag.div(title_link), time].compact)
     end
   end
 
   private
 
-  # A compact entry (a card in a grid) has three parts: the done check and the
-  # statuses on one line that never breaks, the title, and the time range. The
-  # title shares the first line when there is room for it, else it goes below.
-  def compact_parts
-    [lead, tag.div(title_link, class: "min-w-0 grow basis-16"), time].compact
-  end
-
-  # The check on the left, and the text block beside it. The text block wants at
-  # least 4rem (basis-16): when the entry is too narrow for the check and 4rem of
-  # text side by side, the text goes to the line below the check instead of
-  # being squeezed. The statuses have their own line in the text block.
-  def full_parts
-    strip = status_strip
-    [check_above, tag.div(safe_join([strip, title_link, time].compact), class: "min-w-0 grow basis-16")].compact
-  end
-
-  # The check and the statuses are never split on two lines, whatever the width:
+  # The check and the statuses are one line that never breaks, whatever the width:
   # what does not fit is clipped.
   def lead
     return unless check? || @statuses.any?
 
-    tag.div(safe_join([check_above, status_strip].compact), class: "flex max-w-full shrink-0 flex-nowrap items-center gap-1 overflow-hidden")
+    tag.div(safe_join([check_above, status_strip].compact), class: "flex flex-nowrap items-center gap-1 overflow-hidden")
   end
 
   # The done check stays above the link that covers the whole entry, so it can
@@ -87,7 +72,7 @@ class Core::UI::CalendarEntryComponent < ApplicationComponent
   def time
     return unless @show_time
 
-    tag.span(time_range, class: ["block basis-full text-base-content/80", (@compact ? "text-xs" : "text-sm")])
+    tag.span(time_range, class: ["block text-base-content/80", (@compact ? "text-xs" : "text-sm")])
   end
 
   def time_range
