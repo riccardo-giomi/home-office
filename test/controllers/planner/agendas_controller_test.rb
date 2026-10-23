@@ -148,7 +148,10 @@ class Planner::AgendasControllerTest < ActionDispatch::IntegrationTest
       assert_select "li", text: /Cancelled workshop/ do |entries|
         assert_match(/Cancelled/, entries.first.text)
       end
-      assert_select "li", text: /All day · Cancelled/
+      assert_select "li", text: /Cancelled/ do
+        assert_select "svg[aria-hidden=true]"
+      end
+      assert_select "li", text: /All day/
       assert_select "input[type=checkbox][aria-label='Done: Cancelled workshop']", 0
     end
   end

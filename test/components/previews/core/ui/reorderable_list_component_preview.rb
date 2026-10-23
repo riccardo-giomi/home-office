@@ -30,5 +30,5 @@ class Core::UI::ReorderableListComponentPreview < ViewComponent::Preview
 
   # `render` inside a preview builds a preview request, so slot content is
   # rendered to a string here.
-  def entry(title) = ApplicationController.render(Core::UI::CalendarEntryComponent.new(title:, href: "#", show_time: false, priority: {level: :high, label: "High priority"}), layout: false).html_safe
+  def entry(title) = ApplicationController.render(Core::UI::CalendarEntryComponent.new(title:, href: "#", show_time: false, statuses: [{priority: :high, label: "High priority"}]), layout: false).html_safe
 end

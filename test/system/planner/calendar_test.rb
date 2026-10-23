@@ -212,7 +212,7 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
     end
 
     # Only what this test made, in today's list: the fixtures have events around today's real date too
-    def order = evaluate_script("[...document.querySelectorAll('main section li')].map(li => li.dataset.controller === 'now-divider' ? 'NOW' : li.innerText.split('\\n').pop().trim()).filter(t => ['Holiday', 'Early', 'NOW', 'Late'].includes(t))")
+    def order = evaluate_script("[...document.querySelectorAll('main section li')].map(li => li.dataset.controller === 'now-divider' ? 'NOW' : (li.querySelector('a')?.innerText || '').trim()).filter(t => ['Holiday', 'Early', 'NOW', 'Late'].includes(t))")
 
     %w[day week month].each do |view|
       it "is in today's list of the #{view} agenda, after the all-day entries and between the two" do

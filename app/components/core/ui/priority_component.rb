@@ -30,7 +30,7 @@ class Core::UI::PriorityComponent < ApplicationComponent
 
   def call
     tag.span(bars, role: "img", "aria-label": @label, title: @label,
-      class: ["badge", (@compact ? "badge-sm px-1.5" : "badge-md px-2"), @config[:css]])
+      class: ["badge", (@compact ? "badge-xs px-1" : "badge-md px-2"), @config[:css]])
   end
 
   private
@@ -39,7 +39,7 @@ class Core::UI::PriorityComponent < ApplicationComponent
   # are faint (30% opacity).
   def bars
     tag.svg(safe_join(BAR_HEIGHTS.each_with_index.map { |height, index| bar(height, index) }),
-      xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 16 16", fill: "currentColor", "aria-hidden": "true", class: [(@compact ? "size-3.5" : "size-4"), "shrink-0"])
+      xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 16 16", fill: "currentColor", "aria-hidden": "true", class: [(@compact ? "size-3" : "size-4"), "shrink-0"])
   end
 
   def bar(height, index)

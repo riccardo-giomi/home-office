@@ -51,7 +51,7 @@ describe Core::UI::AgendaListComponent do
 
     def at(title, from, to) = entry(title, from:, to:)
 
-    def titles_in_order = page.all("section li", visible: :all).map { |li| (li["data-controller"] == "now-divider") ? "NOW" : li.text.squish[/[A-Z][a-z]+\z/] }
+    def titles_in_order = page.all("section li", visible: :all).map { |li| (li["data-controller"] == "now-divider") ? "NOW" : li.first("a", visible: :all, minimum: 0)&.text }
 
     it "sits between the entries that have started and those still to come, after the all-day ones" do
       render_inline(list(day_of(entry("Holiday"), at("Morning", 540, 600), at("Later", 17 * 60, 18 * 60)), now:))

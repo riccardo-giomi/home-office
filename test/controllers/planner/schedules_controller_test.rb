@@ -43,7 +43,10 @@ class Planner::SchedulesControllerTest < ActionDispatch::IntegrationTest
       get planner_schedule_path
       assert_select "input[type=checkbox][aria-label='Done: Pay the rent']", 1
       get planner_schedule_path(date: "2026-10-03")
-      assert_select "li", text: /All day · Abandoned/
+      assert_select "li", text: /Abandoned/ do
+        assert_select "svg[aria-hidden=true]"
+      end
+      assert_select "li", text: /All day/
       assert_select "input[type=checkbox]", 0
     end
 

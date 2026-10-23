@@ -58,7 +58,7 @@ class Core::UI::TimeGridComponentPreview < ViewComponent::Preview
       entry("A title long enough to need more than one line of the card", 9 * 60 + 30, 10 * 60, check: check("Long title", 2)),
       entry("Done and short", 9 * 60 + 30, 10 * 60, done: true, check: check("Done and short", 3)),
       entry("Short, no check", 10 * 60 + 15, 10 * 60 + 30),
-      entry("Abandoned and short", 10 * 60 + 45, 11 * 60 + 15, state_label: "Abandoned")]
+      entry("Abandoned and short", 10 * 60 + 45, 11 * 60 + 15, muted: true, statuses: [{icon: :minus_circle, label: "Abandoned"}, {priority: :urgent, label: "Urgent priority"}])]
   end
 
   def check(title, id) = ApplicationController.render(Core::UI::CheckboxComponent.new(name: "done", checked: false, label: "Done: #{title}", id: "short-check-#{id}"), layout: false).html_safe

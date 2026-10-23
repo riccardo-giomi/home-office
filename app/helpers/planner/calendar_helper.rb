@@ -26,9 +26,19 @@ module Planner::CalendarHelper
       from: (clock_minutes(item.start_time) if item.timed?),
       to: (clock_minutes(item.end_time) if item.timed?),
       check: (completion_check(item) if item.tracks_done? && item.active?),
-      state_label: (kind_t(item, "state_#{item.state}") unless item.active?),
-      priority: {level: item.priority.to_sym, label: priority_name(item.priority)}
+      muted: !item.active?,
+      statuses: entry_statuses(item)
     }
+  end
+
+  STATE_ICONS = {"abandoned" => :minus_circle, "cancelled" => :x_circle}.freeze
+
+  # What is worth knowing about an item at a glance, most important first.
+  def entry_statuses(item)
+    [
+      (item.active? ? nil : {icon: STATE_ICONS.fetch(item.state), label: kind_t(item, "state_#{item.state}")}),
+      (item.normal? ? nil : {priority: item.priority.to_sym, label: priority_name(item.priority)})
+    ].compact
   end
 
   def calendar_title(period)

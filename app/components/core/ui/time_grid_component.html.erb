@@ -1,4 +1,4 @@
-<div data-controller="grid-scroll" data-grid-scroll-mode-value="<%= scroll_mode %>" class="grid <%= single_day? ? "grid-cols-[3.5rem_minmax(0,1fr)]" : "grid-cols-[3.5rem_repeat(7,minmax(0,1fr))]" %> grid-rows-[auto_auto_repeat(96,1.25rem)] gap-x-0.5">
+<div data-controller="grid-scroll" data-grid-scroll-mode-value="<%= scroll_mode %>" class="grid <%= single_day? ? "grid-cols-[3.5rem_minmax(0,1fr)]" : "grid-cols-[3.5rem_repeat(7,minmax(0,1fr))]" %> grid-rows-[auto_auto_repeat(96,1.5rem)] gap-x-0.5">
   <div aria-hidden="true" class="grid grid-rows-subgrid col-start-1 row-start-3 row-span-96 text-xs text-base-content/80">
     <% 24.times do |hour| %>
       <div class="row-span-4 scroll-mt-20" data-hour="<%= hour %>"><%= hour_label(hour) %></div>
@@ -28,7 +28,7 @@
       <% if view.entries.empty? %>
         <p class="sr-only"><%= t("core.ui.time_grid.empty") %></p>
       <% end %>
-      <ul class="relative grid grid-rows-subgrid grid-cols-1 row-start-3 row-span-96 bg-[repeating-linear-gradient(to_bottom,transparent_0,transparent_4.9rem,var(--color-base-300)_4.9rem,var(--color-base-300)_5rem)]">
+      <ul class="relative grid grid-rows-subgrid grid-cols-1 row-start-3 row-span-96 bg-[repeating-linear-gradient(to_bottom,transparent_0,transparent_5.9rem,var(--color-base-300)_5.9rem,var(--color-base-300)_6rem)]">
         <% if view.now_minutes %>
           <%# Placed by the script (an inline style would be refused by the CSP); invisible until then %>
           <li aria-hidden="true" class="pointer-events-none invisible absolute inset-x-0 z-10 border-t-2 border-primary before:absolute before:-top-[5px] before:-start-1 before:size-2 before:rounded-full before:bg-primary"

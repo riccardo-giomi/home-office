@@ -44,7 +44,7 @@ describe Core::UI::PriorityComponent do
 
   it "can be smaller, for a grid card" do
     render_inline(priority(:urgent, compact: true))
-    assert_selector "span.badge.badge-sm[aria-label='Urgent priority']"
+    assert_selector "span.badge.badge-xs[aria-label='Urgent priority']"
   end
 
   it "refuses a level it does not know" do

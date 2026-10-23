@@ -44,7 +44,7 @@ class Planner::ScheduleSystemTest < ApplicationSystemTestCase
     click_link "Sort the attic"
     click_button I18n.t("planner.kinds.task.abandon")
     assert_selector "dialog[open] dd", text: I18n.t("planner.kinds.task.state_abandoned")
-    assert_selector "main li", text: /#{I18n.t("planner.kinds.task.state_abandoned")}/, visible: :all
+    assert_selector "main li [role=img][aria-label='#{I18n.t("planner.kinds.task.state_abandoned")}']", visible: :all
     assert_no_selector "main li input[type=checkbox]", visible: :all
     click_button I18n.t("planner.kinds.task.reopen")
     assert_selector "dialog[open] button", text: I18n.t("planner.kinds.task.abandon")
@@ -54,7 +54,7 @@ class Planner::ScheduleSystemTest < ApplicationSystemTestCase
   it "shows an all-day task in the strip above the grid" do
     make_task "Buy stamps"
     visit planner_schedule_path
-    assert_selector "main ul li", text: /#{I18n.t("core.ui.calendar_entry.all_day")}.*Buy stamps/m
+    assert_selector "main ul li", text: /Buy stamps.*#{I18n.t("core.ui.calendar_entry.all_day")}/m
   end
 
   it "draws the current-time line only when today is shown" do

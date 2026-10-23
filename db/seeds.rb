@@ -19,14 +19,14 @@ Planner::Item.owned_by(demo_user).destroy_all
   {title: "Dentist", days: 2, times: %w[09:30 10:15]},
   {title: "Team lunch", days: 5, times: %w[12:30 14:00]},
   {title: "Planning", days: 0, times: %w[10:00 11:30], tracks_done: true},
-  {title: "Code review", days: 0, times: %w[10:30 11:00], tracks_done: true},
+  {title: "Code review", days: 0, times: %w[10:30 11:00], tracks_done: true, state: "abandoned"},
   {title: "Call with the client", days: 0, times: %w[11:00 12:00], tracks_done: true},
   {title: "Gym", days: 0, times: %w[18:00 19:00], tracks_done: true},
   {title: "Pay the rent", days: 9, tracks_done: 1},
   {title: "Rent paid last month", days: -20, tracks_done: 1, done: true}
 ].each do |attrs|
   Planner::Event.create!(user: demo_user, title: attrs[:title]) do |event|
-    event.assign_attributes(day: Date.current + attrs[:days], tracks_done: attrs.fetch(:tracks_done, 0))
+    event.assign_attributes(day: Date.current + attrs[:days], tracks_done: attrs.fetch(:tracks_done, 0), state: attrs.fetch(:state, "active"))
     event.start_time, event.end_time = attrs[:times] if attrs[:times]
     event.mark_done(true) if attrs[:done]
   end
@@ -68,6 +68,6 @@ end
 end
 
 # A few priorities on the events and tasks too, so the lists show the markers.
-{Planner::Event => {"Dentist" => :high, "Planning" => :urgent}, Planner::Task => {"Write the report" => :high, "Renew the passport" => :urgent}}.each do |type, priorities|
+{Planner::Event => {"Dentist" => :high, "Planning" => :urgent, "Code review" => :urgent}, Planner::Task => {"Write the report" => :high, "Renew the passport" => :urgent}}.each do |type, priorities|
   priorities.each { |title, priority| type.owned_by(demo_user).find_by(title:)&.update!(priority:) }
 end

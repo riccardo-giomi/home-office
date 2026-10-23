@@ -21,7 +21,9 @@ class Core::UI::IconComponent < ApplicationComponent
     chevron_up: "m4.5 15.75 7.5-7.5 7.5 7.5",
     chevron_down: "m19.5 8.25-7.5 7.5-7.5-7.5",
     chevron_double_up: "m4.5 18.75 7.5-7.5 7.5 7.5m-15-6 7.5-7.5 7.5 7.5",
-    chevron_double_down: "m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5"
+    minus_circle: "M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+    x_circle: "m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+    chevron_double_down:"m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5"
   }.freeze
 
   def initialize(name:, **html_options)
