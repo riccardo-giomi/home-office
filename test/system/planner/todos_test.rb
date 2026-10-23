@@ -72,6 +72,51 @@ class Planner::TodosSystemTest < ApplicationSystemTestCase
     end
   end
 
+  describe "by dragging" do
+    before { %w[First Second Third].each { |title| make_todo title } }
+
+    def row_id(title) = "todo_#{Planner::Todo.find_by!(title:).id}"
+
+    it "sends a drop to the server: the row moved in the page takes its new place, and it is announced" do
+      visit planner_todos_path
+      assert_selector "[data-controller~=sortable] ol li", count: 3
+      execute_script(<<~JS)
+        const row = document.getElementById("#{row_id("Third")}")
+        row.parentElement.insertBefore(row, row.parentElement.firstElementChild)
+        const root = document.querySelector("[data-controller~=sortable]")
+        Stimulus.getControllerForElementAndIdentifier(root, "sortable").drop({item: row, oldIndex: 2, newIndex: 0})
+      JS
+      assert_text "“Third” moved to position 1 of 3."
+      assert_equal %w[Third First Second], titles
+    end
+
+    it "does not ask the server when the row was dropped where it was" do
+      visit planner_todos_path
+      execute_script(<<~JS)
+        const row = document.getElementById("#{row_id("Second")}")
+        const root = document.querySelector("[data-controller~=sortable]")
+        Stimulus.getControllerForElementAndIdentifier(root, "sortable").drop({item: row, oldIndex: 1, newIndex: 1})
+      JS
+      sleep 0.3
+      assert_no_text "moved to position"
+    end
+
+    it "can be dragged with a mouse by its handle" do
+      visit planner_todos_path
+      handle = find("##{row_id("Third")} [data-sortable-handle]")
+      target = find("##{row_id("First")}")
+      page.driver.browser.action.move_to(handle.native).click_and_hold.move_to(target.native, 0, -10).move_by(0, -5).release.perform
+      assert_text "“Third” moved to position 1 of 3."
+      assert_equal %w[Third First Second], titles
+    end
+
+    it "keeps the handle out of the keyboard's way" do
+      visit planner_todos_path
+      assert_equal "true", find("##{row_id("First")} [data-sortable-handle]")["aria-hidden"]
+      assert_no_selector "[data-sortable-handle]:focus"
+    end
+  end
+
   it "adds an urgent todo at the top, from the dialog" do
     %w[First Second].each { |title| make_todo title }
     visit planner_todos_path

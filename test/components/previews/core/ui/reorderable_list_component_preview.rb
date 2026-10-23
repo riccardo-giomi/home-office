@@ -20,7 +20,7 @@ class Core::UI::ReorderableListComponentPreview < ViewComponent::Preview
   def list(titles, prefix:, highlight: nil)
     Core::UI::ReorderableListComponent.new(label: "Todo list", empty_text: "No todos. Add the first one.").tap do |component|
       titles.each_with_index do |title, index|
-        component.with_row(id: "#{prefix}_todo_#{index}", move_url: "#", first: index.zero?, last: index == titles.size - 1, highlight: index == highlight,
+        component.with_row(id: "#{prefix}_todo_#{index}", item_id: index + 1, move_url: "#", first: index.zero?, last: index == titles.size - 1, highlight: index == highlight,
           labels: {group: "Move #{title}", up: "Move up: #{title}", down: "Move down: #{title}", top: "Move to top: #{title}", bottom: "Move to bottom: #{title}"}) do
           entry(title)
         end

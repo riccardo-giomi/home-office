@@ -19,10 +19,22 @@ class Core::UI::ReorderableListComponent < ApplicationComponent
   def call
     return tag.p(@empty_text) if rows.empty?
 
-    tag.ol(safe_join(rows), "aria-label": @label, class: "space-y-2")
+    tag.div(data: {controller: "sortable", sortable_handle_value: "[data-sortable-handle]"}) do
+      safe_join([tag.ol(safe_join(rows), "aria-label": @label, class: "space-y-2", data: {sortable_target: "list"}), drop_form])
+    end
+  end
+
+  # What a drop sends: the sortable controller aims this form at the dropped
+  # row's address and fills in the neighbor the row now follows (`after`) or, at
+  # the top, precedes (`before`).
+  def drop_form
+    form_with(url: "#", method: :patch, hidden: true, data: {sortable_target: "form"}) do
+      safe_join([hidden_field_tag(:after, nil, id: nil, data: {sortable_target: "after"}), hidden_field_tag(:before, nil, id: nil, data: {sortable_target: "before"})])
+    end
   end
 
   # id: the element id.
+  # item_id: what the server knows the row by (sent as the neighbor of a drop).
   # move_url: where a move is PATCHed (param `move`: up, down, top, bottom).
   # first/last: the row's place.
   # labels: {group:, up:, down:, top:, bottom:}, already written in the user's
@@ -35,8 +47,9 @@ class Core::UI::ReorderableListComponent < ApplicationComponent
     BLOCKED_AT_LAST = %i[down bottom].freeze
     HIGHLIGHT = {controller: "highlight", highlight_on_class: "bg-primary/20", highlight_off_class: "bg-base-100"}.freeze
 
-    def initialize(id:, move_url:, first:, last:, labels:, highlight: false)
+    def initialize(id:, item_id:, move_url:, first:, last:, labels:, highlight: false)
       @id = id
+      @item_id = item_id
       @move_url = move_url
       @first = first
       @last = last
@@ -45,12 +58,20 @@ class Core::UI::ReorderableListComponent < ApplicationComponent
     end
 
     def call
-      tag.li(id: @id, class: "flex flex-wrap items-start gap-2 rounded border border-base-300 bg-base-100 p-2", data: (highlight_data if @highlight)) do
-        safe_join([tag.div(content, class: "min-w-0 grow basis-40"), move_buttons])
+      data = {sortable_url: @move_url, sortable_item_id: @item_id}.merge(@highlight ? highlight_data : {})
+      tag.li(id: @id, class: "flex flex-wrap items-start gap-2 rounded border border-base-300 bg-base-100 p-2", data:) do
+        safe_join([handle, tag.div(content, class: "min-w-0 grow basis-40"), move_buttons])
       end
     end
 
     private
+
+    # Only a pointer uses it: the buttons are the way for everyone else, so it
+    # is hidden from assistive technology.
+    def handle
+      tag.span(render(Core::UI::IconComponent.new(name: :grip, class: "size-5", "stroke-width": "3")), "aria-hidden": "true", data: {sortable_handle: true},
+        class: "flex size-6 shrink-0 cursor-grab touch-none items-center justify-center text-base-content/70")
+    end
 
     # A new token each time the row is drawn, so a row that is still highlighted
     # from an earlier move starts over.

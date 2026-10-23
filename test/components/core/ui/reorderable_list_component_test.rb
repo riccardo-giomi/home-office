@@ -8,7 +8,7 @@ describe Core::UI::ReorderableListComponent do
   def list(*titles, highlight: nil)
     render_inline(Core::UI::ReorderableListComponent.new(label: "Todo list", empty_text: "Nothing to do.")) do |component|
       titles.each_with_index do |title, index|
-        component.with_row(id: "todo_#{index}", move_url: "/planner/todos/#{index}/position", first: index.zero?, last: index == titles.size - 1,
+        component.with_row(id: "todo_#{index}", item_id: index + 10, move_url: "/planner/todos/#{index}/position", first: index.zero?, last: index == titles.size - 1,
           labels: labels(title), highlight: highlight == index) { title }
       end
     end
@@ -55,6 +55,22 @@ describe Core::UI::ReorderableListComponent do
     list("A", "B", "C", highlight: 1)
     assert_selector "li#todo_1[data-controller=highlight]"
     assert_no_selector "li#todo_0[data-controller]"
+  end
+
+  it "is a sortable list, with a handle in each row that only a pointer uses" do
+    list("A", "B")
+    assert_selector "div[data-controller=sortable][data-sortable-handle-value='[data-sortable-handle]']"
+    assert_selector "div[data-controller=sortable] ol[data-sortable-target=list]"
+    assert_selector "li#todo_0[data-sortable-url='/planner/todos/0/position'][data-sortable-item-id='10'] [data-sortable-handle][aria-hidden=true]"
+    assert_no_selector "[data-sortable-handle][tabindex]"
+    assert_no_selector "[data-sortable-handle] button"
+  end
+
+  it "holds the form a drop is sent with: a PATCH with an empty after and before the drop fills" do
+    list("A", "B")
+    assert_selector "form[data-sortable-target=form] input[name=_method][value=patch]", visible: :all
+    assert_selector "form[data-sortable-target=form] input[name=after][data-sortable-target=after]", visible: :all
+    assert_selector "form[data-sortable-target=form] input[name=before][data-sortable-target=before]", visible: :all
   end
 
   it "says so when there is nothing in it" do

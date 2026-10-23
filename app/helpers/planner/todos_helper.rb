@@ -2,10 +2,15 @@
 # todo is drawn as.
 module Planner::TodosHelper
   def todo_row(todo, first:, last:, moved_id:)
-    title = todo.title
     {
-      id: "todo_#{todo.id}", move_url: planner_todo_position_path(todo), first:, last:, highlight: todo.id == moved_id,
-      labels: %i[group up down top bottom].index_with { |key| t("planner.positions.labels.#{key}", title:) }
+      id: "todo_#{todo.id}",
+      item_id: todo.id, move_url: planner_todo_position_path(todo),
+      first:,
+      last:,
+      highlight: todo.id == moved_id,
+      labels: %i[group up down top bottom].index_with do |key|
+        t("planner.positions.labels.#{key}", title: todo.title)
+      end
     }
   end
 
