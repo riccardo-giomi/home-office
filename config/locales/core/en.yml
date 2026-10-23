@@ -79,7 +79,7 @@ en:
         title: Administrator
       running: 'Running: %{title}'
     ui:
-      calendar_entry:
+      entry:
         all_day: All day
         done: Done
       error_summary:

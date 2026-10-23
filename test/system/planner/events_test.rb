@@ -22,7 +22,7 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
     click_button I18n.t("planner.kinds.event.submit")
     assert_text I18n.t("planner.kinds.event.created")
     assert_selector "td", text: "Dentist"
-    assert_selector "td", text: I18n.t("core.ui.calendar_entry.all_day")
+    assert_selector "td", text: I18n.t("core.ui.entry.all_day")
   end
 
   it "fills the end 30 minutes after the start until the end is typed" do

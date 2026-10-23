@@ -1,9 +1,9 @@
 require "test_helper"
 
-describe Core::UI::CalendarEntryComponent do
+describe Core::UI::EntryComponent do
   include ViewComponent::TestHelpers
 
-  def entry(**attrs) = Core::UI::CalendarEntryComponent.new(title: "Dentist", href: "/planner/events/1/edit", **attrs)
+  def entry(**attrs) = Core::UI::EntryComponent.new(title: "Dentist", href: "/planner/events/1/edit", **attrs)
 
   # The markup without the tooltip, which repeats the title and the statuses
   # before anything else.
@@ -19,19 +19,19 @@ describe Core::UI::CalendarEntryComponent do
   it "says all day when there are no times" do
     render_inline(entry)
     assert_no_selector "time"
-    assert_text I18n.t("core.ui.calendar_entry.all_day")
+    assert_text I18n.t("core.ui.entry.all_day")
   end
 
   it "shows a done entry struck through, with a hidden Done and not by color alone" do
     render_inline(entry(done: true))
     assert_selector "s a, a s", text: "Dentist"
-    assert_selector ".sr-only", text: I18n.t("core.ui.calendar_entry.done")
+    assert_selector ".sr-only", text: I18n.t("core.ui.entry.done")
   end
 
   it "does not mark an open entry" do
     render_inline(entry)
     assert_no_selector "s"
-    assert_no_selector ".sr-only", text: I18n.t("core.ui.calendar_entry.done")
+    assert_no_selector ".sr-only", text: I18n.t("core.ui.entry.done")
   end
 
   it "dims the title of a muted entry, and only of that" do
@@ -166,14 +166,14 @@ describe Core::UI::CalendarEntryComponent do
 
     it "says all day for an entry without times, and Done for a done one" do
       render_inline(entry(done: true))
-      assert_equal ["Dentist", I18n.t("core.ui.calendar_entry.all_day"), I18n.t("core.ui.calendar_entry.done")], page.find("div[title]", match: :first)[:title].split("\n")
+      assert_equal ["Dentist", I18n.t("core.ui.entry.all_day"), I18n.t("core.ui.entry.done")], page.find("div[title]", match: :first)[:title].split("\n")
     end
   end
 
   describe "without a time line" do
     it "draws no time and no all-day text" do
       render_inline(entry(show_time: false))
-      assert_no_text I18n.t("core.ui.calendar_entry.all_day")
+      assert_no_text I18n.t("core.ui.entry.all_day")
       assert_selector "a", text: "Dentist"
     end
 

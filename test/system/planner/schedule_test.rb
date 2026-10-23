@@ -54,7 +54,7 @@ class Planner::ScheduleSystemTest < ApplicationSystemTestCase
   it "shows an all-day task in the strip above the grid" do
     make_task "Buy stamps"
     visit planner_schedule_path
-    assert_selector "main ul li", text: /Buy stamps.*#{I18n.t("core.ui.calendar_entry.all_day")}/m
+    assert_selector "main ul li", text: /Buy stamps.*#{I18n.t("core.ui.entry.all_day")}/m
   end
 
   it "draws the current-time line only when today is shown" do

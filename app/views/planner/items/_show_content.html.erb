@@ -10,7 +10,7 @@
         <% if item.starts_at %>
           <br><%= format_time(item.starts_at, zone: item.time_zone) %>&ndash;<%= format_time(item.ends_at, zone: item.time_zone) %>
         <% else %>
-          <br><%= t("core.ui.calendar_entry.all_day") %>
+          <br><%= t("core.ui.entry.all_day") %>
         <% end %>
       </dd>
     <% end %>

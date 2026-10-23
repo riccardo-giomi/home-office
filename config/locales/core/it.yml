@@ -79,7 +79,7 @@ it:
         title: Amministratore
       running: 'In corso: %{title}'
     ui:
-      calendar_entry:
+      entry:
         all_day: Tutto il giorno
         done: Fatto
       error_summary:

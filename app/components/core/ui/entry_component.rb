@@ -13,7 +13,7 @@
 # statuses: what is worth knowing at a glance, most important first. Each one is
 # {icon:, label:} or {priority:, label:}, where priority is the level of the
 # priority pill. A compact entry shows icons only; the others add the word.
-class Core::UI::CalendarEntryComponent < ApplicationComponent
+class Core::UI::EntryComponent < ApplicationComponent
   renders_one :check
 
   def initialize(title:, href:, starts_at: nil, ends_at: nil, time_zone: nil, done: false, muted: false, compact: false, link_data: {}, statuses: [], show_time: true)
@@ -76,7 +76,7 @@ class Core::UI::CalendarEntryComponent < ApplicationComponent
   end
 
   def time_range
-    return t("core.ui.calendar_entry.all_day") unless @starts_at
+    return t("core.ui.entry.all_day") unless @starts_at
 
     safe_join([helpers.format_time(@starts_at, zone: @time_zone), "–", helpers.format_time(@ends_at, zone: @time_zone)])
   end
@@ -84,7 +84,7 @@ class Core::UI::CalendarEntryComponent < ApplicationComponent
   # Lines: the full title, the time range, the statuses.
   def tooltip
     lines = [@title, (helpers.strip_tags(time_range) if @show_time), *@statuses.map { |status| status[:label] }]
-    lines << t("core.ui.calendar_entry.done") if @done
+    lines << t("core.ui.entry.done") if @done
     lines.compact.join("\n")
   end
 
@@ -94,7 +94,7 @@ class Core::UI::CalendarEntryComponent < ApplicationComponent
   # The link also covers the whole entry (the ::after), so the entry opens when
   # clicked anywhere, even where its title is clipped.
   def title_link
-    text = @done ? safe_join([tag.s(@title), tag.span(" #{t("core.ui.calendar_entry.done")}", class: "sr-only")]) : @title
+    text = @done ? safe_join([tag.s(@title), tag.span(" #{t("core.ui.entry.done")}", class: "sr-only")]) : @title
     text = tag.span(text, class: "line-clamp-2") if @compact
     link_to(text, @href, class: ["link inline-flex items-center min-h-6 wrap-anywhere after:absolute after:inset-0", ("opacity-70" if @done || @muted)], data: @link_data)
   end

@@ -17,8 +17,8 @@ module Planner::TodosHelper
   # The same entry the calendar draws, without a time line (a todo has no moment
   # of its own).
   def todo_entry(todo)
-    attributes = calendar_entry(todo)
-    render(Core::UI::CalendarEntryComponent.new(**attributes.except(:check, :from, :to), show_time: false)) do |entry|
+    attributes = entry_attributes(todo)
+    render(Core::UI::EntryComponent.new(**attributes.except(:check, :from, :to), show_time: false)) do |entry|
       entry.with_check { attributes[:check] } if attributes[:check]
     end
   end

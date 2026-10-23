@@ -33,7 +33,7 @@ class Core::UI::AgendaListComponent < ApplicationComponent
   def rendered_at_ms = (@now.to_f * 1000).round
 
   def render_entry(attributes)
-    render(Core::UI::CalendarEntryComponent.new(**attributes.except(:check, :from, :to))) do |entry|
+    render(Core::UI::EntryComponent.new(**attributes.except(:check, :from, :to))) do |entry|
       entry.with_check { attributes[:check] } if attributes[:check]
     end
   end

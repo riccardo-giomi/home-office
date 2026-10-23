@@ -80,7 +80,7 @@ class Core::UI::TimeGridComponent < ApplicationComponent
   def compact?(placement) = !single_day? || slot_to(placement) - slot_from(placement) < 3
 
   def render_entry(attributes, compact: !single_day?)
-    render(Core::UI::CalendarEntryComponent.new(**attributes.except(:check, :from, :to), compact:)) do |entry|
+    render(Core::UI::EntryComponent.new(**attributes.except(:check, :from, :to), compact:)) do |entry|
       entry.with_check { attributes[:check] } if attributes[:check]
     end
   end

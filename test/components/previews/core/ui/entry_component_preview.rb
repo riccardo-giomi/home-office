@@ -1,4 +1,4 @@
-class Core::UI::CalendarEntryComponentPreview < ViewComponent::Preview
+class Core::UI::EntryComponentPreview < ViewComponent::Preview
   def timed
     render(entry(starts_at: Time.utc(2026, 10, 7, 7, 30), ends_at: Time.utc(2026, 10, 7, 8, 15), time_zone: "Europe/Rome"))
   end
@@ -58,5 +58,5 @@ class Core::UI::CalendarEntryComponentPreview < ViewComponent::Preview
   # `render` inside a preview builds a preview request, so slot content is rendered to a string here
   def checkbox = ApplicationController.render(Core::UI::CheckboxComponent.new(name: "done", checked: false, label: "Done: Pay the rent", id: "entry-check"), layout: false).html_safe
 
-  def entry(title: "Dentist", **attrs) = Core::UI::CalendarEntryComponent.new(title:, href: "#", **attrs)
+  def entry(title: "Dentist", **attrs) = Core::UI::EntryComponent.new(title:, href: "#", **attrs)
 end
