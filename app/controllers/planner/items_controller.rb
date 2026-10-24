@@ -40,9 +40,12 @@ class Planner::ItemsController < ApplicationController
     end
   end
 
-  # Permanent until the trash exists.
+  # Moves the item to the trash.
+  #
+  # It is not gone: the trash page restores it and the purge job removes it
+  # after 30 days.
   def destroy
-    @item.destroy!
+    @item.trash
     return dialog_done(kind_t("deleted")) if in_dialog?
 
     redirect_to back_path_or_default(@item), notice: kind_t("deleted"), status: :see_other
@@ -53,7 +56,9 @@ class Planner::ItemsController < ApplicationController
   def items = item_class.owned_by(Current.user).kept
 
   def set_item
-    @item = items.find(params[:id])
+    # The entity comes along: trashing goes through it, and strict loading
+    # refuses a lazy read.
+    @item = items.includes(:entity).find(params[:id])
   end
 
   # What a new item starts with. An item with no day of its own starts with

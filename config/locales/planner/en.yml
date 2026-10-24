@@ -79,8 +79,8 @@ en:
         delete: Delete event
         delete_confirm: Delete event
         delete_title: Delete this event?
-        delete_warning: "“%{title}” will be deleted for good."
-        deleted: Event deleted.
+        delete_warning: "“%{title}” goes to the trash. You can restore it for 30 days."
+        deleted: Event moved to the trash.
         edit: Edit event
         edit_title: 'Edit event: %{title}'
         new_title: New event
@@ -100,8 +100,8 @@ en:
         delete: Delete task
         delete_confirm: Delete task
         delete_title: Delete this task?
-        delete_warning: "“%{title}” will be deleted for good."
-        deleted: Task deleted.
+        delete_warning: "“%{title}” goes to the trash. You can restore it for 30 days."
+        deleted: Task moved to the trash.
         edit: Edit task
         edit_title: 'Edit task: %{title}'
         new_title: New task
@@ -119,8 +119,8 @@ en:
         delete: Delete todo
         delete_confirm: Delete todo
         delete_title: Delete this todo?
-        delete_warning: "“%{title}” will be deleted for good."
-        deleted: Todo deleted.
+        delete_warning: "“%{title}” goes to the trash. You can restore it for 30 days."
+        deleted: Todo moved to the trash.
         edit: Edit todo
         edit_title: 'Edit todo: %{title}'
         new_title: New todo

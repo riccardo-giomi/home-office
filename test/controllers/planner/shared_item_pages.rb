@@ -110,11 +110,26 @@ module SharedItemPages
           assert_equal title, sample.reload.title
         end
 
-        it "deletes the item" do
-          assert_difference "item_class.count", -1 do
-            delete polymorphic_path(sample)
+        it "moves the item to the trash, and says so" do
+          assert_no_difference "item_class.count" do
+            assert_difference "item_class.kept.count", -1 do
+              delete polymorphic_path(sample)
+            end
           end
           assert_redirected_to default_back(sample)
+          assert_predicate sample.reload, :trashed?
+          assert_match(/trash/, flash[:notice])
+        end
+
+        it "finds nothing to delete the second time" do
+          delete polymorphic_path(sample)
+          delete polymorphic_path(sample)
+          assert_response :not_found
+        end
+
+        it "warns on the edit page that the item goes to the trash for 30 days" do
+          get edit_polymorphic_path(sample)
+          assert_select "dialog p", text: /trash.*30 days/
         end
       end
 
@@ -219,7 +234,7 @@ module SharedItemPages
           assert_equal copy.call("updated"), flash[:notice]
           delete polymorphic_path(sample), headers: frame
           assert_select "turbo-stream[action=refresh]", 1
-          assert_nil item_class.find_by(id: sample.id)
+          assert_predicate sample.reload, :trashed?
         end
 
         it "shows the errors inside the dialog, keeping what was typed" do

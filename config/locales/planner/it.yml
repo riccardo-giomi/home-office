@@ -79,8 +79,8 @@ it:
         delete: Elimina evento
         delete_confirm: Elimina evento
         delete_title: Eliminare questo evento?
-        delete_warning: "«%{title}» verrà eliminato definitivamente."
-        deleted: Evento eliminato.
+        delete_warning: "«%{title}» andrà nel cestino. Puoi ripristinarlo per 30 giorni."
+        deleted: Evento spostato nel cestino.
         edit: Modifica evento
         edit_title: 'Modifica evento: %{title}'
         new_title: Nuovo evento
@@ -100,8 +100,8 @@ it:
         delete: Elimina attività
         delete_confirm: Elimina attività
         delete_title: Eliminare questa attività?
-        delete_warning: "«%{title}» sarà eliminata definitivamente."
-        deleted: Attività eliminata.
+        delete_warning: "«%{title}» andrà nel cestino. Puoi ripristinarla per 30 giorni."
+        deleted: Attività spostata nel cestino.
         edit: Modifica attività
         edit_title: 'Modifica attività: %{title}'
         new_title: Nuova attività
@@ -119,8 +119,8 @@ it:
         delete: Elimina da fare
         delete_confirm: Elimina da fare
         delete_title: Eliminare questo da fare?
-        delete_warning: "«%{title}» sarà eliminato definitivamente."
-        deleted: Da fare eliminato.
+        delete_warning: "«%{title}» andrà nel cestino. Puoi ripristinarlo per 30 giorni."
+        deleted: Da fare spostato nel cestino.
         edit: Modifica da fare
         edit_title: 'Modifica da fare: %{title}'
         new_title: Nuovo da fare
