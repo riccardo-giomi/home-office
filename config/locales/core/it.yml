@@ -46,6 +46,9 @@ it:
       back: Torna agli utenti
       create:
         created: Utente creato.
+      destroy:
+        deleted: "%{email} eliminato definitivamente."
+        not_removable: Disattiva questo utente prima di eliminarlo.
       edit:
         title: Modifica utente
       form:
@@ -57,6 +60,10 @@ it:
         caption: Utenti e relativi ruoli
         deactivate: Disattiva
         deactivated: Disattivato
+        delete: Elimina
+        delete_confirm: Elimina utente
+        delete_title: Eliminare definitivamente questo utente?
+        delete_warning: "%{email} e tutti i suoi dati saranno eliminati definitivamente. Non si può annullare."
         edit: Modifica
         new: Nuovo utente
         reactivate: Riattiva

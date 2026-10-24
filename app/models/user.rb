@@ -34,6 +34,12 @@ class User < ApplicationRecord
 
   def reactivate = update_columns(deactivated_at: nil)
 
+  # Whether the user may be deleted for good.
+  #
+  # Only someone already deactivated, and so never the administrator keeping the
+  # app.
+  def removable? = deactivated?
+
   private
 
   # Whether this is the last active administrator.

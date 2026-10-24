@@ -32,6 +32,14 @@
                   <%= render(Core::UI::ButtonComponent.new(type: :submit, variant: :secondary, size: :xs)) do %><%= user.active? ? t(".deactivate") : t(".reactivate") %><span class="sr-only"> <%= user.email_address %></span><% end %>
                 <% end %>
               <% end %>
+              <% if hard_delete_users? && user.removable? && user != Current.user %>
+                <%= render(Core::UI::ModalComponent.new(id: "delete-user-#{user.id}", title: t(".delete_title"), trigger: safe_join([t(".delete"), tag.span(" #{user.email_address}", class: "sr-only")]), trigger_variant: :danger, trigger_size: :xs)) do %>
+                  <p class="mb-4"><%= t(".delete_warning", email: user.email_address) %></p>
+                  <%= form_with url: admin_user_path(user), method: :delete do %>
+                    <%= render(Core::UI::ButtonComponent.new(type: :submit, variant: :danger)) { t(".delete_confirm") } %>
+                  <% end %>
+                <% end %>
+              <% end %>
             </div>
           </td>
         </tr>

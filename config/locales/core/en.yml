@@ -46,6 +46,9 @@ en:
       back: Back to users
       create:
         created: User created.
+      destroy:
+        deleted: "%{email} deleted for good."
+        not_removable: Deactivate this user before deleting the account.
       edit:
         title: Edit user
       form:
@@ -57,6 +60,10 @@ en:
         caption: Users and their roles
         deactivate: Deactivate
         deactivated: Deactivated
+        delete: Delete
+        delete_confirm: Delete user
+        delete_title: Delete this user for good?
+        delete_warning: "%{email} and all its data will be deleted for good. This cannot be undone."
         edit: Edit
         new: New user
         reactivate: Reactivate

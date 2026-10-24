@@ -60,4 +60,35 @@ class AdminUsersTest < ApplicationSystemTestCase
       assert_fits_small_screen
     end
   end
+
+  describe "with hard delete switched on" do
+    before do
+      @saved_option = Rails.configuration.x.hard_delete_users
+      Rails.configuration.x.hard_delete_users = true
+    end
+
+    after { Rails.configuration.x.hard_delete_users = @saved_option }
+
+    it "deletes a deactivated user after a confirmation" do
+      visit admin_users_path
+      within("tr", text: "retired@example.com") { click_button "Delete" }
+      within("dialog[open]") do
+        assert_text "all its data"
+        click_button "Delete user"
+      end
+      assert_text "retired@example.com deleted for good."
+      assert_no_text "Deactivated"
+    end
+
+    %w[light dark].each do |theme|
+      it "has no axe violations with the confirmation open, in the #{theme} theme" do
+        users(:admin).update!(theme:)
+        visit admin_users_path
+        within("tr", text: "retired@example.com") { click_button "Delete" }
+        assert_selector "dialog[open] h2"
+        sleep 0.4 # The dialog fades in; axe must not read mid-transition colors.
+        assert_accessible
+      end
+    end
+  end
 end

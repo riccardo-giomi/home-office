@@ -136,4 +136,77 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
       end
     end
   end
+
+  describe "deleting a user for good" do
+    before { sign_in_as users(:admin) }
+
+    def with_hard_delete(on)
+      saved = Rails.configuration.x.hard_delete_users
+      Rails.configuration.x.hard_delete_users = on
+      yield
+    ensure
+      Rails.configuration.x.hard_delete_users = saved
+    end
+
+    it "is off unless the option is set: no button, and the route refuses an admin posting by hand" do
+      with_hard_delete(false) do
+        get admin_users_path
+        assert_select "button", text: /Delete/, count: 0
+        assert_no_difference "User.count" do
+          delete admin_user_path(users(:retired))
+        end
+        assert_response :not_found
+      end
+    end
+
+    it "offers Delete only on deactivated users, with a confirmation that names the user and the data" do
+      with_hard_delete(true) do
+        get admin_users_path
+        assert_select "dialog#delete-user-#{users(:retired).id} p", text: /retired@example.com.*all (their|its) data/i
+        assert_select "dialog#delete-user-#{users(:retired).id} form[action='#{admin_user_path(users(:retired))}']"
+        assert_select "dialog#delete-user-#{users(:member).id}", 0
+        assert_select "dialog#delete-user-#{users(:admin).id}", 0
+      end
+    end
+
+    it "deletes a deactivated user and all the data of that user" do
+      with_hard_delete(true) do
+        retired = users(:retired)
+        Planner::Todo.create!(user: retired, title: "Theirs")
+        assert_difference "User.count", -1 do
+          delete admin_user_path(retired)
+        end
+        assert_redirected_to admin_users_path
+        assert_equal "retired@example.com deleted for good.", flash[:notice]
+        assert_equal 0, Planner::Item.where(user_id: retired.id).count
+      end
+    end
+
+    it "refuses an active user, oneself and an unknown one" do
+      with_hard_delete(true) do
+        assert_no_difference "User.count" do
+          delete admin_user_path(users(:member))
+          assert_redirected_to admin_users_path
+          assert_equal "Deactivate this user before deleting the account.", flash[:alert]
+          delete admin_user_path(users(:admin))
+          assert_redirected_to admin_users_path
+        end
+        delete admin_user_path(id: 0)
+        assert_response :not_found
+      end
+    end
+
+    it "keeps regular users and visitors out" do
+      with_hard_delete(true) do
+        sign_in_as users(:member)
+        assert_no_difference "User.count" do
+          delete admin_user_path(users(:retired))
+        end
+        assert_redirected_to root_path
+        sign_out
+        delete admin_user_path(users(:retired))
+        assert_redirected_to new_session_path
+      end
+    end
+  end
 end
