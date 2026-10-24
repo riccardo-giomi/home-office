@@ -10,15 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_22_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_24_090000) do
   create_table "core_entities", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "record_type", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "deleted_at"
+    t.index ["deleted_at"], name: "index_core_entities_purge", where: "deleted_at IS NOT NULL"
     t.index ["id", "record_type"], name: "index_core_entities_on_id_and_record_type", unique: true
     t.index ["id", "user_id", "record_type"], name: "index_core_entities_on_id_and_user_id_and_record_type", unique: true
     t.index ["id", "user_id"], name: "index_core_entities_on_id_and_user_id", unique: true
+    t.index ["user_id", "deleted_at"], name: "index_core_entities_trash", where: "deleted_at IS NOT NULL"
   end
 
   create_table "planner_items", force: :cascade do |t|

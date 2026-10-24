@@ -35,4 +35,12 @@ describe "core_entities constraints" do
     insert_entity
     _(connection.select_rows("PRAGMA foreign_key_check")).must_be_empty
   end
+
+  it "has partial indexes on the trash state" do
+    trash = connection.indexes(:core_entities).index_by(&:name)
+    _(trash["index_core_entities_trash"].columns).must_equal %w[user_id deleted_at]
+    _(trash["index_core_entities_purge"].columns).must_equal %w[deleted_at]
+    wheres = trash.values_at("index_core_entities_trash", "index_core_entities_purge").map(&:where)
+    _(wheres).must_equal ["deleted_at IS NOT NULL"] * 2
+  end
 end
