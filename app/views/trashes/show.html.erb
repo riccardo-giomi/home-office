@@ -1,0 +1,15 @@
+<% content_for :title, t(".title") %>
+<div class="w-full">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title")) %>
+  <p class="mb-4"><%= t(".intro") %></p>
+  <%= render(Core::UI::CardGridComponent.new(label: t(".list"))) do |grid| %>
+    <% @sources.each do |source| %>
+      <% grid.with_card do %>
+        <%= render Core::UI::CardLinkComponent.new(
+              href: public_send(source.route), title: t(source.title_key), caption: t(".caption"),
+              lines: trash_card_lines(source)
+            ) %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

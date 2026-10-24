@@ -76,3 +76,46 @@ describe "the booted registry" do
     _(Core::Modules.navigation(admin: true).map(&:route)).must_include :admin_users_path
   end
 end
+
+describe "the trash in the manifests" do
+  before do
+    @saved = Core::Modules.all
+    Core::Modules.reset!
+  end
+
+  after do
+    Core::Modules.reset!
+    @saved.each { |manifest| Core::Modules.register(manifest) }
+  end
+
+  def source(total, title_key: "planner.nav.groups.planner")
+    Core::TrashSource.new(title_key:, route: :planner_trash_path, counts: ->(_user) { {"event" => total} }, total: ->(_user) { total }, labels_key: "planner.trash.counts")
+  end
+
+  it "collects the sources of the modules that have a trash, in registration order" do
+    one = source(2)
+    two = source(5, title_key: "core.nav.home")
+    Core::Modules.register(Core::ModuleManifest.new(name: "a", trash: one))
+    Core::Modules.register(Core::ModuleManifest.new(name: "none"))
+    Core::Modules.register(Core::ModuleManifest.new(name: "b", trash: two))
+    _(Core::Modules.trash_sources).must_equal [one, two]
+  end
+
+  it "adds up what every source holds for a user" do
+    Core::Modules.register(Core::ModuleManifest.new(name: "a", trash: source(2)))
+    Core::Modules.register(Core::ModuleManifest.new(name: "b", trash: source(5)))
+    _(Core::Modules.trash_total(users(:admin))).must_equal 7
+  end
+
+  it "has no total without sources" do
+    _(Core::Modules.trash_total(users(:admin))).must_equal 0
+  end
+end
+
+describe "the booted trash" do
+  it "is the Planner's, counting the signed-in user's own items" do
+    _(Core::Modules.trash_sources.size).must_equal 1
+    _(Core::Modules.trash_total(users(:admin))).must_equal 4
+    _(Core::Modules.trash_total(users(:member))).must_equal 0
+  end
+end

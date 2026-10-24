@@ -1,4 +1,4 @@
-# Navigation, trash and more arrive with the features that build them.
+# Previews and setup steps arrive with the features that build them.
 Planner::Manifest = Core::ModuleManifest.new(
   name: "planner",
   navigation: [
@@ -14,5 +14,12 @@ Planner::Manifest = Core::ModuleManifest.new(
     Core::NavItem.new(label_key: "planner.nav.todos",
       route: :planner_todos_path, icon: :queue_list,
       group_key: "planner.nav.groups.planner")
-  ]
+  ],
+  trash: Core::TrashSource.new(
+    title_key: "planner.nav.groups.planner",
+    route: :planner_trash_path,
+    labels_key: "planner.trash.counts",
+    counts: ->(user) { Planner::Trash.new(user).counts },
+    total: ->(user) { Planner::Trash.new(user).total }
+  )
 )

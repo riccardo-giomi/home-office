@@ -150,6 +150,12 @@ it:
       submit: Accedi
       title: Accedi
     rate_limited: Troppi tentativi. Riprova più tardi.
+  trashes:
+    show:
+      caption: 'Nel cestino:'
+      intro: Quello che hai eliminato resta qui per 30 giorni. Apri un'area per ripristinare o svuotare.
+      list: Cestino per modulo
+      title: Cestino
   users:
     roles:
       admin: Amministratore

@@ -150,6 +150,12 @@ en:
       submit: Sign in
       title: Sign in
     rate_limited: Too many attempts. Try again later.
+  trashes:
+    show:
+      caption: 'In the trash:'
+      intro: What you deleted stays here for 30 days. Open a place to restore things or empty it.
+      list: Trash by module
+      title: Trash
   users:
     roles:
       admin: Administrator

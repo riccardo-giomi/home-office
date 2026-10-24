@@ -193,6 +193,16 @@ en:
         new: New todo
         title: Todos
     trash:
+      counts:
+        event:
+          one: "%{count} event"
+          other: "%{count} events"
+        task:
+          one: "%{count} task"
+          other: "%{count} tasks"
+        todo:
+          one: "%{count} todo"
+          other: "%{count} todos"
       kinds:
         event:
           one: Event

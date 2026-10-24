@@ -18,5 +18,9 @@ module Core::Modules
     end
 
     def setup_steps = all.flat_map(&:setup_steps)
+
+    def trash_sources = all.filter_map(&:trash)
+
+    def trash_total(user) = trash_sources.sum { |source| source.total.call(user) }
   end
 end

@@ -193,6 +193,16 @@ it:
         new: Nuovo da fare
         title: Da fare
     trash:
+      counts:
+        event:
+          one: "%{count} evento"
+          other: "%{count} eventi"
+        task:
+          one: "%{count} attività"
+          other: "%{count} attività"
+        todo:
+          one: "%{count} da fare"
+          other: "%{count} da fare"
       kinds:
         event:
           one: Evento
