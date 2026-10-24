@@ -168,6 +168,9 @@ it:
         moved: "«%{title}» spostato in posizione %{position} di %{count}."
         refused: Questo spostamento non è possibile.
         unchanged: "«%{title}» è già al suo posto."
+    restorations:
+      update:
+        restored: "«%{title}» ripristinato."
     schedules:
       show:
         nav: Navigazione del programma
@@ -189,3 +192,36 @@ it:
         list: Da fare
         new: Nuovo da fare
         title: Da fare
+    trash:
+      kinds:
+        event:
+          one: Evento
+          other: Eventi
+        task:
+          one: Attività
+          other: Attività
+        todo:
+          one: Da fare
+          other: Da fare
+    trashes:
+      destroy:
+        emptied:
+          one: 'Cestino svuotato: %{count} elemento eliminato definitivamente.'
+          other: 'Cestino svuotato: %{count} elementi eliminati definitivamente.'
+          zero: Il cestino era già vuoto.
+      show:
+        all: Tutti (%{count})
+        back: Torna alle aree del cestino
+        empty: Il cestino è vuoto.
+        empty_title: Svuotare il cestino?
+        empty_trash: Svuota il cestino
+        empty_warning:
+          one: "%{count} elemento nel cestino verrà eliminato definitivamente. Non si può annullare."
+          other: Tutti i %{count} elementi nel cestino verranno eliminati definitivamente. Non si può annullare.
+        list: Elementi nel cestino
+        pages: Pagine
+        restore: Ripristina
+        tabs: Mostra
+        tabs_nav: Filtro del cestino
+        title: Cestino
+        trashed_on_html: Nel cestino dal %{date}

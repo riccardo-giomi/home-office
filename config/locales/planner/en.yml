@@ -168,6 +168,9 @@ en:
         moved: "“%{title}” moved to position %{position} of %{count}."
         refused: That move is not possible.
         unchanged: "“%{title}” is already there."
+    restorations:
+      update:
+        restored: "“%{title}” restored."
     schedules:
       show:
         nav: Schedule navigation
@@ -189,3 +192,36 @@ en:
         list: Todo list
         new: New todo
         title: Todos
+    trash:
+      kinds:
+        event:
+          one: Event
+          other: Events
+        task:
+          one: Task
+          other: Tasks
+        todo:
+          one: Todo
+          other: Todos
+    trashes:
+      destroy:
+        emptied:
+          one: 'Trash emptied: %{count} item deleted for good.'
+          other: 'Trash emptied: %{count} items deleted for good.'
+          zero: The trash was already empty.
+      show:
+        all: All (%{count})
+        back: Back to the trash places
+        empty: The trash is empty.
+        empty_title: Empty the trash?
+        empty_trash: Empty trash
+        empty_warning:
+          one: "%{count} item in the trash will be deleted for good. This cannot be undone."
+          other: All %{count} items in the trash will be deleted for good. This cannot be undone.
+        list: Trashed items
+        pages: Pages
+        restore: Restore
+        tabs: Show
+        tabs_nav: Trash filter
+        title: Trash
+        trashed_on_html: Trashed %{date}

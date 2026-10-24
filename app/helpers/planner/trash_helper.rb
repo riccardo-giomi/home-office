@@ -1,0 +1,51 @@
+# Words and rows of the trash page.
+module Planner::TrashHelper
+  # The tabs of the trash page: all, then each kind.
+  #
+  # Each is [label, address, current?], with how many are in it.
+  def trash_tabs(trash)
+    all = [t("planner.trashes.show.all", count: trash.total), planner_trash_path, trash.type.nil?]
+    kinds = Planner::Trash::KINDS.map do |kind|
+      label = "#{t("planner.trash.kinds.#{kind}", count: 2)} (#{trash.counts.fetch(kind)})"
+      [label, planner_trash_path(type: kind), trash.type == kind]
+    end
+    [all, *kinds]
+  end
+
+  def trashed_row(item, type:)
+    {id: "trashed_#{item.id}", detail: trashed_detail(item), actions: restore_button(item, type:)}
+  end
+
+  # The detail line of a trashed row.
+  #
+  # Kind, the item's own day and times when it has them (to tell look-alikes
+  # apart), and when it was trashed.
+  def trashed_detail(item)
+    parts = [t("planner.trash.kinds.#{item.class.kind}", count: 1)]
+    parts << trashed_moment(item) if item.timed? && item.day
+    parts << t("planner.trashes.show.trashed_on_html", date: format_date(item.deleted_at.in_time_zone.to_date))
+    safe_join(parts, " · ")
+  end
+
+  def restore_button(item, type:)
+    form_with(url: planner_item_restoration_path(item), method: :patch) do
+      safe_join([
+        (hidden_field_tag(:type, type, id: nil) if type),
+        render(Core::UI::ButtonComponent.new(type: :submit, variant: :secondary, size: :sm)) do
+          safe_join([t("planner.trashes.show.restore"), tag.span(" #{item.title}", class: "sr-only")])
+        end
+      ].compact)
+    end
+  end
+
+  private
+
+  def trashed_moment(item)
+    times = if item.starts_at
+      safe_join([format_time(item.starts_at, zone: item.time_zone), "–", format_time(item.ends_at, zone: item.time_zone)])
+    else
+      t("core.ui.entry.all_day")
+    end
+    tag.span(safe_join([format_date(item.day), times], " "), class: "whitespace-nowrap")
+  end
+end

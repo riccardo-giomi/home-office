@@ -155,6 +155,7 @@ ignore_unused:
   - "core.nav.*"
   - "core.preferences.defaults.*"
   - "planner.nav.*"
+  - "planner.trash.kinds.*"
   - "preferences.date_formats.*"
   - "preferences.locales.*"
   - "preferences.themes.*"

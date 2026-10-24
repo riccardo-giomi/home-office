@@ -1,0 +1,29 @@
+<% content_for :title, t(".title") %>
+<%# A restore redirects back here: morphing keeps the scroll place %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<div class="w-full" data-controller="focus-fallback">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title"), back_href: trash_path, back_label: t(".back")) %>
+  <%= render(Core::UI::PageToolbarComponent.new) do |toolbar| %>
+    <% toolbar.with_leading do %>
+      <nav aria-label="<%= t(".tabs_nav") %>">
+        <%= render Core::UI::TabsComponent.new(items: trash_tabs(@trash), label: t(".tabs")) %>
+      </nav>
+    <% end %>
+    <% if @trash.total.positive? %>
+      <% toolbar.with_trailing do %>
+        <%= render(Core::UI::ModalComponent.new(id: "empty-trash", title: t(".empty_title"), trigger: t(".empty_trash"), trigger_variant: :danger)) do %>
+          <p class="mb-4"><%= t(".empty_warning", count: @trash.total) %></p>
+          <%= form_with url: planner_trash_path, method: :delete do %>
+            <%= render(Core::UI::ButtonComponent.new(type: :submit, variant: :danger)) { t(".empty_trash") } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <%= render(Core::UI::RowListComponent.new(label: t(".list"), empty_text: t(".empty"))) do |list| %>
+    <% @items.each do |item| %>
+      <% list.with_row(**trashed_row(item, type: @trash.type)) { item.title } %>
+    <% end %>
+  <% end %>
+  <%= render Core::UI::PaginationComponent.new(pagy: @pagy, label: t(".pages")) %>
+</div>

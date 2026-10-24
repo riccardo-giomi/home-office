@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resource :session, only: %i[new create destroy]
   resource :preferences, only: %i[edit update]
   resource :theme, only: :update
+  resource :trash, only: :show
 
   namespace :planner do
     resource :calendar, only: :show
@@ -10,12 +11,14 @@ Rails.application.routes.draw do
     resources :events, except: :index
     resources :tasks, except: :index
     resource :done_todos, only: :destroy
+    resource :trash, only: %i[show destroy]
     resources :todos do
       resource :position, only: :update
     end
     resources :items, only: [] do
       resource :completion, only: :update
       resource :state, only: :update
+      resource :restoration, only: :update
     end
   end
 
