@@ -165,4 +165,25 @@ class Planner::TodosControllerTest < ActionDispatch::IntegrationTest
       assert_select "span.badge[aria-label='Priorità bassa']"
     end
   end
+
+  describe "the list's delete controls" do
+    before { sign_in_as admin }
+
+    it "puts a Delete button with a confirmation on every row, named after its todo" do
+      get planner_todos_path
+      Planner::Todo.owned_by(admin).kept.each do |todo|
+        assert_select "li#todo_#{todo.id} dialog#delete-todo-#{todo.id} form[action='#{planner_todo_path(todo)}'] input[name=_method][value=delete]"
+        assert_select "li#todo_#{todo.id} [data-controller=modal] > button", text: /Delete\s*#{Regexp.escape(todo.title)}/
+      end
+    end
+
+    it "offers Delete all done only while a todo is done, and says how many" do
+      get planner_todos_path
+      assert_select "dialog#delete-done-todos form[action='#{planner_done_todos_path}']"
+      assert_select "dialog#delete-done-todos p", text: /1 done todo/
+      Planner::Todo.owned_by(admin).update_all(done_at: nil)
+      get planner_todos_path
+      assert_select "#delete-done-todos", 0
+    end
+  end
 end

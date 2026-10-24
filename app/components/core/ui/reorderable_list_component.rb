@@ -40,6 +40,8 @@ class Core::UI::ReorderableListComponent < ApplicationComponent
   # labels: {group:, up:, down:, top:, bottom:}, already written in the user's
   # language.
   # highlight: this row was just moved.
+  # actions: markup for what else can be done to the row (the page gives it, the
+  # list does not know what it does), drawn after the move buttons.
   class Row < ApplicationComponent
     MOVES = {up: :chevron_up, down: :chevron_down, top: :chevron_double_up, bottom: :chevron_double_down}.freeze
     # What each move cannot do from the first row and from the last.
@@ -47,7 +49,7 @@ class Core::UI::ReorderableListComponent < ApplicationComponent
     BLOCKED_AT_LAST = %i[down bottom].freeze
     HIGHLIGHT = {controller: "highlight", highlight_on_class: "bg-primary/20", highlight_off_class: "bg-base-100"}.freeze
 
-    def initialize(id:, item_id:, move_url:, first:, last:, labels:, highlight: false)
+    def initialize(id:, item_id:, move_url:, first:, last:, labels:, highlight: false, actions: nil)
       @id = id
       @item_id = item_id
       @move_url = move_url
@@ -55,12 +57,13 @@ class Core::UI::ReorderableListComponent < ApplicationComponent
       @last = last
       @labels = labels
       @highlight = highlight
+      @actions = actions
     end
 
     def call
       data = {sortable_url: @move_url, sortable_item_id: @item_id}.merge(@highlight ? highlight_data : {})
       tag.li(id: @id, class: "flex flex-wrap items-start gap-2 rounded border border-base-300 bg-base-100 p-2", data:) do
-        safe_join([handle, tag.div(content, class: "min-w-0 grow basis-40"), move_buttons])
+        safe_join([handle, tag.div(content, class: "min-w-0 grow basis-40"), move_buttons, @actions].compact)
       end
     end
 

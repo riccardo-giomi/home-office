@@ -45,6 +45,12 @@ it:
         done: 'Segnato come fatto: %{title}'
         not_done: 'Segnato come non fatto: %{title}'
         refused: Questo elemento non può essere spuntato.
+    done_todos:
+      destroy:
+        deleted:
+          one: "%{count} da fare completato spostato nel cestino."
+          other: "%{count} da fare completati spostati nel cestino."
+          zero: Nessun da fare completato da eliminare.
     items:
       back:
         agenda: Torna all'agenda
@@ -173,6 +179,12 @@ it:
         refused: Questa modifica non è possibile.
     todos:
       index:
+        delete_done: Elimina i completati
+        delete_done_title: Eliminare tutti i da fare completati?
+        delete_done_warning:
+          one: "%{count} da fare completato andrà nel cestino. Puoi ripristinarlo per 30 giorni."
+          other: Tutti i %{count} da fare completati andranno nel cestino. Puoi ripristinarli per 30 giorni.
+        delete_row: Elimina
         empty: La lista è vuota. Aggiungi il primo.
         list: Da fare
         new: Nuovo da fare

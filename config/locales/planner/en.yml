@@ -45,6 +45,12 @@ en:
         done: 'Marked done: %{title}'
         not_done: 'Marked not done: %{title}'
         refused: That item cannot be ticked.
+    done_todos:
+      destroy:
+        deleted:
+          one: "%{count} done todo moved to the trash."
+          other: "%{count} done todos moved to the trash."
+          zero: No done todos to delete.
     items:
       back:
         agenda: Back to agenda
@@ -173,6 +179,12 @@ en:
         refused: That change is not possible.
     todos:
       index:
+        delete_done: Delete all done
+        delete_done_title: Delete all done todos?
+        delete_done_warning:
+          one: "%{count} done todo goes to the trash. You can restore it for 30 days."
+          other: All %{count} done todos go to the trash. You can restore them for 30 days.
+        delete_row: Delete
         empty: No todos. Add the first one.
         list: Todo list
         new: New todo

@@ -164,6 +164,77 @@ class Planner::TodosSystemTest < ApplicationSystemTestCase
     end
   end
 
+  describe "deleting" do
+    def tick(title) = Planner::Todo.find_by!(title:).tap { |todo| todo.mark_done(true) && todo.save! }
+
+    before { %w[First Second Third].each { |title| make_todo title } }
+
+    it "deletes one todo, done or not, after a confirmation, and moves focus to the page heading" do
+      tick("Second")
+      visit planner_todos_path
+      click_button "Delete Second"
+      within("#delete-todo-#{Planner::Todo.find_by!(title: "Second").id}") do
+        assert_text "“Second” goes to the trash"
+        click_button I18n.t("planner.kinds.todo.delete_confirm")
+      end
+      assert_text "Todo moved to the trash."
+      assert_equal %w[First Third], titles
+      assert_selector "main h1:focus"
+      assert_predicate Planner::Todo.includes(:entity).find_by!(title: "Second"), :trashed?
+    end
+
+    it "keeps the todo when the confirmation is closed" do
+      visit planner_todos_path
+      click_button "Delete Third"
+      within("#delete-todo-#{Planner::Todo.find_by!(title: "Third").id}") { click_button I18n.t("core.ui.modal.close") }
+      assert_equal %w[First Second Third], titles
+    end
+
+    it "deletes all done todos at once, saying how many, and leaves the open ones" do
+      tick("First")
+      tick("Third")
+      visit planner_todos_path
+      click_button "Delete all done"
+      within("#delete-done-todos") do
+        assert_text "All 2 done todos go to the trash"
+        click_button "Delete all done"
+      end
+      assert_text "2 done todos moved to the trash."
+      assert_equal %w[Second], titles
+      assert_no_button "Delete all done"
+    end
+
+    it "offers no bulk delete while nothing is done" do
+      visit planner_todos_path
+      assert_no_button "Delete all done"
+    end
+
+    %w[light dark].each do |theme|
+      it "has no axe violations with a confirmation open, in the #{theme} theme" do
+        admin.update!(theme:)
+        tick("First")
+        visit planner_todos_path
+        click_button "Delete First"
+        assert_selector "dialog[open] h2", text: "Delete this todo?"
+        sleep 0.4 # The dialog fades in; axe must not read mid-transition colors.
+        assert_accessible
+        find("dialog[open] form[method=dialog] button").click
+        click_button "Delete all done"
+        assert_selector "dialog[open] h2", text: "Delete all done todos?"
+        sleep 0.4
+        assert_accessible
+      end
+    end
+
+    it "fits a 320 px screen with a delete button on every row and the bulk button showing" do
+      tick("First")
+      page.current_window.resize_to(320, 800)
+      visit planner_todos_path
+      assert_button "Delete all done"
+      assert_fits_small_screen
+    end
+  end
+
   describe "reading it" do
     it "keeps a 255-character unbroken title and the move buttons inside a 320 px screen" do
       make_todo "x" * 255

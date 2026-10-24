@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     resource :schedule, only: :show
     resources :events, except: :index
     resources :tasks, except: :index
+    resource :done_todos, only: :destroy
     resources :todos do
       resource :position, only: :update
     end

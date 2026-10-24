@@ -7,6 +7,7 @@
     <% toolbar.with_leading do %>
       <%= new_item_button(Planner::Todo, t(".new")) %>
     <% end %>
+    <% toolbar.with_trailing { delete_done_todos(@todos.count(&:done?)) } if @todos.any?(&:done?) %>
   <% end %>
   <%= render(Core::UI::ReorderableListComponent.new(label: t(".list"), empty_text: t(".empty"))) do |list| %>
     <% @todos.each_with_index do |todo, index| %>

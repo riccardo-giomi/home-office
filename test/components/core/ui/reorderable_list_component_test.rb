@@ -78,4 +78,13 @@ describe Core::UI::ReorderableListComponent do
     assert_text "Nothing to do."
     assert_no_selector "ol"
   end
+
+  it "draws the actions a page gives a row after the move buttons, and nothing when it gives none" do
+    render_inline(Core::UI::ReorderableListComponent.new(label: "Todo list", empty_text: "Nothing.")) do |component|
+      component.with_row(id: "todo_0", item_id: 1, move_url: "#", first: true, last: false, labels: labels("A"), actions: "<button>Extra A</button>".html_safe) { "A" }
+      component.with_row(id: "todo_1", item_id: 2, move_url: "#", first: false, last: true, labels: labels("B")) { "B" }
+    end
+    assert_selector "li#todo_0 [role=group] ~ button", text: "Extra A"
+    assert_no_selector "li#todo_1 button", text: "Extra"
+  end
 end
