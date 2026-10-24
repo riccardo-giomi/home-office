@@ -71,3 +71,17 @@ end
 {Planner::Event => {"Dentist" => :high, "Planning" => :urgent, "Code review" => :urgent}, Planner::Task => {"Write the report" => :high, "Renew the passport" => :urgent}}.each do |type, priorities|
   priorities.each { |title, priority| type.owned_by(demo_user).find_by(title:)&.update!(priority:) }
 end
+
+# Things in the trash.
+#
+# One of each kind, at a different age (the task is close to its 30 days), so
+# the trash page and the sidebar count have something to show. Each run trashes
+# them again, so their ages start over.
+[
+  [Planner::Event, {title: "Old team lunch", day: Date.current - 4, start_time: "12:30", end_time: "14:00"}, 3.days],
+  [Planner::Task, {title: "Return the parcel", day: Date.current - 9}, 26.days],
+  [Planner::Todo, {title: "Learn the accordion"}, 1.day]
+].each do |type, attrs, age|
+  item = type.create!(attrs.merge(user: demo_user))
+  item.entity.update_columns(deleted_at: Time.current - age)
+end

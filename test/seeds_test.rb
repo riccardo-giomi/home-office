@@ -43,7 +43,7 @@ describe "db/seeds.rb" do
   it "gives the demo user tasks around today, to try the schedule" do
     load_seed_as_development
     demo = User.find_by!(email_address: "demo-user@example.com")
-    tasks = Planner::Task.owned_by(demo)
+    tasks = Planner::Task.owned_by(demo).kept
     _(tasks.count).must_equal 8
     _(tasks.where(day: Date.current).count).must_equal 4
     _(tasks.where(state: "abandoned").count).must_equal 2
@@ -54,7 +54,7 @@ describe "db/seeds.rb" do
     load_seed_as_development
     load_seed_as_development
     demo = User.find_by!(email_address: "demo-user@example.com")
-    _(Planner::Event.owned_by(demo).count).must_equal 8
+    _(Planner::Event.owned_by(demo).kept.count).must_equal 8
     _(Planner::Event.owned_by(demo).where.not(starts_at: nil)).wont_be_empty
     _(Planner::Event.owned_by(demo).where(tracks_done: 1)).wont_be_empty
     _(Planner::Event.where.not(user: demo).count).must_equal Planner::Event.where(user_id: users(:admin).id).count + Planner::Event.where(user_id: users(:other_admin).id).count
@@ -64,7 +64,7 @@ describe "db/seeds.rb" do
     load_seed_as_development
     load_seed_as_development
     demo = User.find_by!(email_address: "demo-user@example.com")
-    todos = Planner::Todo.owned_by(demo).in_order
+    todos = Planner::Todo.owned_by(demo).kept.in_order
     _(todos.map(&:position)).must_equal (1..6).to_a
     _(todos.first.title).must_equal "Fix the leaking tap"
     _(todos.map(&:priority).uniq).must_include "urgent"
@@ -75,5 +75,15 @@ describe "db/seeds.rb" do
     load_seed_as_development
     demo = User.find_by!(email_address: "demo-user@example.com")
     _(Planner::Item.owned_by(demo).where.not(priority: 1).count).must_be :>=, 4
+  end
+
+  it "puts one event, one task and one todo of the demo user in the trash, at different ages, again on every run" do
+    load_seed_as_development
+    demo = User.find_by!(email_address: "demo-user@example.com")
+    trashed = Planner::Item.owned_by(demo).trashed.eager_load(:entity).order("core_entities.deleted_at").to_a
+    _(trashed.map(&:class)).must_equal [Planner::Task, Planner::Event, Planner::Todo]
+    load_seed_as_development
+    _(Planner::Item.owned_by(demo).trashed.count).must_equal 3
+    _(Core::Entity.purgeable.where(user: demo)).must_be :empty?
   end
 end
