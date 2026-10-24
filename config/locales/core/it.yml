@@ -61,6 +61,10 @@ it:
       preferences: Preferenze
       sign_out: Esci
       theme: Tema
+      trash: Cestino
+      trash_badge:
+        one: "%{count} elemento nel cestino"
+        other: "%{count} elementi nel cestino"
       users: Utenti
     preferences:
       defaults:

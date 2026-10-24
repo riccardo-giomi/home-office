@@ -8,13 +8,6 @@ class Planner::SchedulesControllerTest < ActionDispatch::IntegrationTest
     travel_to Time.utc(2026, 10, 7, 12)
   end
 
-  def planner_item_selects(&block)
-    queries = []
-    callback = ->(*, payload) { queries << payload[:sql] if payload[:sql].match?(/\ASELECT .* FROM "planner_items"/m) }
-    ActiveSupport::Notifications.subscribed(callback, "sql.active_record", &block)
-    queries
-  end
-
   it "sends anonymous visitors to sign in" do
     get planner_schedule_path
     assert_redirected_to new_session_path

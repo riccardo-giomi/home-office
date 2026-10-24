@@ -2,6 +2,7 @@ ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 require_relative "test_helpers/session_test_helper"
+require_relative "test_helpers/query_counting"
 
 Dir[Rails.root.join("test/support/**/*.rb")].each { |file| require file }
 
@@ -17,6 +18,8 @@ module ActiveSupport
 
     # The rate limiter needs a real cache store, which must not keep counts between tests
     setup { Rails.cache.clear }
+
+    include QueryCounting
 
     # Add more helper methods to be used by all tests here...
   end

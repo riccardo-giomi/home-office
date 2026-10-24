@@ -24,6 +24,15 @@ module Core::NavigationHelper
   private
 
   def sidebar_item(item)
-    Core::UI::SidebarComponent::Item.new(t(item.label_key), public_send(item.route), item.icon)
+    Core::UI::SidebarComponent::Item.new(
+      t(item.label_key), public_send(item.route), item.icon, nav_badge(item)
+    )
+  end
+
+  def nav_badge(item)
+    return unless item.badge
+
+    count = item.badge.call(Current.user)
+    Core::UI::SidebarComponent::Badge.new(count, t(item.badge_label_key, count:))
   end
 end

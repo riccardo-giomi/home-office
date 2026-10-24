@@ -10,7 +10,7 @@
         <% group.items.each do |item| %>
           <li>
             <%= link_to item.path, class: ["min-h-6", ("font-bold menu-active" if current?(item))], aria: {current: ("page" if current?(item))} do %>
-              <%= render Core::UI::IconComponent.new(name: item.icon) %><%= item.label %>
+              <%= render Core::UI::IconComponent.new(name: item.icon) %><%= item.label %><%= render Core::UI::BadgeComponent.new(count: item.badge.count, label: item.badge.label) if item.badge %>
             <% end %>
           </li>
         <% end %>
@@ -23,7 +23,7 @@
         <% @footer_items.each do |item| %>
           <li>
             <%= link_to item.path, class: ["min-h-6", ("font-bold menu-active" if current?(item))], aria: {current: ("page" if current?(item))} do %>
-              <%= render Core::UI::IconComponent.new(name: item.icon) %><%= item.label %>
+              <%= render Core::UI::IconComponent.new(name: item.icon) %><%= item.label %><%= render Core::UI::BadgeComponent.new(count: item.badge.count, label: item.badge.label) if item.badge %>
             <% end %>
           </li>
         <% end %>

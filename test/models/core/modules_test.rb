@@ -67,7 +67,7 @@ describe "the booted registry" do
     _(Core::Modules.navigation(admin: false).map(&:route)).must_equal %i[root_path planner_calendar_path planner_agenda_path planner_schedule_path planner_todos_path]
     _(Core::Modules.navigation(admin: true).map(&:route)).must_equal %i[root_path planner_calendar_path planner_agenda_path planner_schedule_path planner_todos_path admin_users_path admin_theme_path]
     [false, true].each do |admin|
-      _(Core::Modules.navigation(admin:, placement: :footer).map(&:route)).must_equal %i[edit_preferences_path]
+      _(Core::Modules.navigation(admin:, placement: :footer).map(&:route)).must_equal %i[edit_preferences_path trash_path]
     end
   end
 

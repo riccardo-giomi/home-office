@@ -66,4 +66,15 @@ describe Core::UI::SidebarComponent do
     render_inline(Core::UI::SidebarComponent.new(groups: [], current_path: "/"))
     assert_no_selector "nav", visible: :all
   end
+
+  it "draws a badge after the label of an item that has a count, and nothing for a zero or no count" do
+    item = Core::UI::SidebarComponent::Item
+    badge = Core::UI::SidebarComponent::Badge
+    groups = [Core::UI::SidebarComponent::Group.new(nil, [item.new("Home", "/", :home), item.new("Trash", "/trash", :list, badge.new(2, "2 tasks")), item.new("Zero", "/zero", :list, badge.new(0, "0 tasks"))])]
+    render_inline(Core::UI::SidebarComponent.new(groups:, current_path: "/")) { "footer" }
+    assert_selector "nav a[href='/trash'] span.badge", text: /2/, visible: :all
+    assert_selector "nav a[href='/trash'] .sr-only", text: "2 tasks", visible: :all
+    assert_no_selector "nav a[href='/zero'] span.badge", visible: :all
+    assert_no_selector "nav a[href='/'] span.badge", visible: :all
+  end
 end

@@ -1,6 +1,9 @@
 class Core::UI::SidebarComponent < ApplicationComponent
   Group = Data.define(:label, :items)
-  Item = Data.define(:label, :path, :icon)
+  Badge = Data.define(:count, :label)
+  Item = Data.define(:label, :path, :icon, :badge) do
+    def initialize(label:, path:, icon:, badge: nil) = super
+  end
 
   # open: how the small-screen panel looks once the menu button is pressed (for previews)
   def initialize(groups:, current_path:, footer_items: [], open: false)

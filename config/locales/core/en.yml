@@ -61,6 +61,10 @@ en:
       preferences: Preferences
       sign_out: Sign out
       theme: Theme
+      trash: Trash
+      trash_badge:
+        one: "%{count} item in the trash"
+        other: "%{count} items in the trash"
       users: Users
     preferences:
       defaults:
