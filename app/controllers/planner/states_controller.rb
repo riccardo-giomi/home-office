@@ -7,7 +7,7 @@ class Planner::StatesController < ApplicationController
   DONE = {"abandoned" => "abandoned", "cancelled" => "cancelled", "active" => "reopened"}.freeze
 
   def update
-    item = Planner::Item.owned_by(Current.user).find(params[:item_id])
+    item = Planner::Item.owned_by(Current.user).kept.find(params[:item_id])
     if item.change_state(params[:state])
       flash[:notice] = item_copy(item, DONE.fetch(item.state))
     else

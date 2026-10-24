@@ -7,7 +7,7 @@ class Planner::PositionsControllerTest < ActionDispatch::IntegrationTest
   let(:book) { planner_items(:read_book_todo) }
   let(:license) { planner_items(:renew_license_todo) }
 
-  def order = Planner::Todo.owned_by(admin).in_order.map(&:title)
+  def order = Planner::Todo.owned_by(admin).kept.in_order.map(&:title)
 
   before do
     admin.update!(locale: "en")
@@ -38,6 +38,12 @@ class Planner::PositionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to planner_todos_path
     assert_equal "“Water the plants” is already there.", flash[:alert]
     assert_equal ["Water the plants", "Call mom", "Finish the book", "Renew the license"], order
+  end
+
+  it "says the place among the todos in view, not the stored position, when some are in the trash" do
+    planner_items(:read_book_todo).trash
+    patch planner_todo_position_path(license), params: {move: "up"}
+    assert_equal "“Renew the license” moved to position 2 of 3.", flash[:notice]
   end
 
   it "refuses a move it does not know" do

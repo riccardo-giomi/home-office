@@ -7,12 +7,17 @@ class Planner::PositionsController < ApplicationController
   MOVES = %w[up down top bottom].freeze
 
   def update
-    todo = Planner::Todo.owned_by(Current.user).find(params[:todo_id])
+    todo = Planner::Todo.owned_by(Current.user).kept.find(params[:todo_id])
     move = requested_move
     if move.nil?
       flash[:alert] = t(".refused")
     elsif todo.move(move)
-      flash[:notice] = t(".moved", title: todo.title, position: todo.position, count: Planner::Todo.owned_by(Current.user).count)
+      flash[:notice] = t(
+        ".moved",
+        title: todo.title,
+        position: todo.rank,
+        count: Planner::Todo.owned_by(Current.user).kept.count
+      )
       flash[:moved_id] = todo.id
     else
       flash[:alert] = t(".unchanged", title: todo.title)
@@ -32,7 +37,7 @@ class Planner::PositionsController < ApplicationController
     key, value = given.first
     return MOVES.include?(value) ? value.to_sym : nil if key == "move"
 
-    neighbor = Planner::Todo.owned_by(Current.user).find_by(id: value)
+    neighbor = Planner::Todo.owned_by(Current.user).kept.find_by(id: value)
     {key.to_sym => neighbor} if neighbor
   end
 end

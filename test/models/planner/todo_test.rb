@@ -150,4 +150,32 @@ describe Planner::Todo do
     planner_items(:dentist).destroy
     _(positions).must_equal [1, 2]
   end
+
+  describe "with trashed todos" do
+    it "moves over trashed neighbors and ignores them at the ends" do
+      a, b, c = %w[a b c].map { |t| create(t) }
+      b.trash
+      c.move(:up)
+      _(Planner::Todo.owned_by(user).kept.in_order.map(&:title)).must_equal %w[c a]
+      _(c.reload.move(:top)).must_equal false
+      _(a.reload.move(:bottom)).must_equal false
+    end
+
+    it "counts only kept todos in rank, and trashed ones leave the rank of the rest alone" do
+      a, b, c = %w[a b c].map { |t| create(t) }
+      b.trash
+      _(c.rank).must_equal 2
+      _(a.rank).must_equal 1
+      _(c.position).must_be :>, 2
+    end
+
+    it "puts a new urgent todo above the kept ones even when the first slot is trashed" do
+      a = create("a", priority: :low)
+      a.trash
+      create("b", priority: :low)
+      urgent = create("u", priority: :urgent)
+      _(Planner::Todo.owned_by(user).kept.in_order.map(&:title)).must_equal %w[u b]
+      _(urgent.rank).must_equal 1
+    end
+  end
 end

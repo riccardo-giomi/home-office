@@ -66,3 +66,28 @@ renew_license_todo:
 other_users_todo:
   user: other_admin
   record_type: Planner::Item
+
+trashed_event:
+  user: admin
+  record_type: Planner::Item
+  deleted_at: <%= 2.days.ago.to_fs(:db) %>
+
+expired_event:
+  user: admin
+  record_type: Planner::Item
+  deleted_at: <%= 40.days.ago.to_fs(:db) %>
+
+trashed_task:
+  user: admin
+  record_type: Planner::Item
+  deleted_at: <%= 1.day.ago.to_fs(:db) %>
+
+trashed_todo:
+  user: admin
+  record_type: Planner::Item
+  deleted_at: <%= 3.days.ago.to_fs(:db) %>
+
+other_users_trashed_event:
+  user: other_admin
+  record_type: Planner::Item
+  deleted_at: <%= 1.day.ago.to_fs(:db) %>

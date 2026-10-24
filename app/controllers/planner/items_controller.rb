@@ -50,7 +50,7 @@ class Planner::ItemsController < ApplicationController
 
   private
 
-  def items = item_class.owned_by(Current.user)
+  def items = item_class.owned_by(Current.user).kept
 
   def set_item
     @item = items.find(params[:id])

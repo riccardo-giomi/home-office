@@ -2,7 +2,7 @@ class Planner::CompletionsController < ApplicationController
   include Planner::ItemPages
 
   def update
-    item = Planner::Item.owned_by(Current.user).find(params[:item_id])
+    item = Planner::Item.owned_by(Current.user).kept.find(params[:item_id])
     if item.tracks_done? && item.active?
       item.mark_done(params[:done] == "1")
       item.save!

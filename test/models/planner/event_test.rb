@@ -179,7 +179,7 @@ describe Planner::Event do
 
   describe ".owned_by" do
     it "returns only the user's events" do
-      titles = Planner::Event.owned_by(users(:other_admin)).pluck(:title)
+      titles = Planner::Event.owned_by(users(:other_admin)).kept.pluck(:title)
       _(titles).must_equal ["Someone else's secret"]
     end
   end

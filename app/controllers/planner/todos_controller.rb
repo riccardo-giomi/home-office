@@ -2,7 +2,7 @@
 # keeps.
 class Planner::TodosController < Planner::ItemsController
   def index
-    @todos = Planner::Todo.owned_by(Current.user).in_order
+    @todos = Planner::Todo.owned_by(Current.user).kept.in_order
     @moved_id = flash[:moved_id]
   end
 
