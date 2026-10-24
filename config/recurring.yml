@@ -13,3 +13,14 @@ production:
   clear_solid_queue_finished_jobs:
     command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
     schedule: every hour at minute 12
+
+  # Purges the trash.
+  #
+  # Hourly by default, so a computer that is off at night still purges.
+  # HOME_OFFICE_PURGE_SCHEDULE takes any Solid Queue schedule ("every day at
+  # 3am", a cron line); an empty value means the default. The value is written
+  # as JSON so YAML reads it as one string whatever it holds (a cron line starts
+  # with a star).
+  purge_trash:
+    class: Core::PurgeTrashJob
+    schedule: <%= (ENV["HOME_OFFICE_PURGE_SCHEDULE"].presence || "every hour").to_json %>
