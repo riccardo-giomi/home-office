@@ -6,7 +6,9 @@ class SessionsController < ApplicationController
   end
 
   def create
-    if (user = User.authenticate_by(params.permit(:email_address, :password)))
+    # A deactivated user gets the answer a wrong password gets: nothing says the
+    # account exists.
+    if (user = User.authenticate_by(params.permit(:email_address, :password))) && user.active?
       start_new_session_for user
       redirect_to after_authentication_url
     else

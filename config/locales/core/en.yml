@@ -17,9 +17,19 @@ en:
       models:
         user:
           attributes:
+            base:
+              already_deactivated: This user is already deactivated.
+              last_admin_deactivation: The only active administrator cannot be deactivated.
             role:
               last_admin: 'cannot be changed: this is the last administrator'
   admin:
+    deactivations:
+      create:
+        deactivated: "%{email} deactivated."
+        self: You cannot deactivate yourself.
+      destroy:
+        not_deactivated: This user is not deactivated.
+        reactivated: "%{email} reactivated."
     forbidden: You do not have access to that page.
     themes:
       show:
@@ -45,8 +55,11 @@ en:
       index:
         actions: Actions
         caption: Users and their roles
+        deactivate: Deactivate
+        deactivated: Deactivated
         edit: Edit
         new: New user
+        reactivate: Reactivate
         title: Users
       new:
         title: New user

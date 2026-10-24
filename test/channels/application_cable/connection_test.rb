@@ -8,6 +8,11 @@ class ApplicationCable::ConnectionTest < ActionCable::Connection::TestCase
     _(connection.current_user).must_equal users(:admin)
   end
 
+  it "refuses a session of a deactivated user" do
+    cookies.signed[:session_id] = users(:retired).sessions.create!.id
+    assert_reject_connection { connect }
+  end
+
   it "refuses an anonymous connection" do
     assert_reject_connection { connect }
   end

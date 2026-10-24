@@ -46,6 +46,61 @@ describe User do
     _(users(:other_admin).update(role: :user)).must_equal true
   end
 
+  describe "deactivating" do
+    it "keeps deactivated users out of the active scope" do
+      _(User.active).wont_include users(:retired)
+      _(User.active).must_include users(:member)
+      _(users(:retired)).must_be :deactivated?
+      _(users(:member)).must_be :active?
+    end
+
+    it "marks the user, deletes their sessions and keeps their data" do
+      member = users(:member)
+      member.sessions.create!
+      Planner::Todo.create!(user: member, title: "Mine")
+      _(member.deactivate).must_equal true
+      _(member.reload).must_be :deactivated?
+      _(member.sessions.count).must_equal 0
+      _(Planner::Todo.where(user: member).count).must_equal 1
+    end
+
+    it "refuses to deactivate the only active admin, and says why" do
+      users(:other_admin).update!(role: :user)
+      admin = users(:admin)
+      _(admin.deactivate).must_equal false
+      _(admin.errors[:base]).wont_be :empty?
+      _(admin.reload).must_be :active?
+    end
+
+    it "does not count a deactivated admin as one who could take over" do
+      other = users(:other_admin)
+      other.deactivate
+      _(users(:admin).deactivate).must_equal false
+      _(users(:admin).update(role: :user)).must_equal false
+    end
+
+    it "lets one of two active admins be deactivated" do
+      _(users(:other_admin).deactivate).must_equal true
+    end
+
+    it "refuses to deactivate someone already deactivated" do
+      _(users(:retired).deactivate).must_equal false
+      _(users(:retired).errors[:base]).wont_be :empty?
+    end
+
+    it "reactivates" do
+      _(users(:retired).reactivate).must_equal true
+      _(users(:retired).reload).must_be :active?
+    end
+
+    it "lets a deactivated admin be demoted, since they are not the one keeping the app administered" do
+      other = users(:other_admin)
+      other.deactivate
+      other.reload
+      _(other.update(role: :user)).must_equal true
+    end
+  end
+
   it "translates Rails validation messages into Italian" do
     user = build(email_address: "")
     user.valid?

@@ -11,11 +11,39 @@ class User < ApplicationRecord
   validates :password, length: {minimum: 12}, allow_nil: true
   validate :keep_an_admin, on: :update
 
+  scope :active, -> { where(deactivated_at: nil) }
+
+  def active? = deactivated_at.nil?
+
+  def deactivated? = !active?
+
+  # Deactivates the user.
+  #
+  # Ends the sessions and keeps everything else. Answers false, with the reason
+  # in errors, when it must not happen.
+  def deactivate
+    return errors.add(:base, :already_deactivated) && false if deactivated?
+    return errors.add(:base, :last_admin_deactivation) && false if last_active_admin?
+
+    transaction do
+      update_columns(deactivated_at: Time.current)
+      sessions.delete_all
+    end
+    true
+  end
+
+  def reactivate = update_columns(deactivated_at: nil)
+
   private
 
-  # Application guard only; the database cannot express it
+  # Whether this is the last active administrator.
+  #
+  # Application guard only, the database cannot express it. A deactivated
+  # administrator cannot take over, so only active ones count.
+  def last_active_admin? = admin? && active? && !User.admin.active.where.not(id:).exists?
+
   def keep_an_admin
-    return unless role_changed? && role_was == "admin"
-    errors.add(:role, :last_admin) unless User.admin.where.not(id: id).exists?
+    return unless role_changed? && role_was == "admin" && active?
+    errors.add(:role, :last_admin) unless User.admin.active.where.not(id:).exists?
   end
 end

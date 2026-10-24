@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_24_100000) do
   create_table "core_entities", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "record_type", null: false
@@ -80,6 +80,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_090000) do
     t.string "time_zone"
     t.string "theme"
     t.string "detected_time_zone"
+    t.datetime "deactivated_at"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.check_constraint "date_format IN ('dmy', 'mdy', 'ymd')", name: "chk_users_date_format"
     t.check_constraint "email_address = lower(trim(email_address))", name: "chk_users_email_normalized"

@@ -27,8 +27,12 @@ module Authentication
   end
 
   def find_session_by_cookie
-    # `includes` required by strict_loading
-    Session.includes(:user).find_by(id: cookies.signed[:session_id]) if cookies.signed[:session_id]
+    return unless cookies.signed[:session_id]
+
+    # The sessions of deactivated users are deleted when the users are
+    # deactivated. This also turns away a stale one.
+    session = Session.includes(:user).find_by(id: cookies.signed[:session_id])
+    session if session&.user&.active?
   end
 
   def request_authentication

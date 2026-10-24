@@ -17,9 +17,19 @@ it:
       models:
         user:
           attributes:
+            base:
+              already_deactivated: Questo utente è già disattivato.
+              last_admin_deactivation: L'unico amministratore attivo non può essere disattivato.
             role:
               last_admin: 'non può essere cambiato: è l''ultimo amministratore'
   admin:
+    deactivations:
+      create:
+        deactivated: "%{email} disattivato."
+        self: Non puoi disattivare te stesso.
+      destroy:
+        not_deactivated: Questo utente non è disattivato.
+        reactivated: "%{email} riattivato."
     forbidden: Non hai accesso a questa pagina.
     themes:
       show:
@@ -45,8 +55,11 @@ it:
       index:
         actions: Azioni
         caption: Utenti e relativi ruoli
+        deactivate: Disattiva
+        deactivated: Disattivato
         edit: Modifica
         new: Nuovo utente
+        reactivate: Riattiva
         title: Utenti
       new:
         title: Nuovo utente

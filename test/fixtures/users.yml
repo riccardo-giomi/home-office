@@ -14,3 +14,9 @@ member:
   email_address: member@example.com
   password_digest: <%= digest %>
   role: user
+
+retired:
+  email_address: retired@example.com
+  password_digest: <%= digest %>
+  role: user
+  deactivated_at: <%= 5.days.ago.to_fs(:db) %>

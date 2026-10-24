@@ -23,7 +23,9 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
-    resources :users, except: %i[show destroy]
+    resources :users, except: %i[show destroy] do
+      resource :deactivation, only: %i[create destroy]
+    end
     resource :theme, only: :show
   end
 

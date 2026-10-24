@@ -19,10 +19,20 @@
     <tbody>
       <% @users.each do |user| %>
         <tr class="border-t border-base-300">
-          <td class="py-2 pe-2 break-all"><%= user.email_address %></td>
+          <td class="py-2 pe-2 break-all">
+            <%= user.email_address %>
+            <% if user.deactivated? %><span class="block text-sm text-base-content/80"><%= t(".deactivated") %></span><% end %>
+          </td>
           <td class="py-2 pe-2"><%= t("users.roles.#{user.role}") %></td>
           <td class="py-2">
-            <%= render(Core::UI::LinkComponent.new(href: edit_admin_user_path(user))) do %><%= t(".edit") %><span class="sr-only"> <%= user.email_address %></span><% end %>
+            <div class="flex flex-wrap items-center gap-2">
+              <%= render(Core::UI::LinkComponent.new(href: edit_admin_user_path(user))) do %><%= t(".edit") %><span class="sr-only"> <%= user.email_address %></span><% end %>
+              <% unless user == Current.user %>
+                <%= form_with url: admin_user_deactivation_path(user), method: (user.active? ? :post : :delete) do %>
+                  <%= render(Core::UI::ButtonComponent.new(type: :submit, variant: :secondary, size: :xs)) do %><%= user.active? ? t(".deactivate") : t(".reactivate") %><span class="sr-only"> <%= user.email_address %></span><% end %>
+                <% end %>
+              <% end %>
+            </div>
           </td>
         </tr>
       <% end %>

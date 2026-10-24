@@ -54,4 +54,21 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     get root_path
     assert_redirected_to new_session_path
   end
+
+  it "refuses a deactivated user with the same answer as a wrong password" do
+    sign_in(email: users(:retired).email_address)
+    assert_redirected_to new_session_path
+    assert_equal I18n.t("sessions.invalid"), flash[:alert]
+    assert_equal 0, users(:retired).sessions.count
+  end
+
+  it "signs a user out at the next request once they are deactivated, even with a live cookie" do
+    member = users(:member)
+    sign_in_as member
+    get root_path
+    assert_response :success
+    member.update_columns(deactivated_at: Time.current)
+    get root_path
+    assert_redirected_to new_session_path
+  end
 end
