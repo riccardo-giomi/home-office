@@ -1,6 +1,12 @@
 # Previous / today / next and a view switch (tabs) to navigate time periods.
 # It does not name the period: the sticky header's page title does.
+#
+# The aside, when there is one, is a second choice about what is shown (the
+# hours of the day, on the pages with a time grid). It sits at the other end of
+# the line of the views.
 class Core::UI::PeriodNavComponent < ApplicationComponent
+  renders_one :aside
+
   # The steps look like the tabs: separate soft buttons
   BUTTON = Core::UI::TabsComponent::BUTTON
 
@@ -14,11 +20,11 @@ class Core::UI::PeriodNavComponent < ApplicationComponent
     @views = views
   end
 
-  # Two lines. First the choices about what is shown: the views.
-  # Then the way through time: previous, today, next.
+  # Two lines. First the choices about what is shown: the views, and the aside
+  # at the other end. Then the way through time: previous, today, next.
   def call
     tag.nav(class: "mb-4 flex flex-col gap-2", "aria-label": @label) do
-      safe_join([tag.div(view_switch, class: "flex flex-wrap items-center gap-2"),
+      safe_join([tag.div(safe_join([view_switch, aside].compact), class: "flex flex-wrap items-center justify-between gap-2"),
         steps])
     end
   end

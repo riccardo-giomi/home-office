@@ -56,5 +56,20 @@ describe Core::UI::PeriodNavComponent do
       assert_selector "nav > div:first-child ul", count: 1
       assert_selector "nav > div:last-child a[href='/prev']"
     end
+
+    it "puts the aside on the first line, after the views, when there is one" do
+      component = nav
+      component.with_aside { "<ul aria-label='Hours'><li>Day hours</li></ul>".html_safe }
+      render_inline(component)
+      assert_selector "nav > div:first-child ul[aria-label=Hours]", text: "Day hours"
+      html = page.native.to_html
+      assert_operator html.index("Agenda"), :<, html.index("Day hours")
+      assert_operator html.index("Day hours"), :<, html.index("Previous month")
+    end
+
+    it "has no second list on the first line without an aside" do
+      render_inline(nav)
+      assert_selector "nav > div:first-child ul", count: 1
+    end
   end
 end
