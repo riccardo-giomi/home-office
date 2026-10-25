@@ -19,11 +19,16 @@ class Core::UI::TimeGridComponent < ApplicationComponent
   # all-day entry;
   #
   # now: the current time in the viewer's zone; today's column then gets a line
-  # that a script moves along
-  def initialize(days:, today:, agenda_href:, now: nil)
+  # that a script moves along;
+  #
+  # scroll: whether the grid scrolls by itself when the page opens. The caller
+  # turns it off for a page asked for by date, so that moving between periods
+  # leaves the page at the top, with the navigation
+  def initialize(days:, today:, agenda_href:, now: nil, scroll: true)
     @days = days
     @today = today
     @now = now
+    @scroll = scroll
     @agenda_href = agenda_href
   end
 
@@ -59,9 +64,10 @@ class Core::UI::TimeGridComponent < ApplicationComponent
 
   def single_day? = @days.size == 1
 
-  # Opens on the current time when today is shown, else on the morning (7:00):
-  # midnight is rarely what is wanted.
-  def scroll_mode = (@days.any? { |day| day[:date] == @today } && @now) ? "now" : "morning"
+  # What the grid does by itself when the page opens: scroll so that the
+  # current time is centered, if scrolling is allowed and today is shown.
+  # Otherwise nothing, and the page stays at the top.
+  def scroll_mode = (@scroll && @now && @days.any? { |day| day[:date] == @today }) ? "now" : "none"
 
   def rendered_at_ms = (@now.to_f * 1000).round
 

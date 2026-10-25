@@ -1,4 +1,4 @@
-<div <%= tag.attributes(data: {controller: ("agenda-scroll" if @now)}) %>>
+<div <%= tag.attributes(data: {controller: ("agenda-scroll" if @now && @scroll)}) %>>
 <% if @days.empty? %>
   <p><%= @empty_text %></p>
 <% else %>

@@ -20,7 +20,7 @@
           day_href: ->(date) { planner_calendar_path(view: "day", date: date.iso8601) }, entries_by_day: entries_by_day(@events_by_day)
         ) %>
   <% else %>
-    <%= render "planner/time_grid", period: @period, entries_by_day: entries_by_day(@events_by_day), more_href: ->(date) { planner_agenda_path(view: "day", date: date.iso8601) } %>
+    <%= render "planner/time_grid", period: @period, entries_by_day: entries_by_day(@events_by_day), scroll: params[:date].blank?, more_href: ->(date) { planner_agenda_path(view: "day", date: date.iso8601) } %>
   <% end %>
   <%= item_dialog %>
 </div>

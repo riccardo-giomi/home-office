@@ -75,8 +75,6 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
 
     def marker_box = evaluate_script("(() => { const r = document.querySelector('[data-controller~=now-marker]').getBoundingClientRect(); return {top: r.top, bottom: r.bottom, height: innerHeight} })()").transform_keys(&:to_sym)
 
-    def seven_top = evaluate_script("document.querySelector('[data-hour=\"7\"]').getBoundingClientRect().top")
-
     def scroll_room = evaluate_script("[Math.round(window.scrollY), document.documentElement.scrollHeight - innerHeight]")
 
     %i[week day].each do |view|
@@ -91,12 +89,10 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
         assert_in_delta box[:height] / 2.0, box[:top], 4, "not centered (scrolled #{y} of #{max})" if y > 0 && y < max
       end
 
-      it "puts 7:00 at the top, under the header, in the #{view} view of another period" do
-        visit_calendar view, date: (Date.current + 21).iso8601
+      it "stays at the top, on the navigation, in the #{view} view of a period asked for by its date" do
+        visit_calendar view, date: Date.current.iso8601
         sleep 0.3
-        assert_operator scroll_room.first, :>, 0
-        assert_operator seven_top, :>=, 50
-        assert_operator seven_top, :<=, 140
+        assert_equal 0, scroll_room.first
       end
     end
 
@@ -106,12 +102,29 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
       assert_equal 0, scroll_room.first
     end
 
-    it "starts again at 7:00 or the current time when moving to another period" do
+    it "stays on the navigation when moving to another period or view" do
       visit_calendar :week
+      sleep 0.3
+      assert_operator scroll_room.first, :>, 0
+      execute_script("window.scrollTo(0, 0)")
       click_link periods("next.week")
       sleep 0.3
-      assert_operator seven_top, :<=, 140
-      assert_operator seven_top, :>=, 50
+      assert_equal 0, scroll_room.first
+      click_link periods("views.day")
+      sleep 0.3
+      assert_equal 0, scroll_room.first
+    end
+
+    it "goes to the current time again with Today, which is the way back from the navigation" do
+      visit_calendar :week
+      click_link periods("next.week")
+      click_link I18n.t("core.ui.period_nav.today")
+      assert_selector "[data-controller~=now-marker]:not(.invisible)", visible: :all
+      sleep 0.3
+      assert_operator scroll_room.first, :>, 0
+      box = marker_box
+      assert_operator box[:top], :>=, 0
+      assert_operator box[:bottom], :<=, box[:height]
     end
 
     it "does not move the page again when it refreshes after a tick" do
@@ -185,6 +198,17 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
       visit planner_agenda_path(view: "month", date: (Date.current + 62).iso8601)
       sleep 0.3
       assert_equal 0, scroll_room.first
+    end
+
+    it "stays at the top when moving to another period, and opens on today again with Today" do
+      visit planner_agenda_path(view: "month")
+      click_link periods("next.month")
+      sleep 0.3
+      assert_equal 0, scroll_room.first
+      click_link I18n.t("core.ui.period_nav.today")
+      assert_selector "[data-today] h2", visible: :all
+      sleep 0.3
+      assert_operator today_box[:top], :>=, 56
     end
 
     it "does not move the page again after a change is made behind or in a dialog" do

@@ -8,9 +8,9 @@ describe Core::UI::TimeGridComponent do
   # from/to are minutes from midnight in the event's own zone; nil means all day
   def entry(title, from = nil, to = nil, **attrs) = {title:, href: "/e/#{title}", from:, to:, **attrs}
 
-  def grid(entries = {}, today: Date.new(2026, 10, 6), now: nil)
+  def grid(entries = {}, today: Date.new(2026, 10, 6), now: nil, **options)
     days = week.map { |date| {date:, entries: entries.fetch(date, [])} }
-    Core::UI::TimeGridComponent.new(days:, today:, now:, agenda_href: ->(date) { "/agenda/#{date.iso8601}" })
+    Core::UI::TimeGridComponent.new(days:, today:, now:, agenda_href: ->(date) { "/agenda/#{date.iso8601}" }, **options)
   end
 
   let(:tuesday) { Date.new(2026, 10, 6) }
@@ -85,13 +85,19 @@ describe Core::UI::TimeGridComponent do
   end
 
   describe "where the page scrolls to when it opens" do
-    it "centers the current time when today is among the days, and the morning otherwise" do
+    it "centers the current time when today is among the days, and stays at the top otherwise" do
       render_inline(grid(now: Time.utc(2026, 10, 6, 14, 35)))
       assert_selector "[data-controller~=grid-scroll][data-grid-scroll-mode-value=now]"
       render_inline(grid)
-      assert_selector "[data-controller~=grid-scroll][data-grid-scroll-mode-value=morning]"
+      assert_selector "[data-controller~=grid-scroll][data-grid-scroll-mode-value=none]"
       render_inline(grid(now: Time.utc(2026, 11, 20, 9, 0), today: Date.new(2026, 11, 20)))
-      assert_selector "[data-grid-scroll-mode-value=morning]"
+      assert_selector "[data-grid-scroll-mode-value=none]"
+    end
+
+    it "stays at the top when the caller does not allow the scroll, even with today among the days" do
+      render_inline(grid(now: Time.utc(2026, 10, 6, 14, 35), scroll: false))
+      assert_selector "[data-grid-scroll-mode-value=none]"
+      assert_selector "[data-controller=now-marker]", visible: :all
     end
 
     it "labels each hour in the gutter with its number, and keeps room above them for the sticky header" do

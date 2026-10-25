@@ -1,5 +1,5 @@
-<%# One day or a week of entries on the time grid; more_href leads to where a day's overflow can be read %>
+<%# One day or a week of entries on the time grid; more_href leads to where a day's overflow can be read; scroll says whether the page may open on the current time %>
 <%= render Core::UI::TimeGridComponent.new(
       days: ((period.view == :week) ? period.days_of_week : [period.date]).map { |date| {date:, entries: entries_by_day.fetch(date, [])} }, today: Date.current,
-      agenda_href: more_href, now: Time.current
+      agenda_href: more_href, now: Time.current, scroll:
     ) %>

@@ -1,7 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
-// When the page is shown (a visit, not a refresh) it scrolls to the current
-// time, centered, if today is among the days, else to 7:00 at the top.
+// When the page is shown (a visit, not a refresh) in the "now" mode, it
+// scrolls to the current time, centered. In any other mode it stays where the
+// browser puts it.
 export default class extends Controller {
   static values = { mode: String }
 
@@ -10,14 +11,10 @@ export default class extends Controller {
   }
 
   scroll() {
-    if (this.modeValue === "now") {
-      this.element
-        .querySelector("[data-controller~=now-marker]")
-        ?.scrollIntoView({ block: "center" })
-    } else {
-      this.element
-        .querySelector("[data-hour='7']")
-        ?.scrollIntoView({ block: "start" })
-    }
+    if (this.modeValue !== "now") return
+
+    this.element
+      .querySelector("[data-controller~=now-marker]")
+      ?.scrollIntoView({ block: "center" })
   }
 }

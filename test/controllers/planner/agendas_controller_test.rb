@@ -124,10 +124,12 @@ class Planner::AgendasControllerTest < ActionDispatch::IntegrationTest
     assert_select "a.btn.btn-primary[data-turbo-frame=item-dialog-frame][href^='#{new_planner_event_path}']", text: "New event"
   end
 
-  it "opens on what is next only when the period includes today" do
+  it "opens on what is next only when no date is asked for and the period includes today" do
     sign_in_as admin
-    get planner_agenda_path(view: "month", date: "2026-10-15")
+    get planner_agenda_path(view: "month")
     assert_select "[data-controller=agenda-scroll]", 1
+    get planner_agenda_path(view: "month", date: "2026-10-15")
+    assert_select "[data-controller=agenda-scroll]", 0
     get planner_agenda_path(view: "month", date: "2026-12-15")
     assert_select "[data-controller=agenda-scroll]", 0
   end

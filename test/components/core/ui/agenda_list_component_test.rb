@@ -5,7 +5,7 @@ describe Core::UI::AgendaListComponent do
 
   def entry(title, **attrs) = {title:, href: "/e/#{title}", **attrs}
 
-  def list(days, today: Date.new(2026, 10, 6), now: nil) = Core::UI::AgendaListComponent.new(days:, today:, now:, empty_text: "Nothing this month.")
+  def list(days, today: Date.new(2026, 10, 6), now: nil, **options) = Core::UI::AgendaListComponent.new(days:, today:, now:, empty_text: "Nothing this month.", **options)
 
   it "lists only the days that have entries, each under a level-two heading" do
     render_inline(list([{date: Date.new(2026, 10, 7), entries: [entry("Dentist")]}, {date: Date.new(2026, 10, 8), entries: []}]))
@@ -98,6 +98,12 @@ describe Core::UI::AgendaListComponent do
       assert_selector "section[data-today]", count: 1
       assert_selector "section[data-today] h2[aria-current=date]"
       assert_selector "[data-controller=agenda-scroll]"
+    end
+
+    it "does not scroll when the caller does not allow it" do
+      render_inline(list([{date: today, entries: [at("Morning", 540)]}], now:, scroll: false))
+      assert_selector "section[data-today]"
+      assert_no_selector "[data-controller=agenda-scroll]"
     end
 
     it "keeps room above it for the sticky header" do

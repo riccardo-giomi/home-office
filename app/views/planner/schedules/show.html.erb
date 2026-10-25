@@ -10,6 +10,6 @@
     <% end %>
   <% end %>
   <%= render period_nav(@period, label: t(".nav"), path: ->(**params) { planner_schedule_path(**params) }) %>
-  <%= render "planner/time_grid", period: @period, entries_by_day: entries_by_day(@tasks_by_day), more_href: ->(date) { planner_schedule_path(view: "day", date: date.iso8601) } %>
+  <%= render "planner/time_grid", period: @period, entries_by_day: entries_by_day(@tasks_by_day), scroll: params[:date].blank?, more_href: ->(date) { planner_schedule_path(view: "day", date: date.iso8601) } %>
   <%= item_dialog %>
 </div>

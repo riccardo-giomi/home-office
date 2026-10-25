@@ -4,11 +4,14 @@ class Core::UI::AgendaListComponent < ApplicationComponent
   # days: [{date:, entries: [{title:, href:, starts_at:, ends_at:, time_zone:, done:, check:}]}]
   #
   # now: the current time in the viewer's zone; today's list then gets a
-  # divider that a script moves along
-  def initialize(days:, today:, empty_text:, now: nil)
+  # divider that a script moves along;
+  #
+  # scroll: whether the page scrolls by itself to today's list when it opens
+  def initialize(days:, today:, empty_text:, now: nil, scroll: true)
     @days = days.select { |day| day[:entries].any? }
     @today = today
     @now = now
+    @scroll = scroll
     @empty_text = empty_text
   end
 
