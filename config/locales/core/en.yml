@@ -107,6 +107,8 @@ en:
         title: Administrator
       running: 'Running: %{title}'
     ui:
+      back_to_top:
+        label: Back to top
       entry:
         all_day: All day
         done: Done

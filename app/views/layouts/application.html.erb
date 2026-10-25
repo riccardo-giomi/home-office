@@ -32,6 +32,7 @@
         <% if authenticated? %>
           <%= render Core::UI::ClockComponent.new(zone: Time.zone.name, date_format: effective_preferences.date_format, time_format: effective_preferences.time_format, locale: I18n.locale.to_s) %>
         <% end %>
+        <%= render Core::UI::BackToTopComponent.new %>
         <%= render Core::UI::ThemeSwitchComponent.new(url: theme_path) %>
       <% end %>
       <%= render(Core::UI::SidebarComponent.new(groups: navigation_groups, footer_items: navigation_footer_items, current_path: request.path)) do %>

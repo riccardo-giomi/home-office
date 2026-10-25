@@ -13,6 +13,14 @@ class Core::UI::HeaderComponentPreview < ViewComponent::Preview
     render(Core::UI::HeaderComponent.new(page_title: "Calendar")) { controls }
   end
 
+  # With the button that takes the visitor back to the top, forced visible (it
+  # shows once the page is scrolled a screen)
+  def with_back_to_top
+    helpers = ApplicationController.helpers
+    controls = helpers.safe_join([helpers.render(Core::UI::BackToTopComponent.new(shown: true)), helpers.render(Core::UI::ThemeSwitchComponent.new(url: "/theme"))])
+    render(Core::UI::HeaderComponent.new(page_title: "Calendar")) { controls }
+  end
+
   def home
     render(Core::UI::HeaderComponent.new(page_title: nil)) { render Core::UI::ThemeSwitchComponent.new(url: "/theme") }
   end
