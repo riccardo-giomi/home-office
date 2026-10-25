@@ -1,11 +1,16 @@
-<div data-controller="grid-scroll" data-grid-scroll-mode-value="<%= scroll_mode %>" class="grid <%= single_day? ? "grid-cols-[3.5rem_minmax(0,1fr)]" : "grid-cols-[3.5rem_repeat(7,minmax(0,1fr))]" %> grid-rows-[auto_auto_repeat(96,1.5rem)] gap-x-0.5">
-  <div aria-hidden="true" class="grid grid-rows-subgrid col-start-1 row-start-3 row-span-96 text-xs text-base-content/80">
-    <% 24.times do |hour| %>
-      <div class="row-span-4 scroll-mt-20" data-hour="<%= hour %>"><%= hour_label(hour) %></div>
+<div data-controller="grid-scroll" data-grid-scroll-mode-value="<%= scroll_mode %>"
+  class="grid <%= single_day? ? "grid-cols-[3.5rem_minmax(0,1fr)]" : "grid-cols-[3.5rem_repeat(7,minmax(0,1fr))]" %> grid-rows-[auto_auto] auto-rows-[1.5rem] gap-x-0.5">
+  <div aria-hidden="true" class="grid grid-rows-subgrid col-start-1 row-start-3 row-span-<%= total_rows %> text-xs text-base-content/80">
+    <% gutter.each do |item| %>
+      <% if item == :break %>
+        <div class="row-span-4 text-center" data-break>…</div>
+      <% else %>
+        <div class="row-span-4 scroll-mt-20" data-hour="<%= item %>"><%= hour_label(item) %></div>
+      <% end %>
     <% end %>
   </div>
   <% day_views.each do |view| %>
-    <section class="grid grid-rows-subgrid row-start-1 row-span-98 col-start-<%= view.column %> border-s border-base-300">
+    <section class="grid grid-rows-subgrid row-start-1 row-span-<%= total_rows + 2 %> col-start-<%= view.column %> border-s border-base-300">
       <h2 class="text-center text-sm font-bold" <%= tag.attributes("aria-current": ("date" if view.date == @today)) %>>
         <span class="<%= "inline-block rounded-full bg-primary px-2 text-primary-content" if view.date == @today %>">
           <% if single_day? %>
@@ -15,10 +20,13 @@
           <% end %>
         </span>
       </h2>
-      <% if view.all_day.any? || view.result.overflow.any? %>
+      <% if view.all_day.any? || view.result.overflow.any? || view.outside.any? %>
         <ul class="row-start-2 px-0.5">
           <% view.all_day.each do |attributes| %>
             <li class="rounded border border-base-300 bg-base-100 p-1 text-sm"><%= render_entry(attributes) %></li>
+          <% end %>
+          <% view.outside.each do |kind, count, href| %>
+            <li class="text-xs text-base-content/80" data-outside="<%= kind %>"><%= outside_note(kind, count, href) %></li>
           <% end %>
           <% if view.result.overflow.any? %>
             <li><%= link_to t("core.ui.time_grid.more", count: view.result.overflow.size), @agenda_href.call(view.date), class: "link inline-flex min-h-6 items-center text-sm" %></li>
@@ -28,11 +36,15 @@
       <% if view.entries.empty? %>
         <p class="sr-only"><%= t("core.ui.time_grid.empty") %></p>
       <% end %>
-      <ul class="relative grid grid-rows-subgrid grid-cols-1 row-start-3 row-span-96 bg-[repeating-linear-gradient(to_bottom,transparent_0,transparent_5.9rem,var(--color-base-300)_5.9rem,var(--color-base-300)_6rem)]">
-        <% if view.now_minutes %>
+      <ul class="relative grid grid-rows-subgrid grid-cols-1 row-start-3 row-span-<%= total_rows %> bg-[repeating-linear-gradient(to_bottom,transparent_0,transparent_5.9rem,var(--color-base-300)_5.9rem,var(--color-base-300)_6rem)]">
+        <% break_rows.each do |row| %>
+          <li aria-hidden="true" class="row-start-<%= row %> row-span-4 border-y border-dashed border-base-content/40 bg-base-200" data-break></li>
+        <% end %>
+        <% if view.today && @now %>
           <%# Placed by the script (an inline style would be refused by the CSP); invisible until then %>
           <li aria-hidden="true" class="pointer-events-none invisible absolute inset-x-0 z-10 border-t-2 border-primary before:absolute before:-top-[5px] before:-start-1 before:size-2 before:rounded-full before:bg-primary"
-            data-controller="now-marker" data-now-marker-minutes-value="<%= view.now_minutes %>" data-now-marker-rendered-at-value="<%= rendered_at_ms %>"></li>
+            data-controller="now-line" data-now-line-minutes-value="<%= now_minutes %>" data-now-line-rendered-at-value="<%= rendered_at_ms %>"
+            data-now-line-segments-value="<%= now_segments.to_json %>" data-now-line-total-value="<%= total_minutes %>"></li>
         <% end %>
         <% view.clusters.each do |cluster| %>
           <li class="grid grid-rows-subgrid gap-x-0.5 row-start-<%= cluster.first_row %> row-span-<%= cluster.rows %> grid-cols-<%= cluster.columns %>">

@@ -73,14 +73,14 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
   describe "where the week and the day open" do
     before { page.current_window.resize_to(1400, 700) }
 
-    def marker_box = evaluate_script("(() => { const r = document.querySelector('[data-controller~=now-marker]').getBoundingClientRect(); return {top: r.top, bottom: r.bottom, height: innerHeight} })()").transform_keys(&:to_sym)
+    def marker_box = evaluate_script("(() => { const r = document.querySelector('[data-controller~=now-line]').getBoundingClientRect(); return {top: r.top, bottom: r.bottom, height: innerHeight} })()").transform_keys(&:to_sym)
 
     def scroll_room = evaluate_script("[Math.round(window.scrollY), document.documentElement.scrollHeight - innerHeight]")
 
     %i[week day].each do |view|
       it "shows the current time in the window, centered when there is room to center it, in the #{view} view of this period" do
         visit_calendar view
-        assert_selector "[data-controller~=now-marker]:not(.invisible)", visible: :all
+        assert_selector "[data-controller~=now-line]:not(.invisible)", visible: :all
         sleep 0.3
         box = marker_box
         assert_operator box[:top], :>=, 0
@@ -119,7 +119,7 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
       visit_calendar :week
       click_link periods("next.week")
       click_link I18n.t("core.ui.period_nav.today")
-      assert_selector "[data-controller~=now-marker]:not(.invisible)", visible: :all
+      assert_selector "[data-controller~=now-line]:not(.invisible)", visible: :all
       sleep 0.3
       assert_operator scroll_room.first, :>, 0
       box = marker_box
@@ -142,30 +142,30 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
   end
 
   describe "the line for the current time" do
-    def marker_top = evaluate_script("document.querySelector('[data-controller=now-marker]').style.top")
+    def marker_top = evaluate_script("document.querySelector('[data-controller=now-line]').style.top")
 
     def expected_percent = Time.current.in_time_zone("UTC").then { |now| (now.hour * 60 + now.min) / 14.4 }
 
     %i[week day].each do |view|
       it "is drawn in today's column of the #{view} view, where the time is" do
         visit_calendar view
-        assert_selector "[data-controller=now-marker]:not(.invisible)", visible: :all, count: 1
+        assert_selector "[data-controller=now-line]:not(.invisible)", visible: :all, count: 1
         assert_in_delta expected_percent, marker_top.to_f, 0.2
       end
     end
 
     it "moves with the clock, without the page being reloaded (time is turned back here, so midnight cannot interfere)" do
       visit_calendar :day
-      assert_selector "[data-controller=now-marker]:not(.invisible)", visible: :all
+      assert_selector "[data-controller=now-line]:not(.invisible)", visible: :all
       before = marker_top.to_f
       later = 2 * 60 * 60 * 1000
-      execute_script("const real = Date.now; Date.now = () => real.call(Date) - #{later}; Stimulus.getControllerForElementAndIdentifier(document.querySelector('[data-controller=now-marker]'), 'now-marker').place()")
+      execute_script("const real = Date.now; Date.now = () => real.call(Date) - #{later}; Stimulus.getControllerForElementAndIdentifier(document.querySelector('[data-controller=now-line]'), 'now-line').place()")
       assert_in_delta before - (120 / 14.4), marker_top.to_f, 0.3
     end
 
     it "is not drawn on a month with no today, nor in a week that is not this one" do
       visit_calendar :week, date: (Date.current + 21).iso8601
-      assert_no_selector "[data-controller=now-marker]", visible: :all
+      assert_no_selector "[data-controller=now-line]", visible: :all
     end
   end
 

@@ -141,6 +141,16 @@ en:
         more:
           one: "+1 more"
           other: "+%{count} more"
+        outside:
+          after:
+            one: 1 entry after %{time}
+            other: "%{count} entries after %{time}"
+          before:
+            one: 1 entry before %{time}
+            other: "%{count} entries before %{time}"
+          between:
+            one: 1 entry between %{from} and %{to}
+            other: "%{count} entries between %{from} and %{to}"
   home:
     show:
       signed_in_as: Signed in as %{email}.

@@ -141,6 +141,16 @@ it:
         more:
           one: "+1 altro"
           other: "+%{count} altri"
+        outside:
+          after:
+            one: 1 voce dopo le %{time}
+            other: "%{count} voci dopo le %{time}"
+          before:
+            one: 1 voce prima delle %{time}
+            other: "%{count} voci prima delle %{time}"
+          between:
+            one: 1 voce tra le %{from} e le %{to}
+            other: "%{count} voci tra le %{from} e le %{to}"
   home:
     show:
       signed_in_as: Accesso eseguito come %{email}.

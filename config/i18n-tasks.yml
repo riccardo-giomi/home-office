@@ -154,6 +154,7 @@ ignore_unused:
   - "activerecord.*"
   - "core.nav.*"
   - "core.preferences.defaults.*"
+  - "core.ui.time_grid.outside.*"
   - "planner.nav.*"
   - "planner.trash.counts.*"
   - "planner.trash.kinds.*"

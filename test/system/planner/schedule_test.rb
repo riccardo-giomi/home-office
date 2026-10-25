@@ -59,9 +59,9 @@ class Planner::ScheduleSystemTest < ApplicationSystemTestCase
 
   it "draws the current-time line only when today is shown" do
     visit planner_schedule_path
-    assert_selector "[data-controller=now-marker]", visible: :all, count: 1
+    assert_selector "[data-controller=now-line]", visible: :all, count: 1
     visit planner_schedule_path(date: (Date.current + 3).iso8601)
-    assert_no_selector "[data-controller=now-marker]", visible: :all
+    assert_no_selector "[data-controller=now-line]", visible: :all
   end
 
   it "moves a phone from the week to the day" do

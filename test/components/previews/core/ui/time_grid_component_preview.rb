@@ -47,11 +47,38 @@ class Core::UI::TimeGridComponentPreview < ViewComponent::Preview
     render(grid({WEEK[2] => short_entries, WEEK[3] => short_entries}))
   end
 
+  # Only the day hours (07:00 to 22:00): the entries outside say so under the
+  # day's heading, with a link. The ones across an edge are cut at it.
+  def day_hours
+    render(grid(hours_entries, segments: [420...1320], outside_href: ->(date) { "#hours-#{date}" }))
+  end
+
+  # The hours around the day hours, in one grid with a break between them. The
+  # entry in the middle is counted, not drawn.
+  def other_hours
+    render(grid(hours_entries, segments: [0...420, 1320...1440], outside_href: ->(date) { "#hours-#{date}" }))
+  end
+
+  # A single day with the day hours, as the phone shows it.
+  def day_hours_single_day
+    day = WEEK[2]
+    render(grid({day => hours_entries.fetch(day)}, days: [day], segments: [420...1320], outside_href: ->(date) { "#hours-#{date}" }))
+  end
+
   def five_at_once
     render(grid({WEEK[4] => (1..5).map { |i| entry("Parallel #{i}", 9 * 60, 10 * 60) }}))
   end
 
   private
+
+  # Entries before, across and after the edges of the day hours (07:00 and
+  # 22:00).
+  def hours_entries
+    {
+      WEEK[2] => [entry("Early run", 6 * 60 + 30, 7 * 60 + 30), entry("Standup", 9 * 60, 9 * 60 + 15), entry("Night deploy", 21 * 60 + 30, 23 * 60), entry("Alarm", 5 * 60, 5 * 60 + 30)],
+      WEEK[3] => [entry("Call with Tokyo", 23 * 60, 23 * 60 + 45), entry("Dentist", 15 * 60, 16 * 60)]
+    }
+  end
 
   def short_entries
     [entry("Quick call", 9 * 60, 9 * 60 + 15, check: check("Quick call", 1)),
@@ -69,8 +96,8 @@ class Core::UI::TimeGridComponentPreview < ViewComponent::Preview
     {title:, href: "#", from:, to:, **times, **attrs}
   end
 
-  def grid(entries, days: WEEK)
+  def grid(entries, days: WEEK, **options)
     days = days.map { |date| {date:, entries: entries.fetch(date, [])} }
-    Core::UI::TimeGridComponent.new(days:, today: Date.new(2026, 10, 6), agenda_href: ->(date) { "#agenda-#{date}" })
+    Core::UI::TimeGridComponent.new(days:, today: Date.new(2026, 10, 6), agenda_href: ->(date) { "#agenda-#{date}" }, **options)
   end
 end

@@ -10,11 +10,17 @@ export default class extends Controller {
     requestAnimationFrame(() => this.scroll())
   }
 
-  scroll() {
+  // The line places itself when its own controller connects, which can be
+  // after this one (modules load one by one). Until then it is invisible and
+  // not where it will be, so wait for it, for a second at most.
+  scroll(attempt = 0) {
     if (this.modeValue !== "now") return
 
-    this.element
-      .querySelector("[data-controller~=now-marker]")
-      ?.scrollIntoView({ block: "center" })
+    const line = this.element.querySelector("[data-controller~=now-line]")
+    if (line?.classList.contains("invisible") && attempt < 60) {
+      requestAnimationFrame(() => this.scroll(attempt + 1))
+      return
+    }
+    line?.scrollIntoView({ block: "center" })
   }
 }
