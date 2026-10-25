@@ -4,6 +4,8 @@ en:
     attributes:
       user:
         date_format: Date format
+        day_end_hour: Last hour shown
+        day_start_hour: First hour shown
         email_address: Email address
         first_weekday: First day of the week
         locale: Language
@@ -20,6 +22,8 @@ en:
             base:
               already_deactivated: This user is already deactivated.
               last_admin_deactivation: The only active administrator cannot be deactivated.
+            day_end_hour:
+              before_start: cannot be before the first hour shown
             role:
               last_admin: 'cannot be changed: this is the last administrator'
   admin:

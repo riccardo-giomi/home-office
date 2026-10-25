@@ -4,6 +4,8 @@ it:
     attributes:
       user:
         date_format: Formato della data
+        day_end_hour: Ultima ora visibile
+        day_start_hour: Prima ora visibile
         email_address: Indirizzo email
         first_weekday: Primo giorno della settimana
         locale: Lingua
@@ -20,6 +22,8 @@ it:
             base:
               already_deactivated: Questo utente è già disattivato.
               last_admin_deactivation: L'unico amministratore attivo non può essere disattivato.
+            day_end_hour:
+              before_start: non può essere prima della prima ora visibile
             role:
               last_admin: 'non può essere cambiato: è l''ultimo amministratore'
   admin:

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_25_110000) do
   create_table "core_entities", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "record_type", null: false
@@ -81,8 +81,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_100000) do
     t.string "theme"
     t.string "detected_time_zone"
     t.datetime "deactivated_at"
+    t.integer "day_start_hour", default: 7, null: false
+    t.integer "day_end_hour", default: 21, null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.check_constraint "date_format IN ('dmy', 'mdy', 'ymd')", name: "chk_users_date_format"
+    t.check_constraint "day_end_hour BETWEEN 0 AND 23", name: "chk_users_day_end_hour"
+    t.check_constraint "day_start_hour <= day_end_hour", name: "chk_users_day_hours_order"
+    t.check_constraint "day_start_hour BETWEEN 0 AND 23", name: "chk_users_day_start_hour"
     t.check_constraint "email_address = lower(trim(email_address))", name: "chk_users_email_normalized"
     t.check_constraint "first_weekday BETWEEN 0 AND 6", name: "chk_users_first_weekday"
     t.check_constraint "locale GLOB '[a-z][a-z]'", name: "chk_users_locale_shape"
