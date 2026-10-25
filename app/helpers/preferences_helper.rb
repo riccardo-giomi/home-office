@@ -32,6 +32,12 @@ module PreferencesHelper
     end
   end
 
+  # The hours of the day, written the way the grids write them. The value is
+  # the whole hour.
+  def hour_choices
+    (0..23).map { |hour| [format_time_text(Time.utc(2000, 1, 1, hour), zone: "UTC"), hour] }
+  end
+
   def time_zone_choices
     [automatic_choice] + ActiveSupport::TimeZone.all.map do |zone|
       [zone.to_s, zone.tzinfo.name]

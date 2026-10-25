@@ -154,7 +154,12 @@ it:
       ymd: Anno-mese-giorno (2026-12-31)
     edit:
       date_format_hint: I campi data dentro i moduli usano sempre il formato del tuo browser.
+      day_hours_hint: Le griglie mostrano la giornata dall'inizio della prima ora alla fine dell'ultima. Ogni ora è indicata da quando inizia.
       example: 'Esempio, adesso:'
+      groups:
+        day_hours: Ore della giornata
+        localization: Localizzazione
+        theme: Tema
       intro: Lascia un'impostazione su Automatico per seguire il browser e la lingua.
       submit: Salva le preferenze
       title: Preferenze

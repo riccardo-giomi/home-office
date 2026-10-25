@@ -21,7 +21,7 @@ class PreferencesController < ApplicationController
 
   # Only the preference columns: never email, role or password through this page
   def preferences_params
-    params.expect(user: [:locale, :date_format, :first_weekday, :time_format, :time_zone, :theme])
+    params.expect(user: [:locale, :date_format, :first_weekday, :time_format, :time_zone, :theme, :day_start_hour, :day_end_hour])
   end
 
   # The redirect renders in the language just chosen, so the notice must be written in it

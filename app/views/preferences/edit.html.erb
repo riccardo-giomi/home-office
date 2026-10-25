@@ -4,12 +4,20 @@
   <p class="mb-6"><%= t(".intro") %></p>
   <%= form_with model: @user, url: preferences_path, method: :patch, id: "preferences-form" do |form| %>
     <%= render Core::UI::ErrorSummaryComponent.new(record: @user) %>
-    <%= render Core::UI::FieldComponent.new(form:, attribute: :locale, label: User.human_attribute_name(:locale), as: :select, choices: locale_choices) %>
-    <%= render Core::UI::FieldComponent.new(form:, attribute: :date_format, label: User.human_attribute_name(:date_format), as: :select, choices: date_format_choices, hint: t(".date_format_hint")) %>
-    <%= render Core::UI::FieldComponent.new(form:, attribute: :first_weekday, label: User.human_attribute_name(:first_weekday), as: :select, choices: weekday_choices) %>
-    <%= render Core::UI::FieldComponent.new(form:, attribute: :time_format, label: User.human_attribute_name(:time_format), as: :select, choices: time_format_choices) %>
-    <%= render Core::UI::FieldComponent.new(form:, attribute: :time_zone, label: User.human_attribute_name(:time_zone), as: :select, choices: time_zone_choices) %>
-    <%= render Core::UI::FieldComponent.new(form:, attribute: :theme, label: User.human_attribute_name(:theme), as: :select, choices: theme_choices) %>
+    <%= render(Core::UI::FieldsetComponent.new(legend: t(".groups.localization"))) do %>
+      <%= render Core::UI::FieldComponent.new(form:, attribute: :locale, label: User.human_attribute_name(:locale), as: :select, choices: locale_choices) %>
+      <%= render Core::UI::FieldComponent.new(form:, attribute: :date_format, label: User.human_attribute_name(:date_format), as: :select, choices: date_format_choices, hint: t(".date_format_hint")) %>
+      <%= render Core::UI::FieldComponent.new(form:, attribute: :first_weekday, label: User.human_attribute_name(:first_weekday), as: :select, choices: weekday_choices) %>
+      <%= render Core::UI::FieldComponent.new(form:, attribute: :time_format, label: User.human_attribute_name(:time_format), as: :select, choices: time_format_choices) %>
+      <%= render Core::UI::FieldComponent.new(form:, attribute: :time_zone, label: User.human_attribute_name(:time_zone), as: :select, choices: time_zone_choices) %>
+    <% end %>
+    <%= render(Core::UI::FieldsetComponent.new(legend: t(".groups.day_hours"), hint: t(".day_hours_hint"), id: "day_hours")) do %>
+      <%= render Core::UI::FieldComponent.new(form:, attribute: :day_start_hour, label: User.human_attribute_name(:day_start_hour), as: :select, choices: hour_choices) %>
+      <%= render Core::UI::FieldComponent.new(form:, attribute: :day_end_hour, label: User.human_attribute_name(:day_end_hour), as: :select, choices: hour_choices) %>
+    <% end %>
+    <%= render(Core::UI::FieldsetComponent.new(legend: t(".groups.theme"))) do %>
+      <%= render Core::UI::FieldComponent.new(form:, attribute: :theme, label: User.human_attribute_name(:theme), as: :select, choices: theme_choices) %>
+    <% end %>
     <p class="mb-1"><%= t(".example") %> <%= format_datetime(Time.current) %> (<%= Time.zone.name %>)</p>
     <p class="mb-6"><%= t(".week_starts", day: first_weekday_name) %></p>
   <% end %>

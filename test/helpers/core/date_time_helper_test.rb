@@ -43,6 +43,14 @@ class Core::DateTimeHelperTest < ActionView::TestCase
     end
   end
 
+  it "formats a time as plain text, in the zone it is given or else the viewer's" do
+    time = Time.utc(2026, 10, 6, 22, 30)
+    with_preferences(time_zone: "America/Los_Angeles", time_format: "12h") do
+      assert_equal "3:30 PM", format_time_text(time)
+      assert_equal "12:30 AM", format_time_text(time, zone: "Europe/Rome")
+    end
+  end
+
   it "shows midnight and noon correctly in the 12-hour clock" do
     with_preferences(time_zone: "Europe/Rome", time_format: "12h") do
       _(format_time(Time.utc(2026, 10, 5, 22, 5))).must_include ">12:05 AM<"

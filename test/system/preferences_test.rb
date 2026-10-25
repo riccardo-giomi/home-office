@@ -17,6 +17,17 @@ class PreferencesTest < ApplicationSystemTestCase
     assert_accessible
   end
 
+  it "groups the settings, in both languages and both themes" do
+    sign_in_through_form users(:member)
+    [["en", "light"], ["it", "dark"]].each do |locale, theme|
+      users(:member).update!(locale:, theme:)
+      visit edit_preferences_path
+      assert_selector "html[lang=#{locale}]"
+      %w[localization day_hours theme].each { |group| assert_selector "fieldset > legend", text: I18n.t("preferences.edit.groups.#{group}", locale:) }
+      assert_accessible
+    end
+  end
+
   it "fits a 320 px screen with touch-sized targets" do
     page.current_window.resize_to(320, 640)
     sign_in_through_form users(:member)

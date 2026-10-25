@@ -154,7 +154,12 @@ en:
       ymd: Year-month-day (2026-12-31)
     edit:
       date_format_hint: Date fields inside forms always use your browser's own format.
+      day_hours_hint: The grids show your day from the start of the first hour to the end of the last hour. Each hour is labeled by when it starts.
       example: 'Example, now:'
+      groups:
+        day_hours: Day hours
+        localization: Localization
+        theme: Theme
       intro: Leave a setting on Automatic to follow your browser and language.
       submit: Save preferences
       title: Preferences

@@ -25,6 +25,34 @@ class PreferencesControllerTest < ActionDispatch::IntegrationTest
       assert_select "#user_date_format_hint", text: I18n.t("preferences.edit.date_format_hint")
     end
 
+    it "groups the settings under Localization, Day hours and Theme" do
+      get edit_preferences_path
+      assert_select "fieldset > legend", text: I18n.t("preferences.edit.groups.localization")
+      assert_select "fieldset > legend", text: I18n.t("preferences.edit.groups.day_hours")
+      assert_select "fieldset > legend", text: I18n.t("preferences.edit.groups.theme")
+      assert_select "fieldset select#user_day_start_hour option", count: 24
+      assert_select "fieldset select#user_day_end_hour option[selected][value='21']"
+    end
+
+    it "labels the hours with plain text, no markup inside the options" do
+      get edit_preferences_path
+      assert_select "select#user_day_start_hour option", count: 24
+      assert_no_match(/<option[^>]*>\s*<time/, response.body)
+    end
+
+    it "stores the day hours" do
+      patch preferences_path, params: {user: {day_start_hour: "6", day_end_hour: "22"}}
+      assert_redirected_to edit_preferences_path
+      _([member.reload.day_start_hour, member.day_end_hour]).must_equal [6, 22]
+    end
+
+    it "refuses an end before the start, with the error summary" do
+      patch preferences_path, params: {user: {day_start_hour: "12", day_end_hour: "10"}}
+      assert_response :unprocessable_content
+      assert_select "#error-summary a[href='#user_day_end_hour']"
+      _([member.reload.day_start_hour, member.day_end_hour]).must_equal [7, 21]
+    end
+
     it "stores explicit choices" do
       patch preferences_path, params: {user: {locale: "it", date_format: "ymd", first_weekday: "1", time_format: "24h", time_zone: "Europe/Rome"}}
       assert_redirected_to edit_preferences_path
