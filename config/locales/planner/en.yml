@@ -51,6 +51,11 @@ en:
           one: "%{count} done todo moved to the trash."
           other: "%{count} done todos moved to the trash."
           zero: No done todos to delete.
+    hours:
+      all: All hours
+      day: Day hours
+      label: Hours shown
+      rest: Other hours
     items:
       back:
         agenda: Back to agenda

@@ -1,9 +1,15 @@
 require "application_system_test_case"
 
 class Planner::ScheduleSystemTest < ApplicationSystemTestCase
+  include DaySliceExamples
+
   let(:admin) { users(:admin) }
 
   def make_task(title, days_ahead: 0, **attrs) = Planner::Task.create!(user: admin, title:, day: Date.current + days_ahead, **attrs)
+
+  def visit_grid(view, **params) = visit planner_schedule_path(view:, **params)
+
+  def make_timed(title, from, to) = make_task(title, start_time: from, end_time: to)
 
   def field(attribute) = Planner::Task.human_attribute_name(attribute)
 

@@ -12,7 +12,7 @@
       <%= render(Core::UI::ButtonComponent.new(variant: :secondary, href: planner_agenda_path(**@period.to_params))) { t(".in_agenda") } %>
     <% end %>
   <% end %>
-  <%= render period_nav(@period, label: t(".nav"), path: ->(**params) { planner_calendar_path(**params) }) %>
+  <%= render period_nav(@period, label: t(".nav"), path: method(:planner_calendar_path), hours: true) %>
   <% case @period.view %>
   <% when :month %>
     <%= render Core::UI::MonthGridComponent.new(
@@ -20,7 +20,7 @@
           day_href: ->(date) { planner_calendar_path(view: "day", date: date.iso8601) }, entries_by_day: entries_by_day(@events_by_day)
         ) %>
   <% else %>
-    <%= render "planner/time_grid", period: @period, entries_by_day: entries_by_day(@events_by_day), scroll: params[:date].blank?, more_href: ->(date) { planner_agenda_path(view: "day", date: date.iso8601) } %>
+    <%= render "planner/time_grid", period: @period, entries_by_day: entries_by_day(@events_by_day), path: method(:planner_calendar_path), scroll: params[:date].blank?, more_href: ->(date) { planner_agenda_path(view: "day", date: date.iso8601) } %>
   <% end %>
   <%= item_dialog %>
 </div>

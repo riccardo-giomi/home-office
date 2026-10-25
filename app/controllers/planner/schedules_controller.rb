@@ -3,7 +3,7 @@
 class Planner::SchedulesController < ApplicationController
   def show
     @period = Planner::Calendar::Period.new(view: params[:view], date: params[:date], first_weekday: effective_preferences.first_weekday,
-      today: Date.current, views: %i[day week], default: :day)
+      today: Date.current, views: %i[day week], default: :day, hours: params[:hours])
     @tasks_by_day = Planner::Task.owned_by(Current.user).kept.on_days(@period.range).group_by(&:day)
   end
 end

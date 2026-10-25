@@ -51,7 +51,7 @@ class Planner::CalendarsControllerTest < ActionDispatch::IntegrationTest
       admin.update!(time_zone: "America/Los_Angeles")
       Planner::Event.create!(user: admin, title: "Night shift", day: Date.new(2026, 10, 9), time_zone: "Europe/Rome",
         starts_at: Time.utc(2026, 10, 8, 22, 30), ends_at: Time.utc(2026, 10, 8, 23, 0))
-      get planner_calendar_path(view: "week", date: "2026-10-07")
+      get planner_calendar_path(view: "week", date: "2026-10-07", hours: "all")
       assert_select "title", /Calendar: Week of 10\/04\/2026/
       assert_select "section", text: /Night shift/ do
         assert_select "time[datetime='2026-10-09T00:30:00+02:00']"
@@ -63,7 +63,7 @@ class Planner::CalendarsControllerTest < ActionDispatch::IntegrationTest
     it "puts an event at its wall-clock time on a day the clocks change" do
       admin.update!(time_zone: "Europe/Rome")
       Planner::Event.create!(user: admin, title: "Small hours", day: Date.new(2026, 10, 25), start_time: "02:30", end_time: "03:00")
-      get planner_calendar_path(view: "week", date: "2026-10-25")
+      get planner_calendar_path(view: "week", date: "2026-10-25", hours: "all")
       assert_select "li.row-start-11", text: /Small hours/
     end
   end

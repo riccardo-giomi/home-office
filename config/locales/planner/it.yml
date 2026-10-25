@@ -51,6 +51,11 @@ it:
           one: "%{count} da fare completato spostato nel cestino."
           other: "%{count} da fare completati spostati nel cestino."
           zero: Nessun da fare completato da eliminare.
+    hours:
+      all: Tutte le ore
+      day: Ore della giornata
+      label: Ore mostrate
+      rest: Altre ore
     items:
       back:
         agenda: Torna all'agenda

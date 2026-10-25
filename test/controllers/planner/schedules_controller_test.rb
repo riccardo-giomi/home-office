@@ -45,7 +45,7 @@ class Planner::SchedulesControllerTest < ActionDispatch::IntegrationTest
 
     it "shows a task on its own day and wall clock, whatever zone the viewer is in" do
       Planner::Task.create!(user: admin, title: "Night call", day: Date.new(2026, 10, 7), time_zone: "Asia/Tokyo", start_time: "23:30", end_time: "23:45")
-      get planner_schedule_path
+      get planner_schedule_path(hours: "all")
       assert_select "time[datetime='2026-10-07T23:30:00+09:00']", text: "23:30"
     end
 

@@ -2,6 +2,8 @@ require "test_helper"
 require "application_system_test_case"
 
 class Planner::CalendarSystemTest < ApplicationSystemTestCase
+  include DaySliceExamples
+
   let(:admin) { users(:admin) }
   let(:t_) { ->(key, **options) { I18n.t("planner.calendars.show.#{key}", **options) } }
 
@@ -10,6 +12,10 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
   end
 
   def visit_calendar(view, **params) = visit planner_calendar_path(view:, **params)
+
+  def visit_grid(view, **params) = visit_calendar(view, **params)
+
+  def make_timed(title, from, to) = make_event(title, start_time: from, end_time: to)
 
   def active_id = evaluate_script("document.activeElement.id")
 
@@ -79,7 +85,7 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
 
     %i[week day].each do |view|
       it "shows the current time in the window, centered when there is room to center it, in the #{view} view of this period" do
-        visit_calendar view
+        visit_calendar view, hours: "all"
         assert_selector "[data-controller~=now-line]:not(.invisible)", visible: :all
         sleep 0.3
         box = marker_box
@@ -103,7 +109,7 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
     end
 
     it "stays on the navigation when moving to another period or view" do
-      visit_calendar :week
+      visit_calendar :week, hours: "all"
       sleep 0.3
       assert_operator scroll_room.first, :>, 0
       execute_script("window.scrollTo(0, 0)")
@@ -116,7 +122,7 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
     end
 
     it "goes to the current time again with Today, which is the way back from the navigation" do
-      visit_calendar :week
+      visit_calendar :week, hours: "all"
       click_link periods("next.week")
       click_link I18n.t("core.ui.period_nav.today")
       assert_selector "[data-controller~=now-line]:not(.invisible)", visible: :all
@@ -148,14 +154,14 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
 
     %i[week day].each do |view|
       it "is drawn in today's column of the #{view} view, where the time is" do
-        visit_calendar view
+        visit_calendar view, hours: "all"
         assert_selector "[data-controller=now-line]:not(.invisible)", visible: :all, count: 1
         assert_in_delta expected_percent, marker_top.to_f, 0.2
       end
     end
 
     it "moves with the clock, without the page being reloaded (time is turned back here, so midnight cannot interfere)" do
-      visit_calendar :day
+      visit_calendar :day, hours: "all"
       assert_selector "[data-controller=now-line]:not(.invisible)", visible: :all
       before = marker_top.to_f
       later = 2 * 60 * 60 * 1000

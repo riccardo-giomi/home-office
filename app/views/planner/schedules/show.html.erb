@@ -9,7 +9,7 @@
       <%= new_item_button(Planner::Task, t(".new")) %>
     <% end %>
   <% end %>
-  <%= render period_nav(@period, label: t(".nav"), path: ->(**params) { planner_schedule_path(**params) }) %>
-  <%= render "planner/time_grid", period: @period, entries_by_day: entries_by_day(@tasks_by_day), scroll: params[:date].blank?, more_href: ->(date) { planner_schedule_path(view: "day", date: date.iso8601) } %>
+  <%= render period_nav(@period, label: t(".nav"), path: method(:planner_schedule_path), hours: true) %>
+  <%= render "planner/time_grid", period: @period, entries_by_day: entries_by_day(@tasks_by_day), path: method(:planner_schedule_path), scroll: params[:date].blank?, more_href: ->(date) { planner_schedule_path(view: "day", date: date.iso8601) } %>
   <%= item_dialog %>
 </div>
