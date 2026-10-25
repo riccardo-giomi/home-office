@@ -93,4 +93,27 @@ describe Planner::Calendar::Period do
     _(period.views).must_equal %i[month week day]
     _(period(view: "week").next.views).must_equal %i[month week day]
   end
+
+  describe "hours" do
+    def with_hours(hours, view: "week") = Planner::Calendar::Period.new(view:, date: "2026-10-06", first_weekday: 0, today:, hours:, views: %i[day week], default: :day)
+
+    it "are the day hours unless asked, and leave the address as it was" do
+      _(with_hours(nil).hours).must_equal "day"
+      _(with_hours("junk").hours).must_equal "day"
+      _(with_hours(nil).to_params).must_equal({view: "week", date: "2026-10-06"})
+    end
+
+    it "show in the address when they are not the default, and stay through every link" do
+      rest = with_hours("rest")
+      _(rest.to_params).must_equal({view: "week", date: "2026-10-06", hours: "rest"})
+      _(rest.previous.to_params[:hours]).must_equal "rest"
+      _(rest.next.to_params[:hours]).must_equal "rest"
+      _(rest.with_view(:day).to_params[:hours]).must_equal "rest"
+    end
+
+    it "change on their own" do
+      _(with_hours("rest").with_hours("day").to_params).must_equal({view: "week", date: "2026-10-06"})
+      _(with_hours(nil).with_hours("all").to_params[:hours]).must_equal "all"
+    end
+  end
 end

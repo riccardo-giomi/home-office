@@ -1,5 +1,6 @@
 # What the calendar page shows: a view (as in month, day or week) and a date,
 # turned into the dates it covers.
+#
 # Anything unreadable falls back to today and the month, so a hand-edited URL
 # never errors.
 class Planner::Calendar::Period
@@ -7,16 +8,20 @@ class Planner::Calendar::Period
   WEEKDAYS = %i[sunday monday tuesday wednesday thursday friday saturday].freeze
   BOUNDS = Date.new(1900, 1, 1)..Date.new(2200, 12, 31)
 
-  attr_reader :view, :views, :date, :first_weekday
+  attr_reader :view, :views, :date, :first_weekday, :hours
 
   # views: the views this page offers (the schedule has two); default: the one
   # used for anything else.
-  def initialize(view:, date:, first_weekday:, today:, views: VIEWS, default: :month)
+  #
+  # hours: which hours of the day the time grids show (Core::DaySlice::MODES),
+  # the day hours when it is unreadable.
+  def initialize(view:, date:, first_weekday:, today:, views: VIEWS, default: :month, hours: nil)
     @views = views
     @default = default
     @view = views.find { |candidate| candidate.to_s == view.to_s } || default
     @date = parse(date) || today
     @first_weekday = first_weekday
+    @hours = Core::DaySlice::MODES.include?(hours.to_s) ? hours.to_s : "day"
     freeze
   end
 
@@ -29,7 +34,7 @@ class Planner::Calendar::Period
   end
 
   # The month grid is drawn in whole weeks; the other views cover exactly their
-  # range
+  # range.
   def grid_range
     return range unless view == :month
 
@@ -42,9 +47,12 @@ class Planner::Calendar::Period
 
   def next = shifted(1)
 
-  def with_view(new_view) = self.class.new(view: new_view, date:, first_weekday:, today: date, views:, default: @default)
+  def with_view(new_view) = self.class.new(view: new_view, date:, first_weekday:, today: date, views:, default: @default, hours:)
 
-  def to_params = {view: view.to_s, date: date.iso8601}
+  def with_hours(new_hours) = self.class.new(view:, date:, first_weekday:, today: date, views:, default: @default, hours: new_hours)
+
+  # The hours are in the address only when they are not the default.
+  def to_params = {view: view.to_s, date: date.iso8601, hours: (hours unless hours == "day")}.compact
 
   private
 
@@ -58,7 +66,7 @@ class Planner::Calendar::Period
     when :day then date + step
     else date.advance(months: step)
     end
-    self.class.new(view:, date: moved, first_weekday:, today: date, views:, default: @default)
+    self.class.new(view:, date: moved, first_weekday:, today: date, views:, default: @default, hours:)
   end
 
   def parse(value)
