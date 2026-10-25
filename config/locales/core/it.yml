@@ -17,6 +17,11 @@ it:
         time_zone: Fuso orario
     errors:
       models:
+        core/link:
+          attributes:
+            base:
+              self_link: Non puoi collegare un elemento a sé stesso.
+              unavailable: Entrambi i capi di un collegamento devono essere elementi tuoi e non nel cestino.
         user:
           attributes:
             base:

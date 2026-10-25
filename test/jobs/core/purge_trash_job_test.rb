@@ -14,6 +14,17 @@ describe Core::PurgeTrashJob do
     _(Planner::Item.trashed.count).must_equal recent
   end
 
+  it "takes the links of what it deletes, and leaves the other end alone" do
+    expired = planner_items(:expired_event)
+    other = planner_items(:holiday)
+    Core::Link.connect(users(:admin), expired.id, other.id)
+    kept_link = core_links(:dentist_and_pay_rent)
+    Core::PurgeTrashJob.perform_now
+    _(Core::Link.involving(expired.id)).must_be_empty
+    _(Core::Link.exists?(kept_link.id)).must_equal true
+    _(Planner::Item.exists?(other.id)).must_equal true
+  end
+
   it "does nothing the second time" do
     Core::PurgeTrashJob.perform_now
     assert_no_difference ["Planner::Item.count", "Core::Entity.count"] do

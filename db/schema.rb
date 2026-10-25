@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_25_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_25_130000) do
   create_table "core_entities", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "record_type", null: false
@@ -22,6 +22,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_110000) do
     t.index ["id", "user_id", "record_type"], name: "index_core_entities_on_id_and_user_id_and_record_type", unique: true
     t.index ["id", "user_id"], name: "index_core_entities_on_id_and_user_id", unique: true
     t.index ["user_id", "deleted_at"], name: "index_core_entities_trash", where: "deleted_at IS NOT NULL"
+  end
+
+  create_table "core_links", force: :cascade do |t|
+    t.integer "first_entity_id", null: false
+    t.integer "second_entity_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["first_entity_id", "second_entity_id"], name: "index_core_links_pair", unique: true
+    t.index ["second_entity_id"], name: "index_core_links_on_second_entity_id"
+    t.check_constraint "first_entity_id < second_entity_id", name: "chk_core_links_ordered"
   end
 
   create_table "planner_items", force: :cascade do |t|
@@ -97,6 +107,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_110000) do
   end
 
   add_foreign_key "core_entities", "users", on_delete: :cascade
+  add_foreign_key "core_links", "core_entities", column: ["first_entity_id", "user_id"], primary_key: ["id", "user_id"], on_delete: :cascade
+  add_foreign_key "core_links", "core_entities", column: ["second_entity_id", "user_id"], primary_key: ["id", "user_id"], on_delete: :cascade
   add_foreign_key "planner_items", "core_entities", column: ["id", "user_id", "record_type"], primary_key: ["id", "user_id", "record_type"], on_delete: :cascade
   add_foreign_key "sessions", "users", on_delete: :cascade
 end

@@ -1,0 +1,23 @@
+<%
+  # The pair is stored lower id first; fixture ids come from labels, so the order is worked out here
+  def pair(first, second, user)
+    ids = [first, second].sort_by { |label| ActiveRecord::FixtureSet.identify(label) }
+    {"first_entity_id" => ActiveRecord::FixtureSet.identify(ids[0]), "second_entity_id" => ActiveRecord::FixtureSet.identify(ids[1]),
+     "user_id" => ActiveRecord::FixtureSet.identify(user), "created_at" => "2026-10-01 10:00:00"}.to_yaml.delete_prefix("---\n").gsub(/^/, "  ")
+  end
+%>
+# Two ends kept
+dentist_and_pay_rent:
+<%= pair(:dentist, :pay_rent_task, :admin) %>
+# Same kind
+pay_rent_and_buy_stamps:
+<%= pair(:pay_rent_task, :buy_stamps_task, :admin) %>
+# A todo
+dentist_and_water_plants:
+<%= pair(:dentist, :water_plants_todo, :admin) %>
+# An end in the trash
+dentist_and_trashed_task:
+<%= pair(:dentist, :trashed_task, :admin) %>
+# Another user's
+other_users_pair:
+<%= pair(:other_users_event, :other_users_task, :other_admin) %>

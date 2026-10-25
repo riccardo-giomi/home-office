@@ -10,4 +10,10 @@ describe "entities and their records" do
       _(strays.pluck(:id)).must_be_empty
     end
   end
+
+  it "has no link whose ends belong to another user than the link" do
+    strays = Core::Link.joins("JOIN core_entities first ON first.id = core_links.first_entity_id JOIN core_entities second ON second.id = core_links.second_entity_id")
+      .where("first.user_id <> core_links.user_id OR second.user_id <> core_links.user_id")
+    _(strays.pluck(:id)).must_be_empty
+  end
 end

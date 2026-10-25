@@ -17,6 +17,11 @@ en:
         time_zone: Time zone
     errors:
       models:
+        core/link:
+          attributes:
+            base:
+              self_link: You cannot link a record to itself.
+              unavailable: Both ends of a link must be your own records, and not in the trash.
         user:
           attributes:
             base:
