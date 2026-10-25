@@ -12,4 +12,15 @@ module QueryCounting
     ActiveSupport::Notifications.subscribed(callback, "sql.active_record", &block)
     queries
   end
+
+  # Every reading query a block asks.
+  #
+  # Repeats answered by the query cache and the schema and transaction
+  # statements are not counted.
+  def selects(&block)
+    queries = []
+    callback = ->(*, payload) { queries << payload[:sql] if !payload[:cached] && payload[:name] != "SCHEMA" && payload[:sql].start_with?("SELECT") }
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record", &block)
+    queries
+  end
 end
