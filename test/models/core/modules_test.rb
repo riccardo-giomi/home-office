@@ -52,9 +52,42 @@ describe Core::Modules do
     Core::Modules.register(manifest("b", setup_steps: [:two]))
     _(Core::Modules.setup_steps).must_equal [:one, :two]
   end
+
+  describe "linkable kinds" do
+    def kind(key) = Core::LinkableKind.new(key:, label_key: "planner.link_kinds.#{key}", scope: ->(user) { Planner::Event.owned_by(user).kept }, new_route: nil)
+
+    it "lists them in registration order and finds one by key" do
+      Core::Modules.register(Core::ModuleManifest.new(name: "a", linkable_kinds: [kind("x"), kind("y")]))
+      Core::Modules.register(Core::ModuleManifest.new(name: "b", linkable_kinds: [kind("z")]))
+      _(Core::Modules.linkable_kinds.map(&:key)).must_equal %w[x y z]
+      _(Core::Modules.linkable_kind("y").key).must_equal "y"
+    end
+
+    it "answers nil for a key it does not know, whatever it looks like" do
+      _(Core::Modules.linkable_kind("Kernel")).must_be_nil
+      _(Core::Modules.linkable_kind(nil)).must_be_nil
+    end
+
+    it "refuses a key that another module has" do
+      Core::Modules.register(Core::ModuleManifest.new(name: "a", linkable_kinds: [kind("x")]))
+      _ { Core::Modules.register(Core::ModuleManifest.new(name: "b", linkable_kinds: [kind("x")])) }.must_raise ArgumentError
+    end
+  end
 end
 
 describe "the booted registry" do
+  it "offers the Planner's three kinds to link, each with the user's own kept records only" do
+    _(Core::Modules.linkable_kinds.map(&:key)).must_equal %w[event task todo]
+    admin = users(:admin)
+    scopes = Core::Modules.linkable_kinds.to_h { |kind| [kind.key, kind.scope.call(admin).to_a] }
+    _(scopes["event"].map(&:class).uniq).must_equal [Planner::Event]
+    _(scopes["task"].map(&:class).uniq).must_equal [Planner::Task]
+    _(scopes["todo"].map(&:class).uniq).must_equal [Planner::Todo]
+    _(scopes.values.flatten.map(&:user_id).uniq).must_equal [admin.id]
+    _(scopes.values.flatten.map(&:id) & Planner::Item.trashed.pluck(:id)).must_be_empty
+    _(Core::Modules.linkable_kinds.map(&:new_route)).must_equal %i[new_planner_event_path new_planner_task_path new_planner_todo_path]
+  end
+
   it "has Core first, then Planner" do
     _(Core::Modules.all.map(&:name)).must_equal %w[core planner]
   end

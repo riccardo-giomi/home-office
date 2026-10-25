@@ -21,5 +21,14 @@ Planner::Manifest = Core::ModuleManifest.new(
     labels_key: "planner.trash.counts",
     counts: ->(user) { Planner::Trash.new(user).counts },
     total: ->(user) { Planner::Trash.new(user).total }
-  )
+  ),
+  linkable_kinds: %w[event task todo].map do |key|
+    klass = Planner::Item.sti_class_for("Planner::#{key.camelize}")
+    Core::LinkableKind.new(
+      key:,
+      label_key: "planner.link_kinds.#{key}",
+      scope: ->(user) { klass.owned_by(user).kept },
+      new_route: :"new_planner_#{key}_path"
+    )
+  end
 )

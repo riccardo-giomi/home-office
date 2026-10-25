@@ -32,6 +32,13 @@ class Planner::Item < ApplicationRecord
 
   def mark_done(done) = (self.done_at = (Time.current if done && tracks_done?))
 
+  # A word for what is not the baseline, "active": the state, or else "done".
+  def link_status
+    if !active? then I18n.t("planner.link_status.#{state}")
+    elsif done? then I18n.t("planner.link_status.done")
+    end
+  end
+
   def state_changes = STATE_CHANGES.keys.select { |to| can_change_state_to?(to) }
 
   # Abandon (tasks, events), cancel (events), reopen.

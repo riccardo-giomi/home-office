@@ -140,6 +140,20 @@ it:
         state_cancelled: Annullato
         submit: Salva da fare
         updated: Da fare aggiornato.
+    link_kinds:
+      event:
+        one: Evento
+        other: Eventi
+      task:
+        one: Attività
+        other: Attività
+      todo:
+        one: Da fare
+        other: Da fare
+    link_status:
+      abandoned: Abbandonato
+      cancelled: Annullato
+      done: Fatto
     nav:
       agenda: Agenda
       calendar: Calendario

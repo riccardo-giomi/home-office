@@ -140,6 +140,20 @@ en:
         state_cancelled: Cancelled
         submit: Save todo
         updated: Todo updated.
+    link_kinds:
+      event:
+        one: Event
+        other: Events
+      task:
+        one: Task
+        other: Tasks
+      todo:
+        one: Todo
+        other: Todos
+    link_status:
+      abandoned: Abandoned
+      cancelled: Cancelled
+      done: Done
     nav:
       agenda: Agenda
       calendar: Calendar

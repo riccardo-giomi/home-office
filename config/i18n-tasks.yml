@@ -155,6 +155,7 @@ ignore_unused:
   - "core.nav.*"
   - "core.preferences.defaults.*"
   - "core.ui.time_grid.outside.*"
+  - "planner.link_kinds.*"
   - "planner.nav.*"
   - "planner.trash.counts.*"
   - "planner.trash.kinds.*"

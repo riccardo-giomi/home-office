@@ -3,7 +3,12 @@ module Core::Modules
 
   class << self
     def register(manifest)
-      @manifests << manifest unless @manifests.any? { |known| known.name == manifest.name }
+      return manifest if @manifests.any? { |known| known.name == manifest.name }
+
+      clash = manifest.linkable_kinds.map(&:key) & linkable_kinds.map(&:key)
+      raise ArgumentError, "linkable kind keys already taken: #{clash.join(", ")}" if clash.any?
+
+      @manifests << manifest
       manifest
     end
 
@@ -18,6 +23,11 @@ module Core::Modules
     end
 
     def setup_steps = all.flat_map(&:setup_steps)
+
+    def linkable_kinds = all.flat_map(&:linkable_kinds)
+
+    # A hash lookup: a key from a request is never turned into a class.
+    def linkable_kind(key) = linkable_kinds.find { |kind| kind.key == key }
 
     def trash_sources = all.filter_map(&:trash)
 
