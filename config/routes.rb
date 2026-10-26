@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resource :preferences, only: %i[edit update]
   resource :theme, only: :update
   resource :trash, only: :show
+  resources :links, only: %i[new create update destroy]
 
   namespace :planner do
     resource :calendar, only: :show

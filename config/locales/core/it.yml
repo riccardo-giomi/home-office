@@ -162,6 +162,26 @@ it:
     show:
       signed_in_as: Accesso eseguito come %{email}.
       title: Home Office
+  links:
+    already: Già collegato a %{title}.
+    create:
+      created: Collegato a %{title}.
+    destroy:
+      removed: Collegamento a %{title} rimosso.
+    new:
+      close: Chiudi
+      go: Cerca
+      kinds: Tipo di elemento
+      link: Collega
+      linked: Già collegato
+      more: Mostro i primi %{count}. Restringi la ricerca per vedere gli altri.
+      none: Nessun risultato.
+      results: Elementi che puoi collegare
+      search: Cerca per titolo
+      title_add: Aggiungi un collegamento
+      title_change: Cambia il collegamento
+    update:
+      changed: Collegamento cambiato in %{title}.
   preferences:
     automatic: Automatico
     back: Torna alla home

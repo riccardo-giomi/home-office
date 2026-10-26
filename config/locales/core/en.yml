@@ -162,6 +162,26 @@ en:
     show:
       signed_in_as: Signed in as %{email}.
       title: Home Office
+  links:
+    already: Already linked to %{title}.
+    create:
+      created: Linked to %{title}.
+    destroy:
+      removed: Link to %{title} removed.
+    new:
+      close: Close
+      go: Search
+      kinds: Kind of record
+      link: Link
+      linked: Already linked
+      more: Showing the first %{count}. Narrow the search to see the others.
+      none: Nothing found.
+      results: Records you can link
+      search: Search by title
+      title_add: Add a link
+      title_change: Change the link
+    update:
+      changed: Link changed to %{title}.
   preferences:
     automatic: Automatic
     back: Back to home
