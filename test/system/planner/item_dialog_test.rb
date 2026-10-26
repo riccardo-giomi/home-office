@@ -24,6 +24,29 @@ class Planner::ItemDialogSystemTest < ApplicationSystemTestCase
     sign_in_through_form admin
   end
 
+  describe "a refresh of the page behind" do
+    before { make_event "Standup", start_time: "09:00", end_time: "09:30" }
+
+    # Turbo shows a cached copy of the page first when it has one, and tells the
+    # page it is being cached. The dialog closes then, for the copy, but must
+    # not for a refresh, which is what a change made inside it asks for.
+    it "keeps the dialog open even when the page was cached before" do
+      visit planner_agenda_path(view: "day")
+      # leaving a page caches it: this address is left twice, so Turbo has a copy of it
+      2.times do
+        click_link "Next day"
+        assert_no_selector "a", text: "Standup"
+        click_link "Previous day"
+        assert_selector "a", text: "Standup"
+      end
+      click_link "Standup"
+      assert_selector "dialog[open] h1#dialog-title", text: "Standup"
+      execute_script("Turbo.visit(location.href, {action: 'replace', shouldCacheSnapshot: false})")
+      sleep 1
+      assert_selector "dialog[open] h1#dialog-title", text: "Standup"
+    end
+  end
+
   describe "opening an event from the calendar or the agenda" do
     before { make_event "Standup", start_time: "09:00", end_time: "09:30", notes: "Bring the laptop" }
 

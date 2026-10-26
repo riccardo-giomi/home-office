@@ -70,12 +70,27 @@ class LinksController < ApplicationController
     Core::Entity.where(user_id: Current.user.id).includes(:record).find(link.other_id(@entity.id)).record.for_links.label
   end
 
-  # Says what has been done: the message is a flash, shown after the page
-  # behind refreshes.
+  # Says what has been done, and shows it where the user is.
+  #
+  # A request from the Links section (`in_section`) gets the section drawn again
+  # with the message as a status, and focus on its heading. The dialog hides the
+  # page's own notice, which is why the section carries one. The page behind
+  # refreshes either way, so its summaries and bar are up to date.
+  #
+  # Other requests, such as the bar that links the two selected records, are
+  # not on the page of either: drawing a section there would put one record's
+  # section on another's page.
   def answer(kind, message)
     flash[kind] = message
     respond_to do |format|
-      format.turbo_stream { render turbo_stream: turbo_stream.refresh(request_id: nil) }
+      format.turbo_stream do
+        streams = []
+        if params[:in_section].present?
+          streams << turbo_stream.replace("links-section", helpers.links_section(@entity.id, notice: message))
+          streams << turbo_stream.action(:focus, "links-section-heading")
+        end
+        render turbo_stream: streams << turbo_stream.refresh(request_id: nil)
+      end
       format.html { redirect_back_or_to polymorphic_path(@entity.record), status: :see_other }
     end
   end

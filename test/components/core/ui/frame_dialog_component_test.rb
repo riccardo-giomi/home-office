@@ -28,7 +28,7 @@ describe Core::UI::FrameDialogComponent do
     assert_selector "[data-controller=frame-dialog]", visible: :all
     assert_selector "turbo-frame[data-action='turbo:frame-load->frame-dialog#open']", visible: :all
     assert_selector "dialog[data-action~='close->frame-dialog#emptied'][data-action~='click->frame-dialog#backdrop']", visible: :all
-    assert_selector "[data-action~='turbo:before-cache@document->frame-dialog#close']", visible: :all
+    assert_selector "[data-action~='turbo:before-cache@document->frame-dialog#beforeCache']", visible: :all
   end
 
   it "is kept as it is when the page behind refreshes, so a refresh cannot close it or empty it" do

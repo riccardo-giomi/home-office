@@ -202,10 +202,10 @@ module SharedItemPages
 
         it "keeps the full page free of the frame, so its own forms and links behave as usual" do
           get polymorphic_path(sample)
-          assert_select "turbo-frame", count: 0
+          assert_select "turbo-frame#item-dialog-frame", count: 0
           assert_select "h1#dialog-title", sample.title
           get edit_polymorphic_path(sample)
-          assert_select "turbo-frame", count: 0
+          assert_select "turbo-frame#item-dialog-frame", count: 0
         end
 
         it "shows the new and edit forms in the frame, the edit form with its way back to the item" do

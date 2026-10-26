@@ -28,6 +28,20 @@ class LinksControllerTest < ActionDispatch::IntegrationTest
       assert_select "turbo-stream[action=refresh]:not([request-id])", 1
     end
 
+    it "only refreshes the page behind when the request did not come from a Links section" do
+      post links_path, params: {entity_id: holiday.id, other_id: rent.id}, as: :turbo_stream
+      assert_select "turbo-stream[action=refresh]", 1
+      assert_select "turbo-stream[action=replace]", 0
+      assert_select "turbo-stream[action=focus]", 0
+    end
+
+    it "redraws the Links section with the notice, and hands focus to its heading" do
+      post links_path, params: {entity_id: holiday.id, other_id: rent.id, in_section: "1"}, as: :turbo_stream
+      assert_select "turbo-stream[action=replace][target=links-section] template div#links-section h2", text: "Links (1)"
+      assert_select "turbo-stream[action=replace] template p[role=status]", text: /Linked to/
+      assert_select "turbo-stream[action=focus][target=links-section-heading]", 1
+    end
+
     it "says so, and adds nothing, when the pair is there already" do
       post links_path, params: {entity_id: holiday.id, other_id: rent.id}
       assert_no_difference "Core::Link.count" do
@@ -95,6 +109,12 @@ class LinksControllerTest < ActionDispatch::IntegrationTest
         delete link_path(link), params: {entity_id: planner_items(:dentist).id}
       end
       assert flash[:notice].start_with?("Link to Pay the rent removed")
+    end
+
+    it "redraws the section without the link, naming it in the status" do
+      delete link_path(core_links(:dentist_and_pay_rent)), params: {entity_id: planner_items(:dentist).id, in_section: "1"}, as: :turbo_stream
+      assert_select "turbo-stream[action=replace] template h2", text: "Links (1)"
+      assert_select "turbo-stream[action=replace] template p[role=status]", text: "Link to Pay the rent removed."
     end
 
     it "removes a link to a record in the trash" do

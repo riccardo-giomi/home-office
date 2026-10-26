@@ -1,4 +1,4 @@
-<%# turbo:before-cache closes it, so a cached page never comes back with a plain open dialog %>
+<%# turbo:before-cache closes it, so a cached page never comes back with the dialog open but not modal %>
 <div data-controller="modal" data-action="turbo:before-cache@document->modal#close">
   <%= render(Core::UI::ButtonComponent.new(variant: @trigger_variant, size: @trigger_size, "aria-haspopup": "dialog", data: {action: "modal#open"})) { @trigger } %>
   <dialog id="<%= @id %>" class="modal" aria-labelledby="<%= @id %>-title" data-modal-target="dialog" data-action="click->modal#backdrop">

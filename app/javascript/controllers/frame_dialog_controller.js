@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { Turbo } from "@hotwired/turbo-rails"
 
 // A dialog that shows what a link loads into its Turbo Frame.
 //
@@ -15,6 +16,19 @@ export default class extends Controller {
 
   close() {
     if (this.dialogTarget.open) this.dialogTarget.close()
+  }
+
+  // Closes the dialog when the page is about to be cached, so that the copy
+  // never comes back with the dialog open but not modal.
+  //
+  // A refresh, which is what a change made in the dialog asks for, is not
+  // cached (shouldCacheSnapshot is false), although Turbo still announces it
+  // with turbo:before-cache. The dialog stays open then.
+  beforeCache() {
+    if (Turbo.session.navigator.currentVisit?.shouldCacheSnapshot === false)
+      return
+
+    this.close()
   }
 
   emptied() {

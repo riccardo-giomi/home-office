@@ -1,5 +1,12 @@
 # The words and buttons of the Links pages that are not components.
 module Core::LinksHelper
+  # The Links section of one record. The id of its entity is the record's own
+  # id.
+  def links_section(entity_id, notice: nil)
+    ends = Core::LinkIndex.new(entity_id).ends_of(entity_id)
+    render Core::UI::LinksSectionComponent.new(entity_id:, ends:, notice:)
+  end
+
   # "Task · 07/10/2026 · Done": the kind, the day when it has one, and the
   # status when it has one.
   def link_detail(record)
@@ -23,6 +30,7 @@ module Core::LinksHelper
     safe_join([
       hidden_field_tag(:entity_id, @entity.id, id: nil),
       hidden_field_tag(:other_id, record.id, id: nil),
+      hidden_field_tag(:in_section, "1", id: nil),
       render(Core::UI::ButtonComponent.new(type: :submit, size: :sm, variant: :secondary)) do
         safe_join([t("links.new.link"), tag.span(" #{record.for_links.label}", class: "sr-only")])
       end

@@ -123,6 +123,15 @@ en:
           other: "%{count} errors prevented saving"
       header:
         menu: Menu
+      links_section:
+        add: Add link
+        change: Change
+        heading: Links (%{count})
+        in_trash: in the trash
+        list: Linked records
+        none: Nothing linked yet.
+        remove: Remove link to %{title}
+        to_trash: See the trash
       modal:
         close: Close
       month_grid:

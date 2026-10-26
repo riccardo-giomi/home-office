@@ -1,6 +1,6 @@
-<%# turbo:before-cache closes it, so a cached page never comes back with a plain open dialog. %>
+<%# turbo:before-cache closes it, so a cached page never comes back with the dialog open but not modal. A refresh is not cached, and leaves it open. %>
 <%# Permanent (data-turbo-permanent), so a refresh of the page behind (after a change made in the dialog) neither closes it nor empties its frame %>
-<div id="<%= @id %>-host" data-turbo-permanent data-controller="frame-dialog" data-action="turbo:before-cache@document->frame-dialog#close">
+<div id="<%= @id %>-host" data-turbo-permanent data-controller="frame-dialog" data-action="turbo:before-cache@document->frame-dialog#beforeCache">
   <dialog id="<%= @id %>" class="modal" aria-labelledby="dialog-title" <%= "open" if @open %>
     data-frame-dialog-target="dialog" data-action="close->frame-dialog#emptied click->frame-dialog#backdrop">
     <%# Fills a phone; a box of its own from sm up %>

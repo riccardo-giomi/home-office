@@ -123,6 +123,15 @@ it:
           other: "%{count} errori hanno impedito il salvataggio"
       header:
         menu: Menu
+      links_section:
+        add: Aggiungi collegamento
+        change: Cambia
+        heading: Collegamenti (%{count})
+        in_trash: nel cestino
+        list: Elementi collegati
+        none: Ancora nessun collegamento.
+        remove: Rimuovi il collegamento a %{title}
+        to_trash: Vai al cestino
       modal:
         close: Chiudi
       month_grid:
