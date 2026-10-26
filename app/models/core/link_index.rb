@@ -8,11 +8,15 @@ class Core::LinkIndex
   End = Data.define(:link, :entity, :record) do
     def trashed? = entity.trashed?
 
-    def kind_key = record.link_kind
+    def facts = record.for_links
 
-    def label = record.link_label
+    def kind_key = facts.kind
 
-    def status = record.link_status
+    def label = facts.label
+
+    def status = facts.status
+
+    def day = facts.day
   end
 
   def initialize(entity_ids)

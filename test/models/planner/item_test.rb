@@ -10,19 +10,24 @@ describe Planner::Item do
 
   describe "as a record to link" do
     it "is known by its kind, labelled by its title" do
-      _(planner_items(:dentist).link_kind).must_equal "event"
-      _(planner_items(:pay_rent_task).link_kind).must_equal "task"
-      _(planner_items(:water_plants_todo).link_kind).must_equal "todo"
-      _(planner_items(:dentist).link_label).must_equal "Dentist"
+      _(planner_items(:dentist).for_links.kind).must_equal "event"
+      _(planner_items(:pay_rent_task).for_links.kind).must_equal "task"
+      _(planner_items(:water_plants_todo).for_links.kind).must_equal "todo"
+      _(planner_items(:dentist).for_links.label).must_equal "Dentist"
     end
 
     it "says nothing about an active item, and in words what is not" do
       I18n.with_locale(:en) do
-        _(planner_items(:pay_rent_task).link_status).must_be_nil
-        _(planner_items(:abandoned_task).link_status).must_equal "Abandoned"
-        _(planner_items(:cancelled_event).link_status).must_equal "Cancelled"
-        _(planner_items(:done_task).link_status).must_equal "Done"
+        _(planner_items(:pay_rent_task).for_links.status).must_be_nil
+        _(planner_items(:abandoned_task).for_links.status).must_equal "Abandoned"
+        _(planner_items(:cancelled_event).for_links.status).must_equal "Cancelled"
+        _(planner_items(:done_task).for_links.status).must_equal "Done"
       end
+    end
+
+    it "has the day of an item that has one of its own, and none for a todo" do
+      _(planner_items(:dentist).for_links.day).must_equal planner_items(:dentist).day
+      _(planner_items(:water_plants_todo).for_links.day).must_be_nil
     end
   end
 

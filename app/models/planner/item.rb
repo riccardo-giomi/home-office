@@ -32,11 +32,14 @@ class Planner::Item < ApplicationRecord
 
   def mark_done(done) = (self.done_at = (Time.current if done && tracks_done?))
 
-  # A word for what is not the baseline, "active": the state, or else "done".
-  def link_status
-    if !active? then I18n.t("planner.link_status.#{state}")
-    elsif done? then I18n.t("planner.link_status.done")
-    end
+  # What the Links pages show of an item: the state in words, or else "done",
+  # and the day when the item has one of its own.
+  def for_links
+    status =
+      if !active? then I18n.t("planner.link_status.#{state}")
+      elsif done? then I18n.t("planner.link_status.done")
+      end
+    super.with(status:, day: (day if timed?))
   end
 
   def state_changes = STATE_CHANGES.keys.select { |to| can_change_state_to?(to) }

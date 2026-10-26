@@ -37,14 +37,15 @@ module Core::EntityRecord
     def entity = super || (build_entity(record_type: self.class.base_class.name) if new_record?)
   end
 
-  # What the Links pages ask of any record: its kind (a key of the manifest),
-  # its label and, for kinds that have one, a status in words. A record's page
-  # is `polymorphic_path(record)`.
-  def link_kind = self.class.model_name.element
-
-  def link_label = title
-
-  def link_status = nil
+  # What the Links pages ask of any record.
+  #
+  # The default is for a record with a title and nothing else: its kind is
+  # a key of the manifest, its label is its title, and it has no status and no
+  # day. A record that knows more overrides this and changes only what differs
+  # (`super.with(status: ...)`). A record's page is `polymorphic_path(record)`.
+  def for_links
+    Core::LinkedEntityFacts.new(kind: self.class.model_name.element, label: title, status: nil, day: nil)
+  end
 
   private
 
