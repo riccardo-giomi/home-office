@@ -49,6 +49,35 @@ describe Core::Link do
     end
   end
 
+  describe "when two requests make the same link at once" do
+    it "answers with the link the other one made, not an error" do
+      first = Core::Link.connect(admin, *ids.call(:holiday, :rent_paid))
+      one, two = ids.call(:holiday, :rent_paid)
+      lookup = Core::Link.method(:existing)
+      calls = 0
+      # The second request looked before the first had written
+      Core::Link.define_singleton_method(:existing) { |*args| ((calls += 1) == 1) ? nil : lookup.call(*args) }
+      assert_no_difference "Core::Link.count" do
+        _(Core::Link.connect(admin, one, two).id).must_equal first.id
+      end
+    ensure
+      Core::Link.define_singleton_method(:existing, lookup)
+    end
+
+    it "answers a reconnect to a pair made meanwhile with that link" do
+      link = core_links(:dentist_and_pay_rent)
+      dentist = core_entities(:dentist).id
+      target = Core::Link.connect(admin, dentist, core_entities(:holiday).id)
+      lookup = Core::Link.method(:existing)
+      calls = 0
+      Core::Link.define_singleton_method(:existing) { |*args| ((calls += 1) == 1) ? nil : lookup.call(*args) }
+      _(link.reconnect(dentist, core_entities(:holiday).id).id).must_equal target.id
+      _(link.reload.other_id(dentist)).must_equal core_entities(:pay_rent_task).id
+    ensure
+      Core::Link.define_singleton_method(:existing, lookup)
+    end
+  end
+
   describe "#reconnect" do
     let(:link) { core_links(:dentist_and_pay_rent) }
     let(:dentist) { core_entities(:dentist).id }

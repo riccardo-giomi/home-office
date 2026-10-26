@@ -22,6 +22,10 @@ class Core::Link < ApplicationRecord
   # saved and its errors say why; nothing is raised.
   def self.connect(user, a_id, b_id)
     existing(user.id, a_id, b_id) || create(user:, first_entity_id: a_id, second_entity_id: b_id)
+  rescue ActiveRecord::RecordNotUnique
+    # Another request made it between the look and the write: a double click,
+    # a second session or a script.
+    existing(user.id, a_id, b_id)
   end
 
   def self.existing(user_id, a_id, b_id)
@@ -43,6 +47,8 @@ class Core::Link < ApplicationRecord
     self.second_entity_id = to_id.to_i
     save
     self
+  rescue ActiveRecord::RecordNotUnique
+    self.class.existing(user_id, entity_id, to_id)
   end
 
   private
