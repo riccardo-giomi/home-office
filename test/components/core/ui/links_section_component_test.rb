@@ -32,6 +32,7 @@ describe Core::UI::LinksSectionComponent do
     section(:dentist)
     assert_selector "li:last-child s", text: planner_items(:trashed_task).title
     assert_selector "li:last-child", text: "in the trash"
+    assert_selector "li:last-child a[href='/trash'][data-turbo-frame=_top]"
     assert_no_selector "li:last-child a[href*='planner/tasks']"
   end
 

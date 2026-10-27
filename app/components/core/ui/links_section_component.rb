@@ -71,8 +71,10 @@ class Core::UI::LinksSectionComponent < ApplicationComponent
     safe_join([safe_join(parts.compact, " · "), (trash_link if link_end.trashed?)].compact, " ")
   end
 
-  # Core cannot name the Planner's trash page: the link goes to the trash hub.
-  def trash_link = link_to(t("core.ui.links_section.to_trash"), helpers.trash_path, class: "link inline-flex items-center min-h-6")
+  # Core cannot name a module's trash page: the link goes to the trash hub.
+  #
+  # It leaves the dialog when the section is in one.
+  def trash_link = link_to(t("core.ui.links_section.to_trash"), helpers.trash_path, class: "link inline-flex items-center min-h-6", data: {turbo_frame: "_top"})
 
   def actions(link_end)
     tag.div(class: "flex shrink-0 flex-wrap items-center gap-2") do
