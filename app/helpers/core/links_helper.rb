@@ -4,7 +4,13 @@ module Core::LinksHelper
   # id.
   def links_section(entity_id, notice: nil)
     ends = Core::LinkIndex.new(entity_id).ends_of(entity_id)
-    render Core::UI::LinksSectionComponent.new(entity_id:, ends:, notice:)
+    linked = ends.map { |link_end| link_end.entity.id }
+    other = current_selection.entries.find { |entity| entity.id != entity_id && linked.exclude?(entity.id) }
+    render Core::UI::LinksSectionComponent.new(
+      entity_id:, ends:, notice:,
+      selected: current_selection.include?(entity_id),
+      other_selected: other && [other.id, other.record.for_links.label]
+    )
   end
 
   # "Task · 07/10/2026 · Done": the kind, the day when it has one, and the

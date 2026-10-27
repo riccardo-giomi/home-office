@@ -82,6 +82,7 @@ class LinksController < ApplicationController
   # section on another's page.
   def answer(kind, message)
     flash[kind] = message
+    current_selection.clear if params[:clear_selection].present? && kind == :notice
     respond_to do |format|
       format.turbo_stream do
         streams = []

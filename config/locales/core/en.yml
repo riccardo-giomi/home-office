@@ -128,10 +128,13 @@ en:
         change: Change
         heading: Links (%{count})
         in_trash: in the trash
+        link_to_selected: 'Link to selected: %{title}'
         list: Linked records
         none: Nothing linked yet.
         remove: Remove link to %{title}
+        select: Select this record
         to_trash: See the trash
+        unselect: Unselect this record
       modal:
         close: Close
       month_grid:
@@ -146,6 +149,12 @@ en:
         title: JavaScript is required
       period_nav:
         today: Today
+      selection_bar:
+        clear: Clear selection
+        label: Selected records
+        link_these: Link these two
+        selected: 'Selected:'
+        unselect: Unselect %{title}
       sidebar:
         close: Close
         label: Main
@@ -221,6 +230,12 @@ en:
       24h: 24-hour clock (13:30)
     update:
       updated: Preferences saved.
+  selections:
+    create:
+      full: Two records are already selected. Unselect one first.
+      selected: 'Selected: %{title}.'
+    destroy:
+      unselected: Selection updated.
   sessions:
     invalid: Try another email address or password.
     new:

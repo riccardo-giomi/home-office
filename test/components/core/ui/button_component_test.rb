@@ -41,4 +41,9 @@ describe Core::UI::ButtonComponent do
     render_inline(Core::UI::ButtonComponent.new(size: :xs, square: true)) { "x" }
     assert_selector "button.btn.btn-xs.btn-square"
   end
+
+  it "takes extra classes next to its own" do
+    render_inline(Core::UI::ButtonComponent.new(class: "max-w-full")) { "Go" }
+    assert_selector "button.btn.btn-primary.max-w-full", text: "Go"
+  end
 end

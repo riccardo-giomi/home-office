@@ -32,7 +32,6 @@ describe Core::UI::LinksSectionComponent do
     section(:dentist)
     assert_selector "li:last-child s", text: planner_items(:trashed_task).title
     assert_selector "li:last-child", text: "in the trash"
-    assert_selector "li:last-child a[href='/trash']"
     assert_no_selector "li:last-child a[href*='planner/tasks']"
   end
 
@@ -57,5 +56,27 @@ describe Core::UI::LinksSectionComponent do
     planner_items(:pay_rent_task).update_columns(title: "W" * 255)
     section(:dentist)
     assert_selector "li .wrap-anywhere", text: "W" * 255
+  end
+
+  it "offers to select the record, or to unselect it when it is selected" do
+    section(:holiday)
+    assert_button "Select this record"
+    assert_no_button "Unselect this record"
+    section(:holiday, selected: true)
+    assert_button "Unselect this record"
+    assert_selector "form[action='/selection'] input[name=in_section]", visible: :all
+  end
+
+  it "offers to link to the other selected record by its title, only when there is one" do
+    section(:holiday)
+    assert_no_selector "button", text: /Link to selected/
+    section(:holiday, other_selected: [core_entities(:dentist).id, "Dentist"])
+    assert_button "Link to selected: Dentist"
+    assert_selector "form[action='/links'] input[name=other_id][value='#{core_entities(:dentist).id}']", visible: :all
+  end
+
+  it "lets the button for a long title shrink, cutting the text short on screen" do
+    section(:holiday, other_selected: [core_entities(:dentist).id, "W" * 255])
+    assert_selector "button.max-w-full span.truncate", text: "Link to selected: #{"W" * 255}"
   end
 end

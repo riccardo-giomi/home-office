@@ -144,4 +144,95 @@ class LinksSystemTest < ApplicationSystemTestCase
     assert_selector "#links-section a", text: "Renew the passport"
     assert_selector "#links-section-heading:focus"
   end
+
+  describe "the selection" do
+    def select_here = click_button("Select this record").then { assert_selector "[aria-label='Selected records']" }
+
+    it "sets a record aside, follows to other pages, and links another record to it" do
+      visit planner_event_path(planner_items(:holiday))
+      select_here
+      assert_selector "[aria-label='Selected records'] a", text: "Bank holiday"
+      assert_button "Unselect this record"
+      visit planner_todo_path(planner_items(:water_plants_todo))
+      assert_selector "[aria-label='Selected records'] a", text: "Bank holiday"
+      before = heading_count
+      click_button "Link to selected: Bank holiday"
+      assert_selector "h2#links-section-heading", text: "Links (#{before + 1})"
+      assert_text "Linked to Bank holiday."
+      assert_selector "#links-section-heading:focus"
+      assert_selector "[aria-label='Selected records'] a", text: "Bank holiday" # the selection stays
+      assert_no_selector "button", text: /Link to selected/ # it is linked now
+    end
+
+    it "links the two selected records from the bar, and empties it" do
+      visit planner_event_path(planner_items(:holiday))
+      select_here
+      visit planner_todo_path(planner_items(:water_plants_todo))
+      select_here
+      assert_selector "[aria-label='Selected records'] a", count: 2
+      click_button "Link these two"
+      assert_text "Linked to"
+      assert_no_selector "[aria-label='Selected records']"
+      assert Core::Link.existing(admin.id, planner_items(:holiday).id, planner_items(:water_plants_todo).id)
+    end
+
+    it "unselects one from the bar, and clears" do
+      visit planner_event_path(planner_items(:holiday))
+      select_here
+      click_button "Unselect Bank holiday"
+      assert_no_selector "[aria-label='Selected records']"
+      select_here
+      click_button "Clear selection"
+      assert_no_selector "[aria-label='Selected records']"
+      assert_button "Select this record"
+    end
+
+    it "refuses a third, and says so" do
+      visit planner_event_path(planner_items(:holiday))
+      select_here
+      visit planner_todo_path(planner_items(:water_plants_todo))
+      select_here
+      visit planner_task_path(planner_items(:buy_stamps_task))
+      click_button "Select this record"
+      assert_text "Two records are already selected. Unselect one first."
+      assert_selector "[aria-label='Selected records'] a", count: 2
+    end
+
+    it "forgets a selected record that goes to the trash" do
+      visit planner_event_path(planner_items(:holiday))
+      select_here
+      planner_items(:holiday).trash
+      visit planner_calendar_path
+      assert_no_selector "[aria-label='Selected records']"
+    end
+
+    it "works in the dialog: selecting redraws the section there and the bar appears behind" do
+      visit planner_agenda_path(view: "day", date: "2026-10-07")
+      click_link "Dentist"
+      within("dialog[open]") do
+        click_button "Select this record"
+        assert_button "Unselect this record"
+      end
+      assert_selector "dialog[open]"
+      assert_selector "[aria-label='Selected records'] a", text: "Dentist", visible: :all
+    end
+
+    %w[light dark].each do |theme|
+      it "has no axe violations in the #{theme} theme with two selected, at desktop and phone width" do
+        admin.update!(theme:)
+        [1400, 320].each do |width|
+          page.current_window.resize_to(width, 900)
+          visit planner_event_path(planner_items(:holiday))
+          select_here if has_button?("Select this record")
+          visit planner_todo_path(planner_items(:water_plants_todo))
+          select_here if has_button?("Select this record")
+          assert_selector "[aria-label='Selected records'] a", count: 2
+          planner_items(:holiday).update_columns(title: "W" * 255) if width == 320
+          visit planner_todo_path(planner_items(:water_plants_todo))
+          assert_accessible
+          assert_fits_small_screen if width == 320
+        end
+      end
+    end
+  end
 end

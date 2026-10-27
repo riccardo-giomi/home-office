@@ -9,6 +9,14 @@ class Core::UI::LinksSectionComponentPreview < ViewComponent::Preview
 
   def long_title = render(section("long", [end_for(5, Planner::Task, "A" * 120, day: "2026-10-07")]))
 
+  # With a record set aside, the section offers to link this one to it. A
+  # selected record offers to be unselected.
+  def with_selection
+    render(Core::UI::LinksSectionComponent.new(id: "links-section-selection", entity_id: 99, ends: [end_for(7, Planner::Task, "Pay the rent")], other_selected: [5, "Dentist"], selected: false))
+  end
+
+  def selected = render(Core::UI::LinksSectionComponent.new(id: "links-section-selected", entity_id: 99, ends: [], selected: true))
+
   def empty = render(section("empty", []))
 
   # What has just been done is said in a status line

@@ -45,6 +45,7 @@
         <% end %>
       <% end %>
       <main id="main-content" tabindex="-1" data-sidebar-target="page" class="px-5 py-8 focus:outline-none">
+        <%= render Core::UI::SelectionBarComponent.new(entries: current_selection.entries) if authenticated? %>
         <% flash.each do |kind, message| %>
           <%= render Core::UI::FlashComponent.new(kind:, message:) %>
         <% end %>

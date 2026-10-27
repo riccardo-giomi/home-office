@@ -128,10 +128,13 @@ it:
         change: Cambia
         heading: Collegamenti (%{count})
         in_trash: nel cestino
+        link_to_selected: 'Collega a quello selezionato: %{title}'
         list: Elementi collegati
         none: Ancora nessun collegamento.
         remove: Rimuovi il collegamento a %{title}
+        select: Seleziona questo elemento
         to_trash: Vai al cestino
+        unselect: Deseleziona questo elemento
       modal:
         close: Chiudi
       month_grid:
@@ -146,6 +149,12 @@ it:
         title: JavaScript è necessario
       period_nav:
         today: Oggi
+      selection_bar:
+        clear: Svuota selezione
+        label: Elementi selezionati
+        link_these: Collega questi due
+        selected: 'Selezionati:'
+        unselect: Deseleziona %{title}
       sidebar:
         close: Chiudi
         label: Principale
@@ -221,6 +230,12 @@ it:
       24h: Orologio a 24 ore (13:30)
     update:
       updated: Preferenze salvate.
+  selections:
+    create:
+      full: Hai già selezionato due elementi. Deselezionane uno prima.
+      selected: 'Selezionato: %{title}.'
+    destroy:
+      unselected: Selezione aggiornata.
   sessions:
     invalid: Prova un altro indirizzo email o un'altra password.
     new:

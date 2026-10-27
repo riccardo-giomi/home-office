@@ -35,6 +35,20 @@ class LinksControllerTest < ActionDispatch::IntegrationTest
       assert_select "turbo-stream[action=focus]", 0
     end
 
+    it "empties the selection when asked to, after the link was made (the bar's 'Link these two')" do
+      post selection_path, params: {entity_id: holiday.id}
+      post selection_path, params: {entity_id: rent.id}
+      post links_path, params: {entity_id: holiday.id, other_id: rent.id, clear_selection: "1"}
+      _(Core::Link.involving(holiday.id).count).must_equal 1
+      _(Core::Selection.new(session, admin).ids).must_equal []
+    end
+
+    it "keeps the selection when the link could not be made" do
+      post selection_path, params: {entity_id: holiday.id}
+      post links_path, params: {entity_id: holiday.id, other_id: holiday.id, clear_selection: "1"}
+      _(Core::Selection.new(session, admin).ids).must_equal [holiday.id]
+    end
+
     it "redraws the Links section with the notice, and hands focus to its heading" do
       post links_path, params: {entity_id: holiday.id, other_id: rent.id, in_section: "1"}, as: :turbo_stream
       assert_select "turbo-stream[action=replace][target=links-section] template div#links-section h2", text: "Links (1)"

@@ -1,15 +1,14 @@
 # The Links section of a record's page or dialog.
 #
 # It lists the other end of each link (kind, title, day, status) with a way to
-# change or remove it, a button to add a link, and the frame the picker is
-# drawn in. It knows nothing of what the records are: the ends come from
-# Core::LinkIndex.
+# change or remove it, the buttons to add a link and to select the record, and
+# the frame the picker is drawn in.
 #
-# A link to a record in the trash stays, last, struck through and said in
+# It knows nothing of what the records are: the ends come from Core::LinkIndex.
+#
+# A link to a record in the trash stays, last, struck through and it's state
+# described in words.
 # words.
-#
-# The section is a labeled group, not a landmark, because the Theme page shows
-# several of them.
 class Core::UI::LinksSectionComponent < ApplicationComponent
   # id: the section's element id, which the server's streams aim at. A page has
   # one section; the previews on the Theme page give each their own. The
@@ -17,8 +16,15 @@ class Core::UI::LinksSectionComponent < ApplicationComponent
   #
   # notice: what has just been done, said in a status line. The dialog hides
   # the page's own notice.
-  def initialize(entity_id:, ends:, notice: nil, id: "links-section")
+  #
+  # selected: this record is in the selection.
+  #
+  # other_selected: the other record in the selection, as [id, label], when it
+  # can be linked to this one (it is not this record and not linked already).
+  def initialize(entity_id:, ends:, notice: nil, id: "links-section", selected: false, other_selected: nil)
     @id = id
+    @selected = selected
+    @other_selected = other_selected
     @entity_id = entity_id
     @ends = ends
     @notice = notice
@@ -96,13 +102,36 @@ class Core::UI::LinksSectionComponent < ApplicationComponent
 
   def buttons
     tag.div(class: "mt-3 flex flex-wrap gap-2") do
-      safe_join([add_link].compact)
+      safe_join([add_link, select_button, link_to_selected].compact)
     end
   end
 
   def add_link
     render(Core::UI::ButtonComponent.new(variant: :secondary, href: helpers.new_link_path(entity_id: @entity_id), data: {turbo_frame: picker_id})) do
       t("core.ui.links_section.add")
+    end
+  end
+
+  def select_button
+    label = @selected ? t("core.ui.links_section.unselect") : t("core.ui.links_section.select")
+    render(Core::UI::SelectButtonComponent.new(entity_id: @entity_id, selected: @selected, label:, in_section: true))
+  end
+
+  def link_to_selected
+    return unless @other_selected
+
+    id, label = @other_selected
+    form_with(url: helpers.links_path, class: "max-w-full") do
+      safe_join([
+        hidden_field_tag(:entity_id, @entity_id, id: nil),
+        hidden_field_tag(:other_id, id, id: nil),
+        hidden_field_tag(:in_section, "1", id: nil),
+        # A button does not wrap: a long title is cut short on screen, and the
+        # whole of it is still the button's text.
+        render(Core::UI::ButtonComponent.new(type: :submit, variant: :secondary, class: "max-w-full")) do
+          tag.span(t("core.ui.links_section.link_to_selected", title: label), class: "truncate")
+        end
+      ])
     end
   end
 end
