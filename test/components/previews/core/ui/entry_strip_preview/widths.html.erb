@@ -1,0 +1,15 @@
+<%# The same entry at several widths: with room it has the words of its statuses, then only icons, then only the first status. %>
+<div class="p-4">
+  <% cases.each_with_index do |entry_case, index| %>
+    <section class="mb-6">
+      <h2 class="mb-2 text-sm font-semibold"><%= entry_case[:name] %></h2>
+      <div class="rounded border border-base-300 bg-base-100 p-1 max-w-full <%= entry_case[:size] %>">
+        <%= render Core::UI::EntryComponent.new(title: "Review the plan", href: "#", statuses:, compact: entry_case[:compact], starts_at: Time.utc(2026, 10, 7, 9), ends_at: Time.utc(2026, 10, 7, 10), time_zone: "UTC") do |entry| %>
+          <% entry.with_check do %>
+            <%= render Core::UI::CheckboxComponent.new(name: "done", checked: false, label: "Done: Review the plan", id: "strip-width-check-#{index}") %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

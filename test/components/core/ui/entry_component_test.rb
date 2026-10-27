@@ -123,11 +123,27 @@ describe Core::UI::EntryComponent do
       assert_no_text "Abandoned"
     end
 
-    it "shows the priority as a small pill named by its label, whether compact or not" do
+    it "shows the priority as a pill named by its label, whether compact or not" do
       [false, true].each do |compact|
         render_inline(entry(statuses: [urgent], compact:))
-        assert_selector "span.badge.badge-xs[role=img][aria-label='Urgent priority']"
+        assert_selector "span.badge.badge-md[role=img][aria-label='Urgent priority']"
       end
+    end
+
+    it "is a container, so that its chips can follow its own width" do
+      render_inline(entry)
+      assert_selector "div[class~='@container']"
+    end
+
+    it "gives the word of a status only to an entry wide enough for it" do
+      render_inline(entry(statuses: [abandoned]))
+      assert_selector "span[role=img][aria-label=Abandoned] span.hidden[class~='@min-[14rem]:inline']", text: "Abandoned"
+    end
+
+    it "keeps only the first status in a very narrow entry" do
+      render_inline(entry(statuses: [abandoned, urgent]))
+      assert_selector "span[class~='@max-[9rem]:hidden']", count: 1
+      assert_selector "span[class~='@max-[9rem]:hidden'] span.badge"
     end
 
     it "keeps the check and the statuses together on one line that does not break, in a compact entry" do

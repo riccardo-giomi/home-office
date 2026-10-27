@@ -12,9 +12,13 @@
 #
 # statuses: what is worth knowing at a glance, most important first. Each one is
 # {icon:, label:} or {priority:, label:}, where priority is the level of the
-# priority pill. A compact entry shows icons only; the others add the word.
+# priority pill. A compact entry shows icons only; the others add the word when
+# they are wide enough.
 class Core::UI::EntryComponent < ApplicationComponent
   renders_one :check
+
+  # The size of the icons and controls of the line at the top.
+  STRIP_ICON = "size-6"
 
   def initialize(title:, href:, starts_at: nil, ends_at: nil, time_zone: nil, done: false, muted: false, compact: false, link_data: {}, statuses: [], show_time: true)
     @title = title
@@ -31,7 +35,7 @@ class Core::UI::EntryComponent < ApplicationComponent
   end
 
   def call
-    tag.div(class: "relative h-full min-w-0", title: tooltip) do
+    tag.div(class: "@container relative h-full min-w-0", title: tooltip) do
       safe_join([lead, tag.div(title_link), time].compact)
     end
   end
@@ -53,20 +57,24 @@ class Core::UI::EntryComponent < ApplicationComponent
   def status_strip
     return if @statuses.empty?
 
-    tag.div(safe_join(@statuses.map { |status| status_chip(status) }), class: "flex shrink-0 flex-nowrap items-center gap-1 overflow-hidden")
+    chips = @statuses.each_with_index.map { |status, index| status_chip(status, index) }
+    tag.div(safe_join(chips), class: "flex shrink-0 flex-nowrap items-center gap-1 overflow-hidden")
   end
 
-  def status_chip(status)
-    # The small pill, in any entry: it must match the 16 px icons of the other
-    # chips.
-    return render(Core::UI::PriorityComponent.new(level: status[:priority], label: status[:label], compact: true)) if status[:priority]
-
-    icon = render(Core::UI::IconComponent.new(name: status[:icon], class: "size-4 shrink-0"))
-    if @compact
-      tag.span(icon, role: "img", "aria-label": status[:label], title: status[:label], class: "shrink-0")
-    else
-      tag.span(safe_join([icon, status[:label]], " "), class: "inline-flex shrink-0 items-center gap-1 text-xs text-base-content/80")
+  # The entry is a container and decides by its own width what to show. Wide
+  # enough, a chip has its words; narrower, only the icon; narrower still, only
+  # the first chip, the most important.
+  def status_chip(status, index)
+    narrowest_hides = ("@max-[9rem]:hidden" if index.positive?)
+    if status[:priority]
+      pill = render(Core::UI::PriorityComponent.new(level: status[:priority], label: status[:label], compact: false))
+      return tag.span(pill, class: narrowest_hides)
     end
+
+    icon = render(Core::UI::IconComponent.new(name: status[:icon], class: "#{STRIP_ICON} shrink-0"))
+    word = tag.span(status[:label], class: "hidden @min-[14rem]:inline") unless @compact
+    tag.span(safe_join([icon, word].compact), role: "img", "aria-label": status[:label], title: status[:label],
+      class: ["inline-flex shrink-0 items-center gap-0.5 text-xs text-base-content/80", narrowest_hides])
   end
 
   def time
