@@ -263,4 +263,38 @@ class LinksSystemTest < ApplicationSystemTestCase
       assert Core::Link.existing(admin.id, todo.id, planner_items(:dentist).id)
     end
   end
+
+  describe "in the strip of the entries" do
+    it "sets a todo aside from its row, then links another record to it" do
+      visit planner_todos_path
+      click_button "Select Water the plants"
+      assert_selector "[aria-label='Selected records'] a", text: "Water the plants"
+      visit planner_event_path(planner_items(:holiday))
+      click_button "Link to selected: Water the plants"
+      assert_selector "#links-section a", text: "Water the plants"
+    end
+
+    it "shows the number of links of an untimed task on the Schedule's day, and its list in the dialog" do
+      visit planner_schedule_path(date: "2026-10-08")
+      assert_selector "[role=img][aria-label='1 link']"
+      click_link "Buy stamps"
+      assert_selector "dialog[open] h2#links-section-heading", text: "Links (1)"
+    end
+
+    %w[light dark].each do |theme|
+      it "has no axe violations in the #{theme} theme on the todo list and the Schedule's day, at desktop and phone width, with long titles" do
+        admin.update!(theme:)
+        planner_items(:dentist).update_columns(title: "W" * 255)
+        [1400, 320].each do |width|
+          page.current_window.resize_to(width, 900)
+          [planner_todos_path, planner_schedule_path(date: "2026-10-08")].each do |path|
+            visit path
+            assert_selector "[role=img][aria-label*=link]"
+            assert_accessible
+            assert_fits_small_screen if width == 320
+          end
+        end
+      end
+    end
+  end
 end

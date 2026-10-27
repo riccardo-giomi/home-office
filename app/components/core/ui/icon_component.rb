@@ -1,4 +1,5 @@
-# Heroicons "outline" paths, shared by the shell components; always decorative
+# Heroicons "outline" paths, shared by the shell components; always decorative.
+# `pin` is from Tabler Icons (MIT), drawn on the same 24 px grid.
 class Core::UI::IconComponent < ApplicationComponent
   PATHS = {
     home: "m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25",
@@ -25,7 +26,9 @@ class Core::UI::IconComponent < ApplicationComponent
     chevron_double_up: "m4.5 18.75 7.5-7.5 7.5 7.5m-15-6 7.5-7.5 7.5 7.5",
     minus_circle: "M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
     x_circle: "m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
-    chevron_double_down: "m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5"
+    chevron_double_down: "m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5",
+    link: "M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244",
+    pin: "M15 4.5l-4 4l-4 1.5l-1.5 1.5l7 7l1.5 -1.5l1.5 -4l4 -4M9 15l-4.5 4.5M14.5 4l5.5 5.5"
   }.freeze
 
   def initialize(name:, **html_options)

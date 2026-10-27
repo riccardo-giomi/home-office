@@ -13,9 +13,14 @@
 # statuses: what is worth knowing at a glance, most important first. Each one is
 # {icon:, label:} or {priority:, label:}, where priority is the level of the
 # priority pill. A compact entry shows icons only; the others add the word when
-# they are wide enough.
+# they are wide enough. A status can have a count:, a number that goes next to
+# the icon when the word is not shown.
+#
+# commands: small buttons at the end of the same line, above the link that
+# covers the entry. The page decides which entries get them.
 class Core::UI::EntryComponent < ApplicationComponent
   renders_one :check
+  renders_one :commands
 
   # The size of the icons and controls of the line at the top.
   STRIP_ICON = "size-6"
@@ -45,14 +50,18 @@ class Core::UI::EntryComponent < ApplicationComponent
   # The check and the statuses are one line that never breaks, whatever the width:
   # what does not fit is clipped.
   def lead
-    return unless check? || @statuses.any?
+    return unless check? || @statuses.any? || commands?
 
-    tag.div(safe_join([check_above, status_strip].compact), class: "flex flex-nowrap items-center gap-1 overflow-hidden")
+    tag.div(safe_join([check_above, status_strip, commands_end].compact), class: "flex flex-nowrap items-center gap-1 overflow-hidden")
   end
 
   # The done check stays above the link that covers the whole entry, so it can
   # still be ticked.
   def check_above = (tag.div(check, class: "relative z-10") if check?)
+
+  # The commands stay above the link that covers the whole entry, so they can be
+  # used, and go to the end of the line.
+  def commands_end = (tag.div(commands, class: "relative z-10 ms-auto flex shrink-0 items-center gap-1") if commands?)
 
   def status_strip
     return if @statuses.empty?
@@ -72,9 +81,17 @@ class Core::UI::EntryComponent < ApplicationComponent
     end
 
     icon = render(Core::UI::IconComponent.new(name: status[:icon], class: "#{STRIP_ICON} shrink-0"))
-    word = tag.span(status[:label], class: "hidden @min-[14rem]:inline") unless @compact
-    tag.span(safe_join([icon, word].compact), role: "img", "aria-label": status[:label], title: status[:label],
+    tag.span(safe_join([icon, *status_words(status)]), role: "img", "aria-label": status[:label], title: status[:label],
       class: ["inline-flex shrink-0 items-center gap-0.5 text-xs text-base-content/80", narrowest_hides])
+  end
+
+  # Next to the icon: the number, when there is one and the word is not shown,
+  # and the word when there is room for it.
+  def status_words(status)
+    return [status[:count]].compact if @compact
+
+    [(tag.span(status[:count], class: "@min-[14rem]:hidden") if status[:count]),
+      tag.span(status[:label], class: "hidden @min-[14rem]:inline")].compact
   end
 
   def time

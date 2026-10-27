@@ -108,12 +108,12 @@ class Planner::AgendasControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  it "reads a month of 200 events with one query on planner_items" do
+  it "reads a month of 200 events with one query on planner_items, and one for the records its links lead to" do
     sign_in_as admin
     200.times { |i| Planner::Event.create!(user: admin, title: "Bulk #{i}", day: Date.new(2026, 10, 1 + (i % 28))) }
     selects = planner_item_selects { get planner_agenda_path }
     assert_response :success
-    assert_equal 1, selects.size, selects.inspect
+    assert_equal 2, selects.size, selects.inspect
   end
 
   it "has the dialog, and the entries and New event open their pages in it" do

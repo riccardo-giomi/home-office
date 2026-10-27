@@ -98,6 +98,7 @@ describe Core::UI::EntryComponent do
   describe "statuses" do
     let(:abandoned) { {icon: :minus_circle, label: "Abandoned"} }
     let(:urgent) { {priority: :urgent, label: "Urgent priority"} }
+    let(:links) { {icon: :link, label: "2 links", count: 2} }
 
     it "draws no strip without statuses" do
       render_inline(entry)
@@ -138,6 +139,18 @@ describe Core::UI::EntryComponent do
     it "gives the word of a status only to an entry wide enough for it" do
       render_inline(entry(statuses: [abandoned]))
       assert_selector "span[role=img][aria-label=Abandoned] span.hidden[class~='@min-[14rem]:inline']", text: "Abandoned"
+    end
+
+    it "puts the number of a status that has one next to its icon, and the word when there is room" do
+      render_inline(entry(statuses: [links]))
+      assert_selector "span[role=img][aria-label='2 links'] span[class~='@min-[14rem]:hidden']", text: "2"
+      assert_selector "span[role=img][aria-label='2 links'] span.hidden[class~='@min-[14rem]:inline']", text: "2 links"
+    end
+
+    it "shows only the number of such a status in a compact entry" do
+      render_inline(entry(statuses: [links], compact: true))
+      assert_selector "span[role=img][aria-label='2 links']", text: "2"
+      assert_no_text "2 links"
     end
 
     it "keeps only the first status in a very narrow entry" do
@@ -196,6 +209,20 @@ describe Core::UI::EntryComponent do
     it "still says a status in words" do
       render_inline(entry(show_time: false, statuses: [{icon: :minus_circle, label: "Abandoned"}]))
       assert_text "Abandoned"
+    end
+  end
+
+  describe "commands" do
+    def pin = "<button id=pin>Pin</button>".html_safe
+
+    it "draws them at the end of the line of the statuses, above the link that covers the entry" do
+      render_inline(entry(statuses: [{icon: :minus_circle, label: "Abandoned"}])) { |component| component.with_commands { pin } }
+      assert_selector "div.flex-nowrap:has(span[role=img]):has(div.relative.z-10.ms-auto button#pin)"
+    end
+
+    it "draws the line for them even with no check and no status" do
+      render_inline(entry) { |component| component.with_commands { pin } }
+      assert_selector "div.flex-nowrap button#pin"
     end
   end
 end

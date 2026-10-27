@@ -117,6 +117,9 @@ it:
       entry:
         all_day: Tutto il giorno
         done: Fatto
+        links:
+          one: "%{count} collegamento"
+          other: "%{count} collegamenti"
       error_summary:
         title:
           one: 1 errore ha impedito il salvataggio
@@ -134,8 +137,10 @@ it:
         none: Ancora nessun collegamento.
         remove: Rimuovi il collegamento a %{title}
         select: Seleziona questo elemento
+        select_short: Seleziona
         to_trash: Vai al cestino
         unselect: Deseleziona questo elemento
+        unselect_short: Deseleziona
       modal:
         close: Chiudi
       month_grid:

@@ -1,0 +1,26 @@
+<%# The line at the top of an entry with the done check, the statuses, the number of links and the button that sets the record aside; each case twice, with the record not selected and selected. %>
+<div class="p-4">
+  <% cases.each_with_index do |entry_case, index| %>
+    <section class="mb-6">
+      <h2 class="mb-2 text-sm font-semibold"><%= entry_case[:name] %></h2>
+      <div class="flex flex-wrap gap-4">
+        <% [false, true].each do |selected| %>
+          <div class="rounded border border-base-300 bg-base-100 p-1 max-w-full <%= entry_case[:size] %>">
+            <%= render Core::UI::EntryComponent.new(title: entry_case[:title], href: "#", statuses: entry_case[:statuses], compact: entry_case[:compact] || false, starts_at: Time.utc(2026, 10, 7, 9), ends_at: Time.utc(2026, 10, 7, 9, 30), time_zone: "UTC") do |entry| %>
+              <% if entry_case[:check] %>
+                <% entry.with_check do %>
+                  <%= render Core::UI::CheckboxComponent.new(name: "done", checked: false, label: "Done: #{entry_case[:title]}", id: "strip-options-check-#{index}-#{selected}") %>
+                <% end %>
+              <% end %>
+              <% if entry_case[:pin] %>
+                <% entry.with_commands do %>
+                  <%= render Core::UI::SelectButtonComponent.new(entity_id: index + 1, selected:, label: selected ? "Unselect" : "Select", title: entry_case[:title], icon: :pin) %>
+                <% end %>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

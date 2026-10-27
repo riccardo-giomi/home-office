@@ -54,10 +54,10 @@ class Planner::SchedulesControllerTest < ActionDispatch::IntegrationTest
       assert_no_match(/Someone else/, response.body)
     end
 
-    it "makes one query for the items of the page" do
+    it "makes one query for the items of the page and one for the records its links lead to" do
       sign_in_as admin
       queries = planner_item_selects { get planner_schedule_path(view: "week") }
-      assert_equal 1, queries.size
+      assert_equal 2, queries.size, queries.inspect
     end
   end
 

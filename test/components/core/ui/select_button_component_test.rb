@@ -22,4 +22,17 @@ describe Core::UI::SelectButtonComponent do
     assert_selector "input[name=in_section][value='1']", visible: :all
     assert_button "Select this record"
   end
+
+  it "can be a small button with only an icon, named for a reader and in a tooltip" do
+    render_inline(Core::UI::SelectButtonComponent.new(entity_id: 7, selected: false, label: "Select", title: "Pay the rent", icon: :pin))
+    assert_selector "button.btn-square.btn-xs[aria-label='Select Pay the rent'][title='Select Pay the rent'] svg"
+    assert_no_selector "button.btn-primary"
+    assert_no_selector "svg[fill=currentColor]"
+  end
+
+  it "fills the icon and highlights the button when the record is selected" do
+    render_inline(Core::UI::SelectButtonComponent.new(entity_id: 7, selected: true, label: "Unselect", title: "Pay the rent", icon: :pin))
+    assert_selector "button.btn-primary[aria-label='Unselect Pay the rent'] svg[fill=currentColor]"
+    assert_selector "input[name=_method][value=delete]", visible: :all
+  end
 end

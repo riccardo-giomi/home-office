@@ -199,9 +199,13 @@ class Core::UI::TimeGridComponent < ApplicationComponent
   # A seven-day grid is always compact.
   def compact?(placement) = !single_day? || slot_to(placement) - slot_from(placement) < 3
 
+  # Only an entry that is not compact has the commands: a box cut to the
+  # duration of its entry would clip the buttons, and a clipped button still
+  # takes the keyboard focus.
   def render_entry(attributes, compact: !single_day?)
-    render(Core::UI::EntryComponent.new(**attributes.except(:check, :from, :to), compact:)) do |entry|
+    render(Core::UI::EntryComponent.new(**attributes.except(:check, :from, :to, :commands), compact:)) do |entry|
       entry.with_check { attributes[:check] } if attributes[:check]
+      entry.with_commands { attributes[:commands] } if attributes[:commands] && !compact
     end
   end
 

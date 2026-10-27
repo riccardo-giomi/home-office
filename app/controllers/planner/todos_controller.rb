@@ -4,6 +4,7 @@ class Planner::TodosController < Planner::ItemsController
   def index
     @todos = Planner::Todo.owned_by(Current.user).kept.in_order
     @moved_id = flash[:moved_id]
+    @link_index = Core::LinkIndex.new(@todos.map(&:id))
   end
 
   private

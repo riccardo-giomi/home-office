@@ -27,7 +27,8 @@ module Planner::EntriesHelper
       to: (clock_minutes(item.end_time) if item.timed?),
       check: (completion_check(item) if item.tracks_done? && item.active?),
       muted: !item.active?,
-      statuses: entry_statuses(item)
+      statuses: entry_statuses(item),
+      commands: select_command(item)
     }
   end
 
@@ -37,7 +38,8 @@ module Planner::EntriesHelper
   def entry_statuses(item)
     [
       (item.active? ? nil : {icon: STATE_ICONS.fetch(item.state), label: kind_t(item, "state_#{item.state}")}),
-      (item.normal? ? nil : {priority: item.priority.to_sym, label: priority_name(item.priority)})
+      (item.normal? ? nil : {priority: item.priority.to_sym, label: priority_name(item.priority)}),
+      link_status(item)
     ].compact
   end
 

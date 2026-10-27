@@ -37,6 +37,15 @@ class Core::UI::EntryComponentPreview < ViewComponent::Preview
     render(entry(title: "Tidy the desk", statuses: [{priority: :low, label: "Low priority"}], compact: true, starts_at: Time.utc(2026, 10, 7, 9), ends_at: Time.utc(2026, 10, 7, 10), time_zone: "UTC"))
   end
 
+  # The number of links, in the line of statuses
+  def with_link_count
+    render(entry(title: "Dentist", starts_at: Time.utc(2026, 10, 7, 9), ends_at: Time.utc(2026, 10, 7, 10), time_zone: "UTC", statuses: [LINKS]))
+  end
+
+  def with_link_count_compact
+    render(entry(title: "Dentist", compact: true, starts_at: Time.utc(2026, 10, 7, 9), ends_at: Time.utc(2026, 10, 7, 9, 30), time_zone: "UTC", statuses: [LINKS]))
+  end
+
   # A todo has no moment of its own: no time line at all
   def without_time
     render(entry(title: "Water the plants", show_time: false, statuses: [{priority: :high, label: "High priority"}]))
@@ -53,6 +62,7 @@ class Core::UI::EntryComponentPreview < ViewComponent::Preview
 
   private
 
+  LINKS = {icon: :link, label: "2 links", count: 2}.freeze
   ALL_STATUSES = [{icon: :minus_circle, label: "Abandoned"}, {priority: :urgent, label: "Urgent priority"}].freeze
 
   # `render` inside a preview builds a preview request, so slot content is rendered to a string here

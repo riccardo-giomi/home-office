@@ -27,7 +27,7 @@ class Core::UI::MonthGridComponent < ApplicationComponent
   def outside_month?(date) = date.month != @month.month || date.year != @month.year
 
   def render_entry(attributes)
-    render(Core::UI::EntryComponent.new(**attributes.except(:check, :from, :to))) do |entry|
+    render(Core::UI::EntryComponent.new(**attributes.except(:check, :from, :to, :commands))) do |entry|
       entry.with_check { attributes[:check] } if attributes[:check]
     end
   end

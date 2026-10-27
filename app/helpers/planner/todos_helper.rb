@@ -65,8 +65,9 @@ module Planner::TodosHelper
   # of its own).
   def todo_entry(todo)
     attributes = entry_attributes(todo)
-    render(Core::UI::EntryComponent.new(**attributes.except(:check, :from, :to), show_time: false)) do |entry|
+    render(Core::UI::EntryComponent.new(**attributes.except(:check, :from, :to, :commands), show_time: false)) do |entry|
       entry.with_check { attributes[:check] } if attributes[:check]
+      entry.with_commands { attributes[:commands] } if attributes[:commands]
     end
   end
 end

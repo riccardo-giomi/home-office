@@ -14,6 +14,30 @@ module Core::LinksHelper
     )
   end
 
+  # How many links a row has, for the strip of statuses of its entry.
+  #
+  # If `item` has links and the page shows them, then it returns the chip
+  # ({icon:, label:, count:}); nothing otherwise.
+  #
+  # Uses `@link_index`, a Core::LinkIndex of the ids of the rows.
+  #
+  # Only the ends that are not in the trash count.
+  def link_status(item)
+    return unless @link_index
+
+    count = @link_index.ends_of(item.id).count { |link_end| !link_end.trashed? }
+    {icon: :link, label: t("core.ui.entry.links", count:), count:} if count.positive?
+  end
+
+  # The button that sets a record aside to link it later.
+  #
+  # Small and with only an icon, for the end of the strip of an entry.
+  def select_command(item)
+    selected = current_selection.include?(item.id)
+    label = selected ? t("core.ui.links_section.unselect_short") : t("core.ui.links_section.select_short")
+    render(Core::UI::SelectButtonComponent.new(entity_id: item.id, selected:, label:, title: item.title, icon: :pin))
+  end
+
   # "Task · 07/10/2026 · Done": the kind, the day when it has one, and the
   # status when it has one.
   def link_detail(record)

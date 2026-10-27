@@ -184,12 +184,12 @@ class Planner::CalendarsControllerTest < ActionDispatch::IntegrationTest
       assert_no_match(/Dentist/, response.body)
     end
 
-    it "reads a month of 200 events with one query on planner_items" do
+    it "reads a month of 200 events with one query on planner_items, and one for the records its links lead to" do
       sign_in_as admin
       200.times { |i| Planner::Event.create!(user: admin, title: "Bulk #{i}", day: Date.new(2026, 10, 1 + (i % 28))) }
       selects = planner_item_selects { get planner_calendar_path }
       assert_response :success
-      assert_equal 1, selects.size, selects.inspect
+      assert_equal 2, selects.size, selects.inspect
     end
 
     it "walks the day index in order, without a temporary b-tree" do
