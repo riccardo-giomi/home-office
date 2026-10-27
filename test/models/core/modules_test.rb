@@ -88,6 +88,22 @@ describe "the booted registry" do
     _(Core::Modules.linkable_kinds.map(&:new_route)).must_equal %i[new_planner_event_path new_planner_task_path new_planner_todo_path]
   end
 
+  it "tells where each kind lives: its page and view around the record, by default" do
+    sample = {"event" => :dentist, "task" => :pay_rent_task, "todo" => :water_plants_todo}
+    paths = Core::Modules.linkable_kinds.to_h { |kind| [kind.key, kind.home.call(planner_items(sample.fetch(kind.key)))] }
+    _(paths["event"]).must_equal "/planner/calendar?date=2026-10-07&view=day"
+    _(paths["task"]).must_equal "/planner/schedule?date=2026-10-07&view=day"
+    _(paths["todo"]).must_equal "/planner/todos"
+    I18n.with_locale(:en) do
+      _(Core::Modules.linkable_kinds.map { |kind| I18n.t(kind.home_label_key) }).must_equal ["Show in Calendar", "Show in Schedule", "Show in Todos"]
+    end
+  end
+
+  it "tells in which dialog each kind opens" do
+    _(Core::Modules.linkable_kinds.map(&:dialog_frame).uniq).must_equal ["item-dialog-frame"]
+    _(Core::LinkableKind.dialog_frame_of(planner_items(:dentist))).must_equal "item-dialog-frame"
+  end
+
   it "has Core first, then Planner" do
     _(Core::Modules.all.map(&:name)).must_equal %w[core planner]
   end

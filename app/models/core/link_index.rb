@@ -17,6 +17,10 @@ class Core::LinkIndex
     def status = facts.status
 
     def day = facts.day
+
+    # [label, address] of the page that holds the record, when its kind says
+    # where it lives.
+    def home = Core::LinkableKind.home_of(record)
   end
 
   def initialize(entity_ids)

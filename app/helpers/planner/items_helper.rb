@@ -40,5 +40,10 @@ module Planner::ItemsHelper
   end
 
   # The dialog the item pages open in, on every page that lists items.
-  def item_dialog = render(Core::UI::FrameDialogComponent.new(id: Planner::ItemDialog::ID, frame_id: Planner::ItemDialog::FRAME_ID))
+  #
+  # It tells the layout which frame the page has, for the selection bar.
+  def item_dialog
+    content_for(:dialog_frames, "#{Planner::ItemDialog::FRAME_ID} ")
+    render(Core::UI::FrameDialogComponent.new(id: Planner::ItemDialog::ID, frame_id: Planner::ItemDialog::FRAME_ID))
+  end
 end

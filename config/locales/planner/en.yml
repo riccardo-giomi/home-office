@@ -140,6 +140,10 @@ en:
         state_cancelled: Cancelled
         submit: Save todo
         updated: Todo updated.
+    link_homes:
+      event: Show in Calendar
+      task: Show in Schedule
+      todo: Show in Todos
     link_kinds:
       event:
         one: Event

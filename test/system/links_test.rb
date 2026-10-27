@@ -297,4 +297,66 @@ class LinksSystemTest < ApplicationSystemTestCase
       end
     end
   end
+
+  describe "going to the page that holds a record" do
+    # The page is left only once the bar shows the record is selected.
+    def select_here = click_button("Select this record").then { assert_selector "[aria-label='Selected records']" }
+
+    it "leads from a link's row to the other record's page and day, leaving the dialog" do
+      visit planner_agenda_path(view: "day", date: "2026-10-07")
+      click_link "Dentist"
+      within("dialog[open]") { click_link "Show in Schedule Pay the rent" }
+      assert_no_selector "dialog[open]"
+      assert_selector "h1", text: "Schedule"
+      assert_selector "a", text: "Pay the rent"
+      assert_equal "/planner/schedule", URI(current_url).path
+      assert_includes current_url, "date=2026-10-07"
+    end
+
+    it "leads from a record's page to its own page and view" do
+      visit planner_task_path(planner_items(:pay_rent_task))
+      click_link "Show in Schedule"
+      assert_selector "h1", text: "Schedule"
+      assert_includes current_url, "view=day"
+      visit planner_event_path(planner_items(:dentist))
+      click_link "Show in Calendar"
+      assert_selector "h1", text: "Calendar"
+      assert_includes current_url, "view=day"
+    end
+
+    it "opens a selected record in the dialog, with all its options, on a page that has one" do
+      visit planner_event_path(planner_items(:holiday))
+      select_here
+      visit planner_todos_path
+      within("[aria-label='Selected records']") { click_link "Bank holiday" }
+      within("dialog[open]") do
+        assert_selector "h1#dialog-title", text: "Bank holiday"
+        assert_link "Show in Calendar"
+      end
+      assert_equal "/planner/todos", URI(current_url).path
+    end
+
+    it "leads to the page and view that hold a selected record, on a page that has no dialog" do
+      visit planner_event_path(planner_items(:holiday))
+      select_here
+      visit trash_path
+      within("[aria-label='Selected records']") { click_link "Bank holiday" }
+      assert_selector "h1", text: "Calendar"
+      assert_current_path "/planner/calendar", ignore_query: true
+      assert_includes current_url, "date=2026-10-08"
+      assert_no_selector "dialog[open]"
+    end
+
+    it "shows in the bar what is changed in the dialog" do
+      visit planner_event_path(planner_items(:holiday))
+      select_here
+      visit planner_todos_path
+      within("[aria-label='Selected records']") { click_link "Bank holiday" }
+      click_link I18n.t("planner.kinds.event.edit")
+      fill_in Planner::Event.human_attribute_name(:title), with: "Bank holiday (moved)"
+      click_button I18n.t("planner.kinds.event.submit")
+      assert_no_selector "dialog[open]"
+      assert_selector "[aria-label='Selected records'] a", text: "Bank holiday (moved)"
+    end
+  end
 end

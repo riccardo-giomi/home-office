@@ -140,6 +140,10 @@ it:
         state_cancelled: Annullato
         submit: Salva da fare
         updated: Da fare aggiornato.
+    link_homes:
+      event: Mostra nel Calendario
+      task: Mostra nel Programma
+      todo: Mostra nell'elenco Da fare
     link_kinds:
       event:
         one: Evento

@@ -38,6 +38,14 @@ module Core::LinksHelper
     render(Core::UI::SelectButtonComponent.new(entity_id: item.id, selected:, label:, title: item.title, icon: :pin))
   end
 
+  # A record's own way to the page and view that hold it ("Show in Calendar").
+  #
+  # It leaves the dialog when the record is shown in one.
+  def link_home_button(record)
+    label, href = Core::LinkableKind.home_of(record)
+    render(Core::UI::ButtonComponent.new(variant: :secondary, href:, data: {turbo_frame: "_top"})) { label } if href
+  end
+
   # "Task · 07/10/2026 · Done": the kind, the day when it has one, and the
   # status when it has one.
   def link_detail(record)

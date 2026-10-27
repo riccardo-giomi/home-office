@@ -220,6 +220,12 @@ module SharedItemPages
           assert_match(/&lt;script&gt;/, response.body)
         end
 
+        it "has a link to the page and view that hold it" do
+          get polymorphic_path(sample)
+          home = Core::Modules.linkable_kind(sample.for_links.kind).home.call(sample)
+          assert_select "a[href='#{home}'][data-turbo-frame=_top]", text: /Show in/
+        end
+
         it "shows no notes section without notes" do
           sample.update!(notes: nil)
           get polymorphic_path(sample)

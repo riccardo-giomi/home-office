@@ -86,4 +86,15 @@ describe Core::UI::LinksSectionComponent do
     assert_selector "a[href='/planner/tasks/new?linked_to=1']", text: "New linked: Task"
     assert_selector "a[href='/planner/todos/new?linked_to=1']", text: "New linked: Todo"
   end
+
+  it "has a link to the page that holds each other end, in its own view, leaving the dialog when there is one" do
+    section(:dentist)
+    assert_selector "a[href='/planner/schedule?date=2026-10-07&view=day'][data-turbo-frame=_top]", text: "Show in Schedule"
+    assert_selector "a[href='/planner/todos'][data-turbo-frame=_top]", text: "Show in Todos"
+  end
+
+  it "has none for an end in the trash, which has no page" do
+    section(:dentist)
+    assert_selector "li", text: "Show in", count: 2
+  end
 end

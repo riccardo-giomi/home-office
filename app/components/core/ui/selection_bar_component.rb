@@ -3,8 +3,11 @@
 # It is shown at the top of every page if it contains something, with
 # information on what is selected and relative controls.
 class Core::UI::SelectionBarComponent < ApplicationComponent
-  def initialize(entries:)
+  # dialog_frames: the ids of the frames of dialog the page has. A record whose
+  # kind opens in one of them opens there.
+  def initialize(entries:, dialog_frames: [])
     @entries = entries
+    @dialog_frames = dialog_frames
   end
 
   def render? = @entries.any?
@@ -22,9 +25,7 @@ class Core::UI::SelectionBarComponent < ApplicationComponent
     label = t("core.ui.selection_bar.unselect", title:)
     tag.span(class: "inline-flex min-w-0 items-center gap-1") do
       safe_join([
-        # TODO: opens the entity details in the page's body instead of the
-        # usual dialog for now, make the dialog work from a layout link too.
-        link_to(title, helpers.polymorphic_path(entity.record), class: "link inline-flex items-center min-h-6 wrap-anywhere"),
+        link_to(title, destination(entity.record), class: "link inline-flex items-center min-h-6 wrap-anywhere", data: {turbo_frame: frame_for(entity.record)}),
         form_with(url: helpers.selection_path, method: :delete, class: "inline-flex") do
           safe_join([
             hidden_field_tag(:entity_id, entity.id, id: nil),
@@ -35,6 +36,22 @@ class Core::UI::SelectionBarComponent < ApplicationComponent
         end
       ])
     end
+  end
+
+  # The frame of dialog that shows the record, when the page has it.
+  def frame_for(record)
+    frame = Core::LinkableKind.dialog_frame_of(record)
+    frame if @dialog_frames.include?(frame)
+  end
+
+  # On a page that has the dialog of the record's kind, the record's page, which
+  # opens in that dialog with all its buttons. On any other page, the page and
+  # view that hold the record, or its own page when its kind does not say.
+  def destination(record)
+    return helpers.polymorphic_path(record) if frame_for(record)
+
+    _label, home = Core::LinkableKind.home_of(record)
+    home || helpers.polymorphic_path(record)
   end
 
   def actions

@@ -1,8 +1,8 @@
 # The Links section of a record's page or dialog.
 #
 # It lists the other end of each link (kind, title, day, status) with a way to
-# change or remove it, the buttons to add a link and to select the record, and
-# the frame the picker is drawn in.
+# show, change or remove it, the buttons to add a link and to select the
+# record, and the frame the picker is drawn in.
 #
 # It knows nothing of what the records are: the ends come from Core::LinkIndex.
 #
@@ -82,7 +82,20 @@ class Core::UI::LinksSectionComponent < ApplicationComponent
 
   def actions(link_end)
     tag.div(class: "flex shrink-0 flex-wrap items-center gap-2") do
-      safe_join([change_button(link_end), remove_button(link_end)])
+      safe_join([show_button(link_end), change_button(link_end), remove_button(link_end)].compact)
+    end
+  end
+
+  # To the page that holds the other end, in its own view. `_top` leaves the
+  # dialog when the section is in one. An end in the trash has no page.
+  def show_button(link_end)
+    return if link_end.trashed?
+
+    label, href = link_end.home
+    return unless href
+
+    render(Core::UI::ButtonComponent.new(variant: :secondary, size: :xs, href:, data: {turbo_frame: "_top"})) do
+      safe_join([label, tag.span(" #{link_end.label}", class: "sr-only")])
     end
   end
 
