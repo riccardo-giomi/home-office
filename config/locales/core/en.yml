@@ -130,6 +130,7 @@ en:
         in_trash: in the trash
         link_to_selected: 'Link to selected: %{title}'
         list: Linked records
+        new_linked: 'New linked: %{kind}'
         none: Nothing linked yet.
         remove: Remove link to %{title}
         select: Select this record

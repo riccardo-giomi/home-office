@@ -9,7 +9,8 @@ module Core::LinksHelper
     render Core::UI::LinksSectionComponent.new(
       entity_id:, ends:, notice:,
       selected: current_selection.include?(entity_id),
-      other_selected: other && [other.id, other.record.for_links.label]
+      other_selected: other && [other.id, other.record.for_links.label],
+      creatable: creatable_kinds(entity_id)
     )
   end
 
@@ -41,5 +42,13 @@ module Core::LinksHelper
         safe_join([t("links.new.link"), tag.span(" #{record.for_links.label}", class: "sr-only")])
       end
     ])
+  end
+
+  # What "New linked" offers: each kind of every module that has a new form, as
+  # [its name, the form's address].
+  def creatable_kinds(entity_id)
+    Core::Modules.linkable_kinds.select(&:new_route).map do |kind|
+      [t(kind.label_key, count: 1), public_send(kind.new_route, linked_to: entity_id)]
+    end
   end
 end

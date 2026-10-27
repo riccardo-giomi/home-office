@@ -53,6 +53,73 @@ module SharedItemPages
         end
       end
 
+      describe "creating a record linked to another" do
+        let(:source) { planner_items(:pay_rent_task) }
+
+        before { sign_in_as admin }
+
+        it "prefills the title with the source's and carries the source in the form" do
+          get new_polymorphic_path(item_class, linked_to: source.id)
+          assert_response :success
+          assert_select "input[name='#{param_key}[title]'][value='#{source.title}']"
+          assert_select "form#item-form input[name=linked_to][value='#{source.id}']"
+        end
+
+        it "saves the record and the link together" do
+          assert_difference ["item_class.count", "Core::Link.count"], 1 do
+            post collection_path, params: item_params(title: "Follow up").merge(linked_to: source.id)
+          end
+          item = item_class.order(:id).last
+          _(Core::Link.existing(admin.id, item.id, source.id)).wont_be_nil
+        end
+
+        it "saves neither, and keeps the source, when the form is invalid" do
+          assert_no_difference ["item_class.count", "Core::Link.count"] do
+            post collection_path, params: item_params(title: " ").merge(linked_to: source.id)
+          end
+          assert_response :unprocessable_content
+          assert_select "form#item-form input[name=linked_to][value='#{source.id}']"
+        end
+
+        it "saves no record, and says why, when the source went to the trash after the form was drawn" do
+          get new_polymorphic_path(item_class, linked_to: source.id)
+          source.trash
+          assert_no_difference ["item_class.count", "Core::Link.count"] do
+            post collection_path, params: item_params(title: "Follow up").merge(linked_to: source.id)
+          end
+          assert_response :not_found
+        end
+
+        it "saves no record, and shows the reason, when the link itself is refused" do
+          # refused after the source was found: it went to the trash between the lookup and the link
+          original = Core::Link.method(:connect)
+          Core::Link.define_singleton_method(:connect) { |user, a, b| Core::Link.new(user:, first_entity_id: a, second_entity_id: a).tap(&:validate) }
+          assert_no_difference ["item_class.count", "Core::Link.count"] do
+            post collection_path, params: item_params(title: "Follow up").merge(linked_to: source.id)
+          end
+          assert_response :unprocessable_content
+          assert_select "#error-summary", text: /itself/
+        ensure
+          Core::Link.define_singleton_method(:connect, original)
+        end
+
+        it "answers 404, on the form and on saving, for a source that is another user's, in the trash or not there" do
+          [users(:other_admin).then { planner_items(:other_users_event).id }, planner_items(:trashed_event).id, 0].each do |id|
+            get new_polymorphic_path(item_class, linked_to: id)
+            assert_response :not_found
+            assert_no_difference ["item_class.count", "Core::Link.count"] do
+              post collection_path, params: item_params(title: "Follow up").merge(linked_to: id)
+            end
+            assert_response :not_found
+          end
+        end
+
+        it "does nothing special without a source" do
+          get new_polymorphic_path(item_class)
+          assert_select "input[name=linked_to]", 0
+        end
+      end
+
       describe "priority" do
         before { sign_in_as admin }
 

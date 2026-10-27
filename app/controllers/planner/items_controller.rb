@@ -6,6 +6,7 @@
 # actions, but its views are still available for any child inheriting from it.
 class Planner::ItemsController < ApplicationController
   include Planner::ItemPages
+  include Core::LinkedCreation
 
   before_action :set_item, only: %i[show edit update destroy]
 
@@ -13,12 +14,12 @@ class Planner::ItemsController < ApplicationController
   end
 
   def new
-    @item = item_class.new(initial_attributes)
+    @item = item_class.new(initial_attributes.merge(linked_attributes))
   end
 
   def create
     @item = item_class.new(item_params.merge(user: Current.user))
-    if @item.save
+    if save_and_link(@item)
       return dialog_done(kind_t("created")) if in_dialog?
 
       redirect_to back_path_or_default(@item), notice: kind_t("created")

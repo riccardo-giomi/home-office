@@ -80,4 +80,10 @@ describe Core::UI::LinksSectionComponent do
     section(:holiday, other_selected: [core_entities(:dentist).id, "W" * 255])
     assert_selector "button.max-w-full span.truncate", text: "Link to selected: #{"W" * 255}"
   end
+
+  it "offers a new linked record of each kind it is given, as a link to that form" do
+    section(:holiday, creatable: [["Task", "/planner/tasks/new?linked_to=1"], ["Todo", "/planner/todos/new?linked_to=1"]])
+    assert_selector "a[href='/planner/tasks/new?linked_to=1']", text: "New linked: Task"
+    assert_selector "a[href='/planner/todos/new?linked_to=1']", text: "New linked: Todo"
+  end
 end

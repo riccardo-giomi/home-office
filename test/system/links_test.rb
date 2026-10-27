@@ -235,4 +235,32 @@ class LinksSystemTest < ApplicationSystemTestCase
       end
     end
   end
+
+  describe "a new linked record" do
+    it "is made from a record's page with its title, and linked at once" do
+      visit planner_event_path(planner_items(:holiday))
+      click_link "New linked: Task"
+      assert_field "Title", with: "Bank holiday"
+      fill_in "Title", with: "Send cards"
+      click_button "Save task"
+      assert_selector "h1", text: "Schedule"
+      assert_text "Send cards"
+      task = Planner::Task.find_by!(title: "Send cards")
+      assert Core::Link.existing(admin.id, task.id, planner_items(:holiday).id)
+    end
+
+    it "is made from the dialog, which closes, leaving the link in place" do
+      visit planner_agenda_path(view: "day", date: "2026-10-07")
+      click_link "Dentist"
+      within("dialog[open]") { click_link "New linked: Todo" }
+      within("dialog[open]") do
+        assert_field "Title", with: "Dentist"
+        fill_in "Title", with: "Call the dentist"
+        click_button "Save todo"
+      end
+      assert_no_selector "dialog[open]"
+      todo = Planner::Todo.find_by!(title: "Call the dentist")
+      assert Core::Link.existing(admin.id, todo.id, planner_items(:dentist).id)
+    end
+  end
 end

@@ -130,6 +130,7 @@ it:
         in_trash: nel cestino
         link_to_selected: 'Collega a quello selezionato: %{title}'
         list: Elementi collegati
+        new_linked: 'Nuovo collegato: %{kind}'
         none: Ancora nessun collegamento.
         remove: Rimuovi il collegamento a %{title}
         select: Seleziona questo elemento

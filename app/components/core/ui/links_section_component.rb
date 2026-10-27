@@ -17,12 +17,16 @@ class Core::UI::LinksSectionComponent < ApplicationComponent
   # notice: what has just been done, said in a status line. The dialog hides
   # the page's own notice.
   #
+  # creatable: [[kind label, address of its new form]], what "New linked"
+  # offers. The form takes `linked_to`.
+  #
   # selected: this record is in the selection.
   #
   # other_selected: the other record in the selection, as [id, label], when it
   # can be linked to this one (it is not this record and not linked already).
-  def initialize(entity_id:, ends:, notice: nil, id: "links-section", selected: false, other_selected: nil)
+  def initialize(entity_id:, ends:, notice: nil, id: "links-section", selected: false, other_selected: nil, creatable: [])
     @id = id
+    @creatable = creatable
     @selected = selected
     @other_selected = other_selected
     @entity_id = entity_id
@@ -104,13 +108,19 @@ class Core::UI::LinksSectionComponent < ApplicationComponent
 
   def buttons
     tag.div(class: "mt-3 flex flex-wrap gap-2") do
-      safe_join([add_link, select_button, link_to_selected].compact)
+      safe_join([add_link, select_button, link_to_selected, *new_linked].compact)
     end
   end
 
   def add_link
     render(Core::UI::ButtonComponent.new(variant: :secondary, href: helpers.new_link_path(entity_id: @entity_id), data: {turbo_frame: picker_id})) do
       t("core.ui.links_section.add")
+    end
+  end
+
+  def new_linked
+    @creatable.map do |label, href|
+      render(Core::UI::ButtonComponent.new(variant: :secondary, href:)) { t("core.ui.links_section.new_linked", kind: label) }
     end
   end
 
