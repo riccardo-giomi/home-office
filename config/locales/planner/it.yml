@@ -191,6 +191,35 @@ it:
         moved: "«%{title}» spostato in posizione %{position} di %{count}."
         refused: Questo spostamento non è possibile.
         unchanged: "«%{title}» è già al suo posto."
+    recurrence:
+      summary:
+        every:
+          daily:
+            one: Ogni giorno
+            other: Ogni %{count} giorni
+          monthly:
+            one: Ogni mese
+            other: Ogni %{count} mesi
+          weekly:
+            one: Ogni settimana
+            other: Ogni %{count} settimane
+          yearly:
+            one: Ogni anno
+            other: Ogni %{count} anni
+        nth:
+          "-1": ultimo
+          '1': primo
+          '2': secondo
+          '3': terzo
+          '4': quarto
+        on_date: il %{day} %{month}
+        on_month_day: il giorno %{day}
+        on_nth_weekday: il %{nth} %{weekday}
+        on_weekdays: il %{days}
+        times:
+          one: una volta
+          other: "%{count} volte"
+        until: fino al %{date}
     restorations:
       update:
         restored: "«%{title}» ripristinato."

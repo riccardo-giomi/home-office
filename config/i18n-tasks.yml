@@ -147,7 +147,7 @@ search:
 
 ## Do not consider these keys missing:
 ignore_missing:
-  - "date.{day_names,abbr_day_names}"
+  - "date.{day_names,abbr_day_names,abbr_month_names}"
 
 ## Consider these keys used:
 ignore_unused:
@@ -158,6 +158,7 @@ ignore_unused:
   - "planner.link_homes.*"
   - "planner.link_kinds.*"
   - "planner.nav.*"
+  - "planner.recurrence.summary.*"
   - "planner.trash.counts.*"
   - "planner.trash.kinds.*"
   - "preferences.date_formats.*"

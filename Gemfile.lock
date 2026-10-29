@@ -337,6 +337,8 @@ GEM
       io-console (~> 0.5)
     rouge (5.1.0)
       strscan (~> 3.1)
+    rrule (0.8.0)
+      activesupport (>= 2.3)
     rubocop (1.91.0)
       json (>= 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -489,6 +491,7 @@ DEPENDENCIES
   puma (>= 5.0)
   rails (~> 8.1.4)
   rails-i18n (~> 8.1)
+  rrule (= 0.8.0)
   selenium-webdriver
   solid_cable
   solid_cache
@@ -621,6 +624,7 @@ CHECKSUMS
   regexp_parser (2.13.1) sha256=5aedb6b7c35688f51e86eef17a15374dfd287c83f4ca644b2c5f3ec50a33b44b
   reline (0.7.0) sha256=5b012d8e55dbf9d450f12bde2cf7d15ff546ae80b3f8f3b30e570d431815583d
   rouge (5.1.0) sha256=b77c632842ab7f5147940212f0345808cccfbce864fd5b631d7d12a35ac85452
+  rrule (0.8.0) sha256=abb19a334efe441879012de9c2f5589372a20097a63a70f5ff9d3b0b4504a4f2
   rubocop (1.91.0) sha256=9c82b7bf391c5d7e3798c5b9996e22a1fe3bd7468e351dfdeb96140c058296d0
   rubocop-ast (1.50.0) sha256=b9ca88300da0803ee222ad20cdb30494c0a784eed06fdc35d254b06d662788db
   rubocop-performance (1.26.1) sha256=cd19b936ff196df85829d264b522fd4f98b6c89ad271fa52744a8c11b8f71834

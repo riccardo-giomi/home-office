@@ -191,6 +191,35 @@ en:
         moved: "“%{title}” moved to position %{position} of %{count}."
         refused: That move is not possible.
         unchanged: "“%{title}” is already there."
+    recurrence:
+      summary:
+        every:
+          daily:
+            one: Every day
+            other: Every %{count} days
+          monthly:
+            one: Every month
+            other: Every %{count} months
+          weekly:
+            one: Every week
+            other: Every %{count} weeks
+          yearly:
+            one: Every year
+            other: Every %{count} years
+        nth:
+          "-1": last
+          '1': 1st
+          '2': 2nd
+          '3': 3rd
+          '4': 4th
+        on_date: on %{day} %{month}
+        on_month_day: on day %{day}
+        on_nth_weekday: on the %{nth} %{weekday}
+        on_weekdays: on %{days}
+        times:
+          one: once
+          other: "%{count} times"
+        until: until %{date}
     restorations:
       update:
         restored: "“%{title}” restored."
