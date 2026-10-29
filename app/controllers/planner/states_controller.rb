@@ -15,6 +15,6 @@ class Planner::StatesController < ApplicationController
     end
     return redraw_dialog(item) if in_dialog?
 
-    redirect_to polymorphic_path(item, back: back_param), status: :see_other
+    redirect_to item_path(item, back: back_param), status: :see_other
   end
 end

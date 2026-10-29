@@ -40,6 +40,9 @@ module Planner::ItemPages
     ]
   end
 
+  # The address of an item's page, the one the views use (a ghost has no id).
+  def item_path(item, **options) = helpers.item_path(item, **options)
+
   # Copy that differs by type, for an item already loaded.
   def item_copy(item, key, **options) = t("planner.kinds.#{item.class.kind}.#{key}", **options)
 

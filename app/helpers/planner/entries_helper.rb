@@ -17,7 +17,7 @@ module Planner::EntriesHelper
   def entry_attributes(item)
     {
       title: item.title,
-      href: polymorphic_path(item, back: request.fullpath),
+      href: item_path(item, back: request.fullpath),
       done: item.done?,
       link_data: {turbo_frame: Planner::ItemDialog::FRAME_ID},
       starts_at: item.starts_at,
@@ -44,9 +44,9 @@ module Planner::EntriesHelper
   end
 
   def completion_check(item)
-    form_with url: planner_item_completion_path(item), method: :patch, data: {controller: "auto-submit"} do
+    form_with url: completion_path(item), method: :patch, data: {controller: "auto-submit"} do
       render Core::UI::CheckboxComponent.new(name: "done", checked: item.done?, label: t("planner.calendars.show.done_label", title: item.title),
-        id: "done_item_#{item.id}", data: {action: "auto-submit#submit"})
+        id: completion_box_id(item), data: {action: "auto-submit#submit"})
     end
   end
 

@@ -1,4 +1,42 @@
 module Planner::ItemsHelper
+  # The address of an item's page.
+  #
+  # A ghost (an occurrence nobody has touched yet) has no id: its address is its
+  # series and the date the rule gave it. Anything else has its own.
+  def item_path(item, **options)
+    return polymorphic_path(item, **options) unless ghost?(item)
+
+    planner_series_occurrence_path(item.series_id, item.occurrence_on.iso8601, **options)
+  end
+
+  def edit_item_path(item, **options)
+    return polymorphic_path([:edit, item], **options) unless ghost?(item)
+
+    edit_planner_series_occurrence_path(item.series_id, item.occurrence_on.iso8601, **options)
+  end
+
+  # Where ticking the box goes. A ghost is saved by the tick.
+  def completion_path(item)
+    return planner_item_completion_path(item) unless ghost?(item)
+
+    planner_series_occurrence_completion_path(item.series_id, item.occurrence_on.iso8601)
+  end
+
+  # The element id of the box: the item's own, or its series and date for a
+  # ghost, which has no id. Ids stay unique.
+  def completion_box_id(item)
+    ghost?(item) ? "done_series_#{item.series_id}_#{item.occurrence_on.iso8601}" : "done_item_#{item.id}"
+  end
+
+  def state_path(item)
+    return planner_item_state_path(item) unless ghost?(item)
+
+    planner_series_occurrence_state_path(item.series_id, item.occurrence_on.iso8601)
+  end
+
+  # An occurrence of a series that is not saved yet.
+  def ghost?(item) = item.new_record? && item.occurrence?
+
   # In the dialog the page lives in the frame the dialog holds; a full page
   # needs no frame (its own forms and links must not be captured by one).
   def item_frame(&block) = in_dialog? ? turbo_frame_tag(Planner::ItemDialog::FRAME_ID, &block) : capture(&block)
@@ -25,7 +63,7 @@ module Planner::ItemsHelper
 
   # One small form per state the item can move to (abandon, cancel, reopen).
   def state_button(item, to)
-    form_with url: planner_item_state_path(item), method: :patch do
+    form_with url: state_path(item), method: :patch do
       safe_join([
         (hidden_field_tag(:back, back_param) if back_param),
         hidden_field_tag(:state, to, id: "state_#{item.id}_#{to}"),

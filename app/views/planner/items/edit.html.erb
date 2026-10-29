@@ -1,7 +1,7 @@
 <% content_for :title, kind_t(@item, "edit_title", title: @item.title_was) %>
 <%= item_frame do %>
   <div class="w-full max-w-md">
-    <%= render Core::UI::PageHeaderComponent.new(id: "dialog-title", title: kind_t(@item, "edit_title", title: @item.title_was), back_href: polymorphic_path(@item, back: back_param), back_label: kind_t(@item, "back_to_item")) %>
+    <%= render Core::UI::PageHeaderComponent.new(id: "dialog-title", title: kind_t(@item, "edit_title", title: @item.title_was), back_href: item_path(@item, back: back_param), back_label: kind_t(@item, "back_to_item")) %>
     <%= render "form", item: @item %>
     <%= render(Core::UI::FormActionsComponent.new) do |actions| %>
       <% actions.with_primary do %>
@@ -10,7 +10,7 @@
       <% actions.with_danger do %>
         <%= render(Core::UI::ModalComponent.new(id: "delete-item", title: kind_t(@item, "delete_title"), trigger: kind_t(@item, "delete"), trigger_variant: :danger)) do %>
           <p class="mb-4"><%= kind_t(@item, "delete_warning", title: @item.title_was) %></p>
-          <%= form_with url: polymorphic_path(@item), method: :delete do %>
+          <%= form_with url: item_path(@item), method: :delete do %>
             <%= hidden_field_tag :back, back_param if back_param %>
             <%= render(Core::UI::ButtonComponent.new(type: :submit, variant: :danger)) { kind_t(@item, "delete_confirm") } %>
           <% end %>

@@ -35,7 +35,7 @@ class Planner::ItemsController < ApplicationController
     if @item.update(item_params)
       return dialog_done(kind_t("updated")) if in_dialog?
 
-      redirect_to polymorphic_path(@item, back: back_param), notice: kind_t("updated")
+      redirect_to item_path(@item, back: back_param), notice: kind_t("updated")
     else
       render :edit, status: :unprocessable_content
     end
