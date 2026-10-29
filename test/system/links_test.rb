@@ -98,6 +98,25 @@ class LinksSystemTest < ApplicationSystemTestCase
   end
 
   describe "in the dialog of the agenda" do
+    it "scrolls the picker to the top of a dialog too short to show it where it opens" do
+      page.current_window.resize_to(1000, 500)
+      visit planner_agenda_path(view: "day", date: "2026-10-07")
+      click_link "Dentist"
+      within("dialog[open]") { click_link "Add link" }
+      assert_selector "#link-picker-panel-title"
+      page.document.synchronize do
+        top, scroller_top = page.evaluate_script(<<~JS)
+          (() => {
+            const title = document.getElementById("link-picker-panel-title")
+            let scroller = title.parentElement
+            while (scroller && !/(auto|scroll)/.test(getComputedStyle(scroller).overflowY)) scroller = scroller.parentElement
+            return [title.getBoundingClientRect().top, scroller.getBoundingClientRect().top]
+          })()
+        JS
+        raise Capybara::ExpectationNotMet, "the picker title is #{top - scroller_top}px from the top of the dialog" unless (top - scroller_top).between?(-1, 120)
+      end
+    end
+
     it "adds and removes a link inside the dialog, which stays open, while the page behind keeps its place" do
       visit planner_agenda_path(view: "day", date: "2026-10-07")
       click_link "Dentist"

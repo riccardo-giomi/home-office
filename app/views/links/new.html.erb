@@ -2,7 +2,7 @@
     In change mode the buttons patch the link being changed instead of making a new one. %>
 <%= turbo_frame_tag(turbo_frame_request_id || "links-section-picker") do %>
   <% unless params[:close] %>
-    <%= render(Core::UI::PanelComponent.new(id: "link-picker-panel", title: @change ? t(".title_change") : t(".title_add"))) do %>
+    <%= render(Core::UI::PanelComponent.new(id: "link-picker-panel", title: @change ? t(".title_change") : t(".title_add"), data: {controller: "scroll-into-view"})) do %>
       <nav aria-label="<%= t(".kinds") %>" class="mb-3">
         <%= render Core::UI::TabsComponent.new(items: Core::Modules.linkable_kinds.map { |kind| [t(kind.label_key, count: 2), new_link_path(entity_id: @entity.id, kind: kind.key, q: @term.presence, change: @change&.id), kind == @kind] }) %>
       </nav>
