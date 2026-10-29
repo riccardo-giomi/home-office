@@ -28,6 +28,8 @@ class Planner::Series < ApplicationRecord
   validate :span_is_ordered
   validate :ends_the_same_day
 
+  include Planner::Series::Occurrences
+
   scope :owned_by, ->(user) { where(user:) }
 
   def self.table_name = "planner_series"
