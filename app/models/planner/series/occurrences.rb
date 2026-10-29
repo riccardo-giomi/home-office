@@ -1,12 +1,12 @@
 # The occurrences of a series.
 #
-# A date is a ghost until someone touches it. Ghosts are unsaved events built
-# from the template, and `materialize` makes one real, once, however many
-# requests ask at the same time.
+# A date is a ghost until someone touches it: an occurrence that exists only
+# as an unsaved event built from the template. `materialize` makes one real,
+# once, however many requests ask at the same time.
 #
-# A date that has a row (in any state, trashed included) or a skip is never a
-# ghost. A row keeps the date the rule gave it (`occurrence_on`) when it moves,
-# so its old date does not become a ghost again.
+# A date that has a row (in any state, trashed included) or a skip is never an
+# unsaved occurrence. A row keeps the date the rule gave it (`occurrence_on`)
+# when it moves, so its old date does not become an unsaved occurrence again.
 module Planner::Series::Occurrences
   extend ActiveSupport::Concern
 
@@ -39,13 +39,13 @@ module Planner::Series::Occurrences
     event
   end
 
-  # The row for the date, else a ghost, else nil (the rule does not give the
-  # date, or it is skipped).
+  # The row for the date, else an unsaved occurrence, else nil (the rule does
+  # not give the date, or it is skipped).
   def occurrence(date)
     events.includes(:entity).find_by(occurrence_on: date) || (build_occurrence(date) if dates(date..date).any?)
   end
 
-  # The row for the date, made now if it was a ghost.
+  # The row for the date, made now if it was unsaved.
   #
   # Safe to call twice at once: the call that lost reads the winner.
   def materialize(date)

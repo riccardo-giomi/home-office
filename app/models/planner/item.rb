@@ -9,7 +9,7 @@ class Planner::Item < ApplicationRecord
   # Set only on the events a series made. `occurrence_on` is the date the rule
   # gave the event, and it stays when the event moves.
   #
-  # No inverse: an unsaved occurrence (a ghost) must not join `series.events`,
+  # No inverse: an unsaved occurrence must not join `series.events`,
   # or saving the series would save it.
   belongs_to :series, class_name: "Planner::Series", optional: true, inverse_of: false
   enum :state, {active: "active", abandoned: "abandoned", cancelled: "cancelled"}, default: :active, validate: true

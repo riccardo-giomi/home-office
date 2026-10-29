@@ -1,5 +1,5 @@
 <%# time-offset: typing a start fills the end 30 minutes later until the end is typed by hand %>
-<%= form_with model: item, url: item_path(item), method: (:patch if ghost?(item)), id: "item-form", data: {controller: "time-offset", time_offset_minutes_value: Planner::Timed::DEFAULT_DURATION.in_minutes.to_i} do |form| %>
+<%= form_with model: item, url: item_path(item), method: (:patch if unsaved_occurrence?(item)), id: "item-form", data: {controller: "time-offset", time_offset_minutes_value: Planner::Timed::DEFAULT_DURATION.in_minutes.to_i} do |form| %>
   <%= hidden_field_tag :back, back_param if back_param %>
   <%= hidden_field_tag :linked_to, linked_source.id if linked_source %>
   <%= render Core::UI::ErrorSummaryComponent.new(record: item) %>

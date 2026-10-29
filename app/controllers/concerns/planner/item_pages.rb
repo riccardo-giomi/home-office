@@ -40,7 +40,8 @@ module Planner::ItemPages
     ]
   end
 
-  # The address of an item's page, the one the views use (a ghost has no id).
+  # The address of an item's page, the one the views use (an unsaved occurrence
+  # has no id).
   def item_path(item, **options) = helpers.item_path(item, **options)
 
   # Copy that differs by type, for an item already loaded.

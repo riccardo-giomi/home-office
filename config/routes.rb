@@ -11,7 +11,8 @@ Rails.application.routes.draw do
     resource :agenda, only: :show
     resource :schedule, only: :show
     resources :events, except: :index
-    # A ghost has no id: it is named by its series and the date the rule gave it.
+    # An unsaved occurrence has no id: it is named by its series and the date
+    # the rule gave it.
     resources :series, only: [] do
       resources :occurrences, only: %i[show edit update], param: :on do
         resource :completion, only: :update

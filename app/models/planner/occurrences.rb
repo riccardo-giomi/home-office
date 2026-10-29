@@ -1,17 +1,17 @@
 # What a calendar or an agenda shows for a range of days.
 #
-# The events of the user (rows) and the ghosts of their series, together. The
-# number of queries is fixed, however many series there are.
+# The events of the user (rows) and the unsaved occurrences of their series,
+# together. The number of queries is fixed, however many series there are.
 module Planner::Occurrences
   def self.for(user, range)
     rows = Planner::Event.owned_by(user).kept.on_days(range).to_a
     series = Planner::Series.owned_by(user).kept.overlapping(range).to_a
-    (rows + ghosts(series, range)).sort_by do |event|
+    (rows + unsaved_occurrences(series, range)).sort_by do |event|
       [event.day, event.starts_at ? 1 : 0, event.starts_at.to_i, event.id.to_i]
     end
   end
 
-  def self.ghosts(series, range)
+  def self.unsaved_occurrences(series, range)
     return [] if series.empty?
 
     ids = series.map(&:id)
@@ -24,5 +24,5 @@ module Planner::Occurrences
       one.dates(range, skip:).map { |date| one.build_occurrence(date) }
     end
   end
-  private_class_method :ghosts
+  private_class_method :unsaved_occurrences
 end
