@@ -27,6 +27,23 @@ class LinksSystemTest < ApplicationSystemTestCase
 
   def focused_id = evaluate_script("document.activeElement.id")
 
+  # Waits until Turbo has finished the visit that the last change started. A
+  # page refresh asked while a visit is still going is dropped, and the bar of
+  # the selection would stay as it was.
+  def wait_for_turbo_idle
+    page.document.synchronize do
+      raise Capybara::ExpectationNotMet, "Turbo is still visiting" if evaluate_script("Boolean(Turbo.session.navigator.currentVisit)")
+    end
+  end
+
+  # The page is left only once the bar shows the record is selected.
+  def select_here
+    wait_for_turbo_idle
+    click_button("Select this record")
+    assert_selector "[aria-label='Selected records']"
+    wait_for_turbo_idle
+  end
+
   %w[event task todo].each do |kind|
     describe "on a #{kind}'s page" do
       let(:record) { planner_items(kinds.fetch(kind)) }
@@ -165,8 +182,6 @@ class LinksSystemTest < ApplicationSystemTestCase
   end
 
   describe "the selection" do
-    def select_here = click_button("Select this record").then { assert_selector "[aria-label='Selected records']" }
-
     it "sets a record aside, follows to other pages, and links another record to it" do
       visit planner_event_path(planner_items(:holiday))
       select_here
@@ -318,9 +333,6 @@ class LinksSystemTest < ApplicationSystemTestCase
   end
 
   describe "going to the page that holds a record" do
-    # The page is left only once the bar shows the record is selected.
-    def select_here = click_button("Select this record").then { assert_selector "[aria-label='Selected records']" }
-
     it "leads from a link's row to the other record's page and day, leaving the dialog" do
       visit planner_agenda_path(view: "day", date: "2026-10-07")
       click_link "Dentist"
