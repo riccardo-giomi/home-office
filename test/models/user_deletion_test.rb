@@ -6,6 +6,9 @@ describe "deleting a user for good" do
     Planner::Todo.create!(user: member, title: "Mine")
     Planner::Event.create!(user: member, title: "Kept event", day: Date.new(2026, 10, 7))
     Planner::Event.create!(user: member, title: "Trashed event", day: Date.new(2026, 10, 7)).trash
+    series = Planner::Series.create!(user: member, title: "Rent", starts_on: Date.new(2026, 10, 5), time_zone: "Europe/Rome", rrule: "FREQ=MONTHLY;BYMONTHDAY=5")
+    series.exclusions.create!(user_id: member.id, excluded_on: Date.new(2026, 11, 5))
+    Planner::Event.create!(user: member, title: "Rent", day: Date.new(2026, 10, 5), series:, occurrence_on: Date.new(2026, 10, 5))
     member.sessions.create!
     Core::Link.connect(member, Planner::Todo.where(user_id: member.id).first.id, Planner::Event.where(user_id: member.id).first.id)
     other_links = Core::Link.where.not(user_id: member.id).count
@@ -15,6 +18,7 @@ describe "deleting a user for good" do
     member.destroy!
 
     _(Planner::Item.where(user_id: member.id).count).must_equal 0
+    _([Planner::Series.where(user_id: member.id).count, Planner::SeriesExclusion.where(user_id: member.id).count]).must_equal [0, 0]
     _(Session.where(user_id: member.id).count).must_equal 0
     _(Core::Link.where(user_id: member.id).count).must_equal 0
     _(Core::Link.where.not(user_id: member.id).count).must_equal other_links

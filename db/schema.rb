@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_25_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_29_120000) do
   create_table "core_entities", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "record_type", null: false
@@ -51,21 +51,67 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_130000) do
     t.datetime "updated_at", null: false
     t.integer "priority", default: 1, null: false
     t.integer "position", null: false
+    t.integer "series_id"
+    t.date "occurrence_on"
+    t.index ["series_id", "occurrence_on"], name: "index_planner_items_on_series_id_and_occurrence_on", unique: true
     t.index ["user_id", "type", "day", "starts_at"], name: "index_planner_items_on_day"
     t.index ["user_id", "type", "position"], name: "index_planner_items_position", unique: true
+    t.check_constraint "(series_id IS NULL) = (occurrence_on IS NULL)", name: "chk_planner_items_series_pair"
     t.check_constraint "(starts_at IS NULL) = (ends_at IS NULL) AND (starts_at IS NULL) = (time_zone IS NULL)", name: "chk_planner_items_times_paired"
     t.check_constraint "day IS NOT NULL OR type = 'Planner::Todo'", name: "chk_planner_items_day_required"
     t.check_constraint "day IS NULL OR day = date(day)", name: "chk_planner_items_day_format"
     t.check_constraint "done_at IS NULL OR tracks_done = 1", name: "chk_planner_items_done_tracked"
     t.check_constraint "ends_at > starts_at", name: "chk_planner_items_window_order"
     t.check_constraint "length(trim(title)) BETWEEN 1 AND 255", name: "chk_planner_items_title"
+    t.check_constraint "occurrence_on IS NULL OR occurrence_on = date(occurrence_on)", name: "chk_planner_items_occurrence_format"
     t.check_constraint "priority BETWEEN 0 AND 3", name: "chk_planner_items_priority"
     t.check_constraint "record_type = 'Planner::Item'", name: "chk_planner_items_record_type"
+    t.check_constraint "series_id IS NULL OR type = 'Planner::Event'", name: "chk_planner_items_series_events"
     t.check_constraint "state <> 'cancelled' OR type = 'Planner::Event'", name: "chk_planner_items_cancelled_events"
     t.check_constraint "state IN ('active', 'abandoned', 'cancelled')", name: "chk_planner_items_state"
     t.check_constraint "tracks_done IN (0, 1)", name: "chk_planner_items_tracks_done"
     t.check_constraint "type = 'Planner::Event' OR tracks_done = 1", name: "chk_planner_items_done_always"
     t.check_constraint "type IN ('Planner::Event', 'Planner::Task', 'Planner::Todo')", name: "chk_planner_items_type"
+  end
+
+  create_table "planner_series", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "chain_id"
+    t.string "title", null: false
+    t.text "notes"
+    t.integer "priority", default: 1, null: false
+    t.date "starts_on", null: false
+    t.date "from_on"
+    t.date "ends_on"
+    t.integer "tracks_done", default: 0, null: false
+    t.string "start_time"
+    t.integer "duration_minutes"
+    t.string "time_zone", null: false
+    t.string "rrule", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["id", "user_id"], name: "index_planner_series_on_id_and_user_id", unique: true
+    t.index ["user_id", "chain_id"], name: "index_planner_series_on_user_id_and_chain_id"
+    t.index ["user_id", "deleted_at"], name: "index_planner_series_trash", where: "deleted_at IS NOT NULL"
+    t.check_constraint "(start_time IS NULL) = (duration_minutes IS NULL) AND (duration_minutes IS NULL OR duration_minutes > 0)", name: "chk_planner_series_times"
+    t.check_constraint "ends_on IS NULL OR ends_on >= starts_on", name: "chk_planner_series_ends"
+    t.check_constraint "from_on IS NULL OR from_on >= starts_on", name: "chk_planner_series_from"
+    t.check_constraint "length(rrule) BETWEEN 1 AND 255", name: "chk_planner_series_rrule"
+    t.check_constraint "length(trim(title)) BETWEEN 1 AND 255", name: "chk_planner_series_title"
+    t.check_constraint "priority BETWEEN 0 AND 3", name: "chk_planner_series_priority"
+    t.check_constraint "start_time IS NULL OR start_time GLOB '[0-2][0-9]:[0-5][0-9]'", name: "chk_planner_series_start_time"
+    t.check_constraint "starts_on = date(starts_on) AND (from_on IS NULL OR from_on = date(from_on)) AND (ends_on IS NULL OR ends_on = date(ends_on))", name: "chk_planner_series_date_format"
+    t.check_constraint "tracks_done IN (0, 1)", name: "chk_planner_series_tracks_done"
+  end
+
+  create_table "planner_series_exclusions", force: :cascade do |t|
+    t.integer "series_id", null: false
+    t.integer "user_id", null: false
+    t.date "excluded_on", null: false
+    t.index ["series_id", "excluded_on"], name: "index_planner_series_exclusions_on_series_id_and_excluded_on", unique: true
+    t.check_constraint "excluded_on = date(excluded_on)", name: "chk_planner_series_exclusions_date_format"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -110,5 +156,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_130000) do
   add_foreign_key "core_links", "core_entities", column: ["first_entity_id", "user_id"], primary_key: ["id", "user_id"], on_delete: :cascade
   add_foreign_key "core_links", "core_entities", column: ["second_entity_id", "user_id"], primary_key: ["id", "user_id"], on_delete: :cascade
   add_foreign_key "planner_items", "core_entities", column: ["id", "user_id", "record_type"], primary_key: ["id", "user_id", "record_type"], on_delete: :cascade
+  add_foreign_key "planner_items", "planner_series", column: ["series_id", "user_id"], primary_key: ["id", "user_id"]
+  add_foreign_key "planner_series", "planner_series", column: ["chain_id", "user_id"], primary_key: ["id", "user_id"]
+  add_foreign_key "planner_series", "users", on_delete: :cascade
+  add_foreign_key "planner_series_exclusions", "planner_series", column: ["series_id", "user_id"], primary_key: ["id", "user_id"], on_delete: :cascade
   add_foreign_key "sessions", "users", on_delete: :cascade
 end

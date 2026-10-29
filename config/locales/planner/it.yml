@@ -20,6 +20,17 @@ it:
             end_time:
               after_start: deve essere dopo l'ora di inizio
               same_day: deve essere nello stesso giorno dell'inizio
+        planner/series:
+          attributes:
+            duration_minutes:
+              same_day: deve finire nello stesso giorno in cui inizia
+            ends_on:
+              before_start: non può essere prima del primo giorno
+            from_on:
+              after_end: non può essere dopo l'ultimo giorno
+              before_start: non può essere prima del primo giorno
+            rrule:
+              invalid: non è una regola di ripetizione prevista
   planner:
     agendas:
       show:

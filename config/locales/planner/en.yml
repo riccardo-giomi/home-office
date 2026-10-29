@@ -20,6 +20,17 @@ en:
             end_time:
               after_start: must be after the start time
               same_day: must be on the same day as the start
+        planner/series:
+          attributes:
+            duration_minutes:
+              same_day: must end on the day it starts
+            ends_on:
+              before_start: must not be before the first day
+            from_on:
+              after_end: must not be after the last day
+              before_start: must not be before the first day
+            rrule:
+              invalid: is not a repeat rule this app offers
   planner:
     agendas:
       show:
