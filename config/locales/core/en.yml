@@ -135,6 +135,7 @@ en:
         list: Linked records
         new_linked: 'New linked: %{kind}'
         none: Nothing linked yet.
+        placeholder_heading: Links
         remove: Remove link to %{title}
         select: Select this record
         select_short: Select

@@ -2,13 +2,18 @@
 # (Item#change_state), this only reports what happened.
 class Planner::StatesController < ApplicationController
   include Planner::ItemPages
+  include Planner::ItemLookup
 
   # What was done, by the state the item is in afterwards
   DONE = {"abandoned" => "abandoned", "cancelled" => "cancelled", "active" => "reopened"}.freeze
 
   def update
-    item = Planner::Item.owned_by(Current.user).kept.find(params[:item_id])
-    if item.change_state(params[:state])
+    changed = false
+    item = changing(find_item) do |target|
+      changed = target.change_state(params[:state])
+      target
+    end
+    if changed
       flash[:notice] = item_copy(item, DONE.fetch(item.state))
     else
       flash[:alert] = t(".refused")

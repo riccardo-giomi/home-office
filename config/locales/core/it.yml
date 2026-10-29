@@ -135,6 +135,7 @@ it:
         list: Elementi collegati
         new_linked: 'Nuovo collegato: %{kind}'
         none: Ancora nessun collegamento.
+        placeholder_heading: Collegamenti
         remove: Rimuovi il collegamento a %{title}
         select: Seleziona questo elemento
         select_short: Seleziona

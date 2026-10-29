@@ -42,5 +42,14 @@
       <%= state_button(item, to) %>
     <% end %>
   </div>
-  <%= links_section(item.id) %>
+  <% if unsaved_occurrence?(item) %>
+    <%= render(Core::UI::LinksPlaceholderComponent.new(text: t("planner.items.show.links_placeholder"))) do %>
+      <%= form_with url: planner_series_occurrence_materialization_path(item.series_id, item.occurrence_on.iso8601) do %>
+        <%= hidden_field_tag :back, back_param if back_param %>
+        <%= render(Core::UI::ButtonComponent.new(type: :submit, variant: :secondary)) { t("core.ui.links_section.add") } %>
+      <% end %>
+    <% end %>
+  <% else %>
+    <%= links_section(item.id) %>
+  <% end %>
 </div>

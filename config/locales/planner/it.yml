@@ -86,6 +86,7 @@ it:
       show:
         done: Fatto
         done_at_html: Fatto il %{time}
+        links_placeholder: Questo evento si ripete. Un collegamento appartiene solo a questo evento, non a tutta la serie.
         notes: Note
         priority: Priorità
         state: Stato

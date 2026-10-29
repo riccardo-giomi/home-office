@@ -17,6 +17,7 @@ Rails.application.routes.draw do
       resources :occurrences, only: %i[show edit update], param: :on do
         resource :completion, only: :update
         resource :state, only: :update
+        resource :materialization, only: :create
       end
     end
     resources :tasks, except: :index

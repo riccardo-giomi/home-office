@@ -86,6 +86,7 @@ en:
       show:
         done: Done
         done_at_html: Done on %{time}
+        links_placeholder: This event repeats. A link belongs to this event only, not to the whole series.
         notes: Notes
         priority: Priority
         state: State

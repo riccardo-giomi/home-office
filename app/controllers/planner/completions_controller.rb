@@ -1,11 +1,16 @@
 class Planner::CompletionsController < ApplicationController
   include Planner::ItemPages
+  include Planner::ItemLookup
 
   def update
-    item = Planner::Item.owned_by(Current.user).kept.find(params[:item_id])
+    item = find_item
     if item.tracks_done? && item.active?
-      item.mark_done(params[:done] == "1")
-      item.save!
+      done = params[:done] == "1"
+      item = changing(item) do |target|
+        target.mark_done(done)
+        target.save!
+        target
+      end
       flash[:notice] = item.done? ? t(".done", title: item.title) : t(".not_done", title: item.title)
     else
       flash[:alert] = t(".refused")
