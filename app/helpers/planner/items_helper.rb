@@ -34,6 +34,12 @@ module Planner::ItemsHelper
     planner_series_occurrence_state_path(item.series_id, item.occurrence_on.iso8601)
   end
 
+  # The title the page was opened with, whatever has been typed since.
+  #
+  # The occurrence of a series has no title of its own, it uses the one from
+  # its series.
+  def item_title_was(item) = item.new_record? ? item.series&.title || item.title : item.title_was
+
   # An occurrence of a series that is not saved yet.
   def ghost?(item) = item.new_record? && item.occurrence?
 
