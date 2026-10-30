@@ -27,12 +27,13 @@ class LinksSystemTest < ApplicationSystemTestCase
 
   def focused_id = evaluate_script("document.activeElement.id")
 
-  # Waits until Turbo has finished the visit that the last change started. A
-  # page refresh asked while a visit is still going is dropped, and the bar of
-  # the selection would stay as it was.
+  # Waits until Turbo has finished the form submission and the visit that the
+  # last change started. A page refresh asked while one of them is still going
+  # is dropped, and the bar of the selection would stay as it was.
   def wait_for_turbo_idle
     page.document.synchronize do
-      raise Capybara::ExpectationNotMet, "Turbo is still visiting" if evaluate_script("Boolean(Turbo.session.navigator.currentVisit)")
+      busy = evaluate_script("Boolean(Turbo.session.navigator.formSubmission || Turbo.session.navigator.currentVisit)")
+      raise Capybara::ExpectationNotMet, "Turbo is still submitting or visiting" if busy
     end
   end
 
@@ -144,6 +145,7 @@ class LinksSystemTest < ApplicationSystemTestCase
         assert_selector "h2#links-section-heading", text: "Links (#{before + 1})"
         assert_text "Linked to Renew the passport."
         assert_selector "#links-section-heading:focus"
+        wait_for_turbo_idle
         click_button "Remove link to Renew the passport"
         assert_selector "h2#links-section-heading", text: "Links (#{before})"
       end
@@ -213,9 +215,11 @@ class LinksSystemTest < ApplicationSystemTestCase
     it "unselects one from the bar, and clears" do
       visit planner_event_path(planner_items(:holiday))
       select_here
+      wait_for_turbo_idle
       click_button "Unselect Bank holiday"
       assert_no_selector "[aria-label='Selected records']"
       select_here
+      wait_for_turbo_idle
       click_button "Clear selection"
       assert_no_selector "[aria-label='Selected records']"
       assert_button "Select this record"
