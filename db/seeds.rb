@@ -14,6 +14,10 @@ demo_user = User.find_by!(email_address: "demo-user@example.com")
 # Important: anything else the demo user made goes too.
 Planner::Item.owned_by(demo_user).destroy_all
 
+# Series are not items. Their events are already gone, so this only removes the
+# series.
+Planner::Series.purge(Planner::Series.owned_by(demo_user))
+
 # A few events around today so the list has something to show
 [
   {title: "Dentist", days: 2, times: %w[09:30 10:15]},
@@ -85,3 +89,45 @@ end
   item = type.create!(attrs.merge(user: demo_user))
   item.entity.update_columns(deleted_at: Time.current - age)
 end
+
+# Events that repeat.
+#
+# One of each kind of rule, and a few of the states worth trying, to have fixed
+# entries to edit and delete. The first days are relative to today.
+zone = Core::EffectivePreferences.new(user: demo_user).time_zone
+today = Date.current
+monday = today.beginning_of_week
+rule = Planner::Recurrence::Rule
+
+# The second Tuesday of last month, where the book club rule starts from.
+last_month = today.prev_month.beginning_of_month
+second_tuesday = last_month + ((2 - last_month.wday) % 7) + 7
+
+[
+  {title: "Piano practice", starts_on: today - 7, rule: rule.new(frequency: "daily"), times: ["20:00", 30], tracks_done: 1},
+  {title: "Team standup", starts_on: monday - 14, rule: rule.new(frequency: "weekly", weekdays: %w[MO WE FR]), times: ["09:00", 15]},
+  {title: "Language course", starts_on: monday - 13, rule: rule.new(frequency: "weekly", weekdays: %w[TU], count: 8), times: ["18:30", 90]},
+  {title: "Book club", starts_on: second_tuesday, rule: rule.new(frequency: "monthly", nth_weekday: "2TU"), times: ["19:00", 120]},
+  {title: "Monthly report", starts_on: Date.new(today.year - 1, 12, 31), rule: rule.new(frequency: "monthly", month_day: 31)},
+  {title: "Mom's birthday", starts_on: (today + 20).prev_year, rule: rule.for_anchor((today + 20).prev_year, frequency: "yearly")},
+  {title: "Spanish lessons", starts_on: monday - 4, rule: rule.new(frequency: "weekly", weekdays: %w[TH]), times: ["17:00", 60], trashed: 2.days}
+].each do |attrs|
+  series = Planner::Series.create!(user: demo_user, time_zone: zone, title: attrs[:title], starts_on: attrs[:starts_on],
+    rule: attrs[:rule], tracks_done: attrs.fetch(:tracks_done, 0)) do |record|
+    record.start_time, record.duration_minutes = attrs[:times] if attrs[:times]
+  end
+  next unless attrs[:trashed]
+
+  # Trashed the way the app does it, and then made older.
+  Planner::Recurrence::Delete.new(series:, item: series.occurrence(series.starts_on), scope: "all").call
+  series.update_columns(deleted_at: Time.current - attrs[:trashed])
+end
+
+# The practice has one occurrence done, one with notes of its own and one
+# skipped.
+piano = Planner::Series.owned_by(demo_user).find_by!(title: "Piano practice")
+yesterday = piano.materialize(today - 1)
+yesterday.mark_done(true)
+yesterday.save!
+piano.materialize(today + 1).update!(notes: "Scales first.")
+Planner::Recurrence::Delete.new(series: piano, item: piano.occurrence(today + 2), scope: "this").call
