@@ -46,6 +46,15 @@ class Core::UI::EntryComponentPreview < ViewComponent::Preview
     render(entry(title: "Dentist", compact: true, starts_at: Time.utc(2026, 10, 7, 9), ends_at: Time.utc(2026, 10, 7, 9, 30), time_zone: "UTC", statuses: [LINKS]))
   end
 
+  # An occurrence of a repeating event: the chip with the repeat icon
+  def repeating
+    render(entry(title: "Gym", starts_at: Time.utc(2026, 10, 12, 16), ends_at: Time.utc(2026, 10, 12, 17), time_zone: "Europe/Rome", statuses: [REPEATS]))
+  end
+
+  def repeating_compact
+    render(entry(title: "Gym", compact: true, starts_at: Time.utc(2026, 10, 12, 16), ends_at: Time.utc(2026, 10, 12, 16, 30), time_zone: "Europe/Rome", statuses: [REPEATS]))
+  end
+
   # A todo has no moment of its own: no time line at all
   def without_time
     render(entry(title: "Water the plants", show_time: false, statuses: [{priority: :high, label: "High priority"}]))
@@ -63,7 +72,8 @@ class Core::UI::EntryComponentPreview < ViewComponent::Preview
   private
 
   LINKS = {icon: :link, label: "2 links", count: 2}.freeze
-  ALL_STATUSES = [{icon: :minus_circle, label: "Abandoned"}, {priority: :urgent, label: "Urgent priority"}].freeze
+  REPEATS = {icon: :repeat, label: "Repeats"}.freeze
+  ALL_STATUSES = [{icon: :minus_circle, label: "Abandoned"}, {priority: :urgent, label: "Urgent priority"}, REPEATS, LINKS].freeze
 
   # `render` inside a preview builds a preview request, so slot content is rendered to a string here
   def checkbox = ApplicationController.render(Core::UI::CheckboxComponent.new(name: "done", checked: false, label: "Done: Pay the rent", id: "entry-check"), layout: false).html_safe

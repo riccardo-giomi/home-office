@@ -150,4 +150,76 @@ class Planner::AgendasControllerTest < ActionDispatch::IntegrationTest
       assert_select "input[type=checkbox][aria-label='Done: Cancelled workshop']", 0
     end
   end
+
+  describe "recurring events" do
+    before do
+      sign_in_as admin
+      @series = Planner::Series.create!(user: admin, title: "Gym", starts_on: Date.new(2026, 10, 5), time_zone: "Europe/Rome", rrule: "FREQ=WEEKLY;BYDAY=MO", start_time: "18:00", duration_minutes: 60)
+    end
+
+    it "shows an occurrence on each day the rule gives, linking to its own page, with the Repeats chip" do
+      get planner_agenda_path(view: "month", date: "2026-10-15")
+      assert_response :success
+      %w[2026-10-05 2026-10-12 2026-10-19 2026-10-26].each do |on|
+        assert_select "a[href^='#{planner_series_occurrence_path(@series, on)}']", text: "Gym"
+      end
+      assert_select "a[href^='/planner/series/#{@series.id}/occurrences/2026-11-02']", count: 0
+      assert_select "main span[role=img][aria-label=Repeats]", 4
+      assert_equal 0, Planner::Event.where(series_id: @series.id).count
+    end
+
+    it "gives each unsaved occurrence's done box an element id of its own" do
+      @series.update!(tracks_done: 1)
+      get planner_agenda_path(view: "week", date: "2026-10-12")
+      ids = css_select("input[type=checkbox]").map { |box| box["id"] }
+      assert_equal 1, ids.size
+      @series.update!(rrule: "FREQ=DAILY")
+      get planner_agenda_path(view: "week", date: "2026-10-12")
+      ids = css_select("input[type=checkbox]").map { |box| box["id"] }
+      assert_equal 7, ids.size
+      assert_equal ids.uniq, ids
+      assert ids.all? { |id| id.match?(/\Adone_[a-z0-9_-]+\z/) }, ids.inspect
+    end
+
+    it "shows an event made from an occurrence once, in place of the unsaved one, linking to the event" do
+      row = @series.materialize(Date.new(2026, 10, 12))
+      get planner_agenda_path(view: "month", date: "2026-10-15")
+      assert_select "a[href^='#{planner_series_occurrence_path(@series, "2026-10-12")}']", count: 0
+      assert_select "a[href^='#{planner_event_path(row)}']", text: "Gym"
+      assert_select "a", text: "Gym", count: 4
+      assert_select "li span[role=img][aria-label=Repeats]", 4
+    end
+
+    it "gives an unsaved occurrence neither the pin nor a number of links, which only a record can have, and the event made from it both" do
+      get planner_agenda_path(view: "week", date: "2026-10-12")
+      assert_select "span[role=img][aria-label=Repeats]", 1
+      assert_select "form[action='/selection']", 0
+      assert_select "span[role=img][aria-label$='link'], span[role=img][aria-label$='links']", 0
+      row = @series.materialize(Date.new(2026, 10, 12))
+      Core::Link.connect(admin, row.id, planner_items(:dentist).id)
+      get planner_agenda_path(view: "week", date: "2026-10-12")
+      assert_select "span[role=img][aria-label=Repeats]", 1
+      assert_select "form[action='/selection'] button[aria-label='Select Gym']", 1
+      assert_select "span[role=img][aria-label='1 link']", 1
+    end
+
+    it "shows a moved occurrence on its new day only" do
+      @series.materialize(Date.new(2026, 10, 12)).update!(day: Date.new(2026, 10, 14))
+      get planner_agenda_path(view: "day", date: "2026-10-12")
+      assert_select "a", text: "Gym", count: 0
+      get planner_agenda_path(view: "day", date: "2026-10-14")
+      assert_select "a", text: "Gym", count: 1
+    end
+
+    it "shows nothing of a deleted date, a trashed series or another user's series" do
+      @series.exclusions.create!(user_id: admin.id, excluded_on: Date.new(2026, 10, 12))
+      Planner::Series.create!(user: users(:other_admin), title: "Theirs", starts_on: Date.new(2026, 10, 5), time_zone: "Europe/Rome", rrule: "FREQ=DAILY")
+      get planner_agenda_path(view: "week", date: "2026-10-12")
+      assert_select "a", text: "Gym", count: 0
+      assert_select "a", text: "Theirs", count: 0
+      @series.trash
+      get planner_agenda_path(view: "month", date: "2026-10-15")
+      assert_select "a", text: "Gym", count: 0
+    end
+  end
 end

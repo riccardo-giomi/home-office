@@ -27,7 +27,8 @@ class Core::UI::EntryStripPreview < ViewComponent::Preview
   ].freeze
 
   LINKS = [{icon: :link, label: "2 links", count: 2}].freeze
-  EVERY_STATUS = [{icon: :minus_circle, label: "Abandoned"}, {priority: :urgent, label: "Urgent priority"}, {icon: :link, label: "12 links", count: 12}].freeze
+  REPEATS = {icon: :repeat, label: "Repeats"}.freeze
+  EVERY_STATUS = [{icon: :minus_circle, label: "Abandoned"}, {priority: :urgent, label: "Urgent priority"}, REPEATS, {icon: :link, label: "12 links", count: 12}].freeze
 
   OPTIONS = [
     {name: "Full, with a check", size: "w-72", check: true, pin: true, title: "Pay the rent", statuses: LINKS},

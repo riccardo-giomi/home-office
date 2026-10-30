@@ -28,7 +28,7 @@ module Planner::EntriesHelper
       check: (completion_check(item) if item.tracks_done? && item.active?),
       muted: !item.active?,
       statuses: entry_statuses(item),
-      commands: select_command(item)
+      commands: (select_command(item) unless unsaved_occurrence?(item))
     }
   end
 
@@ -39,6 +39,7 @@ module Planner::EntriesHelper
     [
       (item.active? ? nil : {icon: STATE_ICONS.fetch(item.state), label: kind_t(item, "state_#{item.state}")}),
       (item.normal? ? nil : {priority: item.priority.to_sym, label: priority_name(item.priority)}),
+      (item.occurrence? ? {icon: :repeat, label: t("core.ui.entry.repeats")} : nil),
       link_status(item)
     ].compact
   end

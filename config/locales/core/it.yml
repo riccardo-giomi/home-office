@@ -120,6 +120,7 @@ it:
         links:
           one: "%{count} collegamento"
           other: "%{count} collegamenti"
+        repeats: Si ripete
       error_summary:
         title:
           one: 1 errore ha impedito il salvataggio

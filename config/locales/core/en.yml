@@ -120,6 +120,7 @@ en:
         links:
           one: "%{count} link"
           other: "%{count} links"
+        repeats: Repeats
       error_summary:
         title:
           one: 1 error prevented saving
