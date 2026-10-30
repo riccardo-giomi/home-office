@@ -34,6 +34,22 @@ class Planner::Series < ApplicationRecord
 
   def self.table_name = "planner_series"
 
+  # A series for a valid event that is not saved, and a rule.
+  #
+  # The event is the template and the first day. An all-day event has no zone of
+  # its own, so the series takes the one of the request.
+  def self.from_event(event, rule)
+    timed = event.starts_at && event.ends_at
+    new(
+      user_id: event.user_id, title: event.title, notes: event.notes, priority: event.priority,
+      tracks_done: event.tracks_done, starts_on: event.day,
+      time_zone: event.time_zone || Time.zone.name,
+      start_time: (event.start_time if timed),
+      duration_minutes: (((event.ends_at - event.starts_at) / 60).to_i if timed),
+      rrule: rule.to_rrule
+    )
+  end
+
   def rule = Planner::Recurrence::Rule.parse(rrule)
 
   def rule=(rule)

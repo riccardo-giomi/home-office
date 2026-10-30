@@ -106,4 +106,25 @@ describe Planner::Series do
     series.restore
     _(Planner::Series.kept).must_include series
   end
+
+  describe ".from_event" do
+    let(:rule) { Planner::Recurrence::Rule.new(frequency: "weekly", weekdays: %w[MO]) }
+
+    it "takes the template, the anchor and the times from a valid event" do
+      event = Planner::Event.new(user:, title: "Gym", notes: "Towel", priority: "high", tracks_done: 1, day: Date.new(2026, 10, 5), start_time: "18:00", end_time: "19:30")
+      event.validate
+      series = Planner::Series.from_event(event, rule)
+      _(series).must_be :valid?
+      _([series.user_id, series.title, series.notes, series.priority, series.tracks_done, series.starts_on, series.start_time, series.duration_minutes, series.rrule, series.time_zone])
+        .must_equal [user.id, "Gym", "Towel", "high", 1, Date.new(2026, 10, 5), "18:00", 90, "FREQ=WEEKLY;BYDAY=MO", event.time_zone]
+    end
+
+    it "is all-day when the event is, in the zone of the request" do
+      event = Planner::Event.new(user:, title: "Holiday", day: Date.new(2026, 10, 5))
+      event.validate
+      series = Time.use_zone("Asia/Tokyo") { Planner::Series.from_event(event, rule) }
+      _([series.start_time, series.duration_minutes, series.time_zone]).must_equal [nil, nil, "Asia/Tokyo"]
+      _(series).must_be :valid?
+    end
+  end
 end

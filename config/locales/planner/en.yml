@@ -1,5 +1,28 @@
 ---
 en:
+  activemodel:
+    attributes:
+      repeat:
+        count: Number of times
+        frequency: Repeats
+        interval: Interval
+        until_on: Last day
+        weekdays: Days of the week
+    errors:
+      models:
+        repeat:
+          attributes:
+            count:
+              out_of_range: must be a number from 1 to 999
+            frequency:
+              invalid: is not a way to repeat
+            interval:
+              out_of_range: must be a number from 1 to 99
+            until_on:
+              before_start: must not be before the first day
+              blank: must be a date
+            weekdays:
+              blank: needs at least one day
   activerecord:
     attributes:
       planner/event:

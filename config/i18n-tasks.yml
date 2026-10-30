@@ -151,6 +151,7 @@ ignore_missing:
 
 ## Consider these keys used:
 ignore_unused:
+  - "activemodel.*"
   - "activerecord.*"
   - "core.nav.*"
   - "core.preferences.defaults.*"
