@@ -1,0 +1,9 @@
+<%# Which events of the series the change is about. scopes: the ones to offer; choice: a Planner::Recurrence::ScopeChoice;
+    kind: "edit" or "delete", whose hints to show; id and namespace keep the ids unique when a page has two of these groups %>
+<%= fields_for :apply, choice, namespace: local_assigns[:namespace] do |apply| %>
+  <%= render(Core::UI::FieldsetComponent.new(legend: t("planner.series.scope.legend"), id: local_assigns.fetch(:id, "apply-scope"))) do %>
+    <% scopes.each do |scope| %>
+      <%= render Core::UI::ChoiceComponent.new(form: apply, attribute: :scope, value: scope, label: t("planner.series.scope.#{scope}"), hint: t("planner.series.scope.hints.#{local_assigns.fetch(:kind, "edit")}.#{scope}"), type: :radio_button) %>
+    <% end %>
+  <% end %>
+<% end %>

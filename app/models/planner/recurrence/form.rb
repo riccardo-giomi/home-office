@@ -16,6 +16,27 @@ class Planner::Recurrence::Form
 
   def self.model_name = ActiveModel::Name.new(self, nil, "Repeat")
 
+  # Creates a new form from the given recurrence rule.
+  def self.from_rule(rule)
+    ends = if rule.until_on then "until"
+    elsif rule.count then "count"
+    else "never"
+    end
+    new(frequency: rule.frequency, interval: rule.interval, weekdays: rule.weekdays, monthly: (rule.nth_weekday ? "weekday" : "day"),
+      ends:, until_on: rule.until_on, count: rule.count)
+  end
+
+  # What the fields say about the recurrence rule.
+  #
+  # What does not matter for the frequency chosen is left out, because a hidden
+  # field still sends its value.
+  def signature
+    {frequency:, interval:, weekdays: (Array(weekdays).compact_blank.sort if frequency == "weekly"), monthly: (monthly if frequency == "monthly"),
+     ends:, until_on: (until_on if ends == "until"), count: (count if ends == "count")}
+  end
+
+  def same_rule_as?(other) = signature == other.signature
+
   def repeating? = frequency.present? && frequency != "never"
 
   # The rule these fields describe for an event on `anchor`.

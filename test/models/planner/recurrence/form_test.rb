@@ -32,6 +32,14 @@ describe Planner::Recurrence::Form do
     _(form(frequency: "yearly", weekdays: %w[MO]).rule_for(anchor).to_rrule).must_equal "FREQ=YEARLY;BYMONTH=10;BYMONTHDAY=5"
   end
 
+  it "compares by what matters for the frequency, not by what a hidden field sends" do
+    base = form(frequency: "weekly", interval: 2, weekdays: %w[MO WE], ends: "never")
+    _(base).must_be :same_rule_as?, form(frequency: "weekly", interval: "2", weekdays: ["", "WE", "MO"], monthly: "weekday", count: 5, until_on: "2026-12-03")
+    _(base).wont_be :same_rule_as?, form(frequency: "weekly", interval: 2, weekdays: %w[MO], ends: "never")
+    _(base).wont_be :same_rule_as?, form(frequency: "weekly", interval: 3, weekdays: %w[MO WE], ends: "never")
+    _(base).wont_be :same_rule_as?, form(frequency: "weekly", interval: 2, weekdays: %w[MO WE], ends: "count", count: 3)
+  end
+
   it "ignores the end it was not asked for" do
     _(form(frequency: "daily", ends: "never", until_on: "2026-12-03", count: "4").rule_for(anchor).to_rrule).must_equal "FREQ=DAILY"
     _(form(frequency: "daily", ends: "count", until_on: "2026-12-03", count: "4").rule_for(anchor).to_rrule).must_equal "FREQ=DAILY;COUNT=4"
@@ -61,6 +69,14 @@ describe Planner::Recurrence::Form do
     built = form
     _(built.rule_for(anchor)).must_be_nil
     _(built.errors).must_be :empty?
+  end
+
+  it "is built back from a rule, to fill the form of a series" do
+    rule = Planner::Recurrence::Rule.new(frequency: "monthly", interval: 2, nth_weekday: "2TU", count: 6)
+    built = Planner::Recurrence::Form.from_rule(rule)
+    _([built.frequency, built.interval, built.monthly, built.ends, built.count]).must_equal ["monthly", 2, "weekday", "count", 6]
+    _(built.rule_for(Date.new(2026, 10, 13))).must_equal rule
+    _(Planner::Recurrence::Form.from_rule(Planner::Recurrence::Rule.new(frequency: "daily", until_on: Date.new(2026, 12, 3))).ends).must_equal "until"
   end
 
   it "names its fields repeat[...] and its errors in words" do

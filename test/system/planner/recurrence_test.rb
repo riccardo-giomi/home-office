@@ -210,4 +210,58 @@ class Planner::RecurrenceSystemTest < ApplicationSystemTestCase
       assert_equal 1, Planner::Series.where(title: "Rent").count
     end
   end
+
+  describe "editing an occurrence for more than itself" do
+    let(:rent) do
+      Planner::Series.create!(user: admin, title: "Flat rent", starts_on: Date.current.beginning_of_month, time_zone: "UTC", rrule: "FREQ=MONTHLY;BYMONTHDAY=#{Date.current.beginning_of_month.day}",
+        start_time: "09:00", duration_minutes: 60)
+    end
+    let(:next_month) { Date.current.beginning_of_month.next_month }
+
+    before do
+      rent
+      sign_in_through_form admin
+    end
+
+    it "moves the day for good from the dialog: this and following, with a new day" do
+      visit planner_calendar_path(view: "day", date: next_month.iso8601)
+      click_link "Flat rent"
+      within("#item-dialog") do
+        click_link I18n.t("planner.kinds.event.edit")
+        fill_in "planner_event_day", with: next_month + 9
+        assert_selector "fieldset#apply-scope"
+        choose I18n.t("planner.series.scope.following")
+        click_button I18n.t("planner.kinds.event.submit")
+      end
+      assert_no_selector "#item-dialog[open]", wait: 5
+      assert_equal [next_month + 9], Planner::Series.where(chain_id: rent.id).pluck(:starts_on)
+      assert_equal next_month - 1, rent.reload.ends_on
+      visit planner_calendar_path(view: "day", date: (next_month + 9).iso8601)
+      assert_text "Flat rent"
+      visit planner_calendar_path(view: "day", date: next_month.iso8601)
+      assert_no_text "Flat rent"
+    end
+
+    it "tells the user the rule cannot change for one event only" do
+      visit edit_planner_series_occurrence_path(rent, next_month.iso8601)
+      select I18n.t("planner.repeat.frequencies.weekly"), from: "repeat_frequency"
+      click_button I18n.t("planner.kinds.event.submit")
+      assert_selector "#error-summary a[href='#repeat_frequency']"
+      assert_equal 0, Planner::Event.where(series_id: rent.id).count
+    end
+
+    it "fits a 320 px screen and has no axe violations in either theme" do
+      page.current_window.resize_to(320, 640)
+      visit edit_planner_series_occurrence_path(rent, next_month.iso8601)
+      assert_fits_small_screen
+      %w[light dark].each do |theme|
+        admin.update!(theme:)
+        visit edit_planner_series_occurrence_path(rent, next_month.iso8601)
+        assert_accessible
+        click_button I18n.t("planner.kinds.event.delete")
+        sleep 0.4
+        assert_accessible(within: "#delete-item")
+      end
+    end
+  end
 end

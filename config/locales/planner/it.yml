@@ -16,6 +16,7 @@ it:
               out_of_range: deve essere un numero da 1 a 999
             frequency:
               invalid: non è un modo di ripetere
+              needs_scope: 'si può cambiare solo per più eventi: scegli Questo e i successivi o Tutti gli eventi'
             interval:
               out_of_range: deve essere un numero da 1 a 99
             until_on:
@@ -38,8 +39,12 @@ it:
       models:
         planner/item:
           attributes:
+            base:
+              stale_series: Qualcuno ha modificato questa serie mentre la modificavi. Ricarica la pagina e riprova.
             day:
+              not_after_previous: deve essere dopo il %{date}, l'ultimo giorno della parte precedente
               not_start_day: deve essere il giorno in cui inizia
+              taken: è già occupato da un altro evento della serie
             end_time:
               after_start: deve essere dopo l'ora di inizio
               same_day: deve essere nello stesso giorno dell'inizio
@@ -282,6 +287,17 @@ it:
         new: Nuova attività
         title: Programma
         title_with_period: 'Programma: %{period}'
+    series:
+      scope:
+        all: Tutti gli eventi
+        following: Questo e i successivi
+        hints:
+          edit:
+            all: Ogni evento della serie. Il giorno resta quello di ciascuno.
+            following: Questo e tutti i successivi. Un nuovo giorno li sposta per sempre.
+            this: Solo questo. Gli altri restano.
+        legend: Applica a
+        this: Questo evento
     states:
       update:
         refused: Questa modifica non è possibile.

@@ -16,6 +16,7 @@ en:
               out_of_range: must be a number from 1 to 999
             frequency:
               invalid: is not a way to repeat
+              needs_scope: 'can only change for several events: choose This and following events or All events'
             interval:
               out_of_range: must be a number from 1 to 99
             until_on:
@@ -38,8 +39,12 @@ en:
       models:
         planner/item:
           attributes:
+            base:
+              stale_series: Someone changed this series while you were editing. Reload the page and try again.
             day:
+              not_after_previous: must come after %{date}, the last day of the earlier part
               not_start_day: must be the day it starts
+              taken: is already taken by another event of the series
             end_time:
               after_start: must be after the start time
               same_day: must be on the same day as the start
@@ -282,6 +287,17 @@ en:
         new: New task
         title: Schedule
         title_with_period: 'Schedule: %{period}'
+    series:
+      scope:
+        all: All events
+        following: This and following events
+        hints:
+          edit:
+            all: Every event of the series. The day stays as it is for each.
+            following: This one and every later one. A new day moves them for good.
+            this: Only this one. The others stay.
+        legend: Apply to
+        this: This event
     states:
       update:
         refused: That change is not possible.
