@@ -277,4 +277,39 @@ class Planner::RecurrenceSystemTest < ApplicationSystemTestCase
       end
     end
   end
+
+  describe "the trash" do
+    before { sign_in_through_form admin }
+
+    def trash_the_series
+      Planner::Recurrence::Delete.new(series:, item: series.occurrence(Date.current.beginning_of_week), scope: "all").call
+    end
+
+    it "holds a series as one row that restores with a click, and the series comes back to the agenda" do
+      series.materialize(Date.current.beginning_of_week + 1)
+      trash_the_series
+      visit planner_agenda_path(view: "week")
+      assert_no_text "Gym"
+      visit planner_trash_path
+      assert_selector "li#trashed_series_#{series.id}", text: "Series: Gym (every day)"
+      assert_selector "main ol > li", text: "Gym", count: 1
+      click_button "#{I18n.t("planner.trashes.show.restore")} Gym"
+      assert_text "“Gym” restored."
+      assert_no_selector "li#trashed_series_#{series.id}"
+      visit planner_agenda_path(view: "week")
+      assert_text "Gym"
+    end
+
+    %w[light dark].each do |theme|
+      it "has no axe violations in the #{theme} theme, and fits 320 px" do
+        admin.update!(theme:)
+        trash_the_series
+        visit planner_trash_path
+        assert_accessible
+        page.current_window.resize_to(320, 640)
+        visit planner_trash_path
+        assert_fits_small_screen
+      end
+    end
+  end
 end

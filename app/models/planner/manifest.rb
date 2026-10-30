@@ -15,6 +15,7 @@ Planner::Manifest = Core::ModuleManifest.new(
       route: :planner_todos_path, icon: :queue_list,
       group_key: "planner.nav.groups.planner")
   ],
+  purge: ->(now) { Planner::Series.purge_expired(now) },
   trash: Core::TrashSource.new(
     title_key: "planner.nav.groups.planner",
     route: :planner_trash_path,

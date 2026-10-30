@@ -31,6 +31,10 @@ module Core::Modules
 
     def trash_sources = all.filter_map(&:trash)
 
+    # What a module keeps in the trash besides the entities goes first: it may
+    # need the entities it takes along.
+    def purge_expired(now = Time.current) = all.filter_map(&:purge).each { |hook| hook.call(now) }
+
     def trash_total(user) = trash_sources.sum { |source| source.total.call(user) }
   end
 end

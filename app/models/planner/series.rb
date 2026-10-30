@@ -1,11 +1,12 @@
 # An event that repeats.
 #
-# It holds the template of the occurrences, the rule and the span in which they
-# show. It is not an entity and cannot be linked: its occurrences are events,
-# made when someone touches them (see Planner::Series::Occurrences).
+# It holds the template of the occurrences, the rule that gives their dates and
+# the span that limits them (`starts_on`, `from_on`, `ends_on`). It is not an
+# entity and cannot be linked: its occurrences are events, saved when someone
+# touches them (see Planner::Series::Occurrences).
 #
-# A series split in two keeps one `chain_id`, and "all events" means the whole
-# chain.
+# A series split by "this and following" becomes a chain of parts that share the
+# `chain_id` of the first. "All events" means every part of the chain.
 class Planner::Series < ApplicationRecord
   include Core::SoftDeletable
 
@@ -34,10 +35,63 @@ class Planner::Series < ApplicationRecord
 
   def self.table_name = "planner_series"
 
-  # A series for a valid event that is not saved, and a rule.
+  # What one action sent to the trash, shown as one row of the trash page.
   #
-  # The event is the template and the first day. An all-day event has no zone of
-  # its own, so the series takes the one of the request.
+  # It is the parts of a chain that share one `deleted_at`, the earliest first.
+  TrashGroup = Data.define(:segments) do
+    def first = segments.first
+
+    def deleted_at = first.deleted_at
+
+    # The id of the first part of the group.
+    #
+    # It stands for the whole group in the restore address and in the id of its
+    # row: `restore_group` finds the other parts from it.
+    def id = first.id
+  end
+
+  # The trashed series of the user as groups, newest first.
+  def self.trash_groups(user)
+    trashed.owned_by(user).order(:starts_on, :id).to_a
+      .group_by { |part| [part.chain_key, part.deleted_at] }.values
+      .map { |segments| TrashGroup.new(segments) }
+      .sort_by { |group| -group.deleted_at.to_f }
+  end
+
+  # Takes the series away for good.
+  #
+  # Its events that are in the trash are deleted. The others stay as events of
+  # their own, no longer part of the series. Then the series is deleted, and its
+  # skipped dates with it.
+  def self.purge(series)
+    ids = series.pluck(:id)
+    return if ids.empty?
+
+    transaction { purge_ids(ids) }
+  end
+
+  # When the first part of a chain goes, the next remaining part becomes the
+  # first: it gets no `chain_id`, and the others point to it.
+  def self.purge_ids(ids)
+    where(id: ids, chain_id: nil).pluck(:id).each do |root|
+      head, *rest = where(chain_id: root).where.not(id: ids).order(:starts_on, :id).to_a
+      next unless head
+
+      where(id: head.id).update_all(chain_id: nil)
+      where(id: rest.map(&:id)).update_all(chain_id: head.id) if rest.any?
+    end
+    Core::Entity.where(id: Planner::Item.where(series_id: ids).select(:id)).where.not(deleted_at: nil).delete_all
+    Planner::Item.where(series_id: ids).update_all(series_id: nil, occurrence_on: nil)
+    where(id: ids).delete_all
+  end
+
+  # Purges the series that sat in the trash past their time.
+  def self.purge_expired(now = Time.current) = purge(purgeable(now))
+
+  # Builds a series from an event that is valid but not saved, and a rule.
+  #
+  # The event is the template and gives the first day. An all-day event has no
+  # time zone, so the series takes the user's time zone for the request.
   def self.from_event(event, rule)
     timed = event.starts_at && event.ends_at
     new(
@@ -50,18 +104,33 @@ class Planner::Series < ApplicationRecord
     )
   end
 
+  # The rule the stored text says, or nil when the text is not one of the
+  # offered rules.
   def rule = Planner::Recurrence::Rule.parse(rrule)
 
   def rule=(rule)
     self.rrule = rule.to_rrule
   end
 
+  # Takes the whole group out of the trash: the parts of the chain that were
+  # trashed by the same action, and the events trashed at that moment. An event
+  # trashed earlier stays in the trash.
+  def restore_group
+    group = self.class.where(user_id:, deleted_at:).where("id = :key OR chain_id = :key", key: chain_key)
+    self.class.transaction do
+      Core::Entity.where(id: Planner::Item.where(series_id: group.select(:id)).select(:id), deleted_at:)
+        .update_all(deleted_at: nil)
+      group.update_all(deleted_at: nil)
+    end
+  end
+
   def tracks_done? = tracks_done == 1
 
-  # The first part's id names the chain. A series that was never split is its
-  # own chain.
+  # The `chain_id` of a part, or its own id when it is the first part. A series
+  # that was never split is a chain of one.
   def chain_key = chain_id || id
 
+  # Every part of the chain, earliest first.
   def chain
     self.class.where(user_id:, id: chain_key).or(self.class.where(user_id:, chain_id: chain_key))
       .order(:starts_on, :id).to_a
@@ -73,7 +142,8 @@ class Planner::Series < ApplicationRecord
     errors.add(:rrule, :invalid) unless rule
   end
 
-  # Planner::Timed asks the same of an event: it cannot run past midnight.
+  # The time of day plus the duration must end before midnight, as for an event
+  # (Planner::Timed).
   def ends_the_same_day
     return unless start_time&.match?(Planner::Timed::CLOCK_TIME) && duration_minutes.is_a?(Integer)
 

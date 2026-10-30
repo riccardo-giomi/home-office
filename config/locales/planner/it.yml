@@ -338,6 +338,9 @@ it:
         event:
           one: Evento
           other: Eventi
+        series:
+          one: Serie
+          other: Serie
         task:
           one: Attività
           other: Attività
@@ -362,6 +365,7 @@ it:
         list: Elementi nel cestino
         pages: Pagine
         restore: Ripristina
+        series_title: 'Serie: %{title} (%{rule})'
         tabs: Mostra
         tabs_nav: Filtro del cestino
         title: Cestino

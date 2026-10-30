@@ -338,6 +338,9 @@ en:
         event:
           one: Event
           other: Events
+        series:
+          one: Series
+          other: Series
         task:
           one: Task
           other: Tasks
@@ -362,6 +365,7 @@ en:
         list: Trashed items
         pages: Pages
         restore: Restore
+        series_title: 'Series: %{title} (%{rule})'
         tabs: Show
         tabs_nav: Trash filter
         title: Trash

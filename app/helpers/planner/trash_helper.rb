@@ -12,6 +12,34 @@ module Planner::TrashHelper
     [all, *kinds]
   end
 
+  # A trashed series is one row, however many parts and events it holds.
+  def trashed_series_row(group, type:)
+    {
+      id: "trashed_series_#{group.id}",
+      detail: safe_join([
+        t("planner.trash.kinds.series", count: 1),
+        t("planner.trashes.show.trashed_on_html", date: format_date(group.deleted_at.in_time_zone.to_date))
+      ], " · "),
+      actions: restore_series_button(group, type:)
+    }
+  end
+
+  # "Series: Gym (every 2 weeks on Mon)"
+  def trashed_series_title(group)
+    t("planner.trashes.show.series_title", title: group.first.title, rule: group.first.rule.summary.downcase_first)
+  end
+
+  def restore_series_button(group, type:)
+    form_with(url: planner_series_restoration_path(group.id), method: :patch) do
+      safe_join([
+        (hidden_field_tag(:type, type, id: nil) if type),
+        render(Core::UI::ButtonComponent.new(type: :submit, variant: :secondary, size: :sm)) do
+          safe_join([t("planner.trashes.show.restore"), tag.span(" #{group.first.title}", class: "sr-only")])
+        end
+      ].compact)
+    end
+  end
+
   def trashed_row(item, type:)
     {id: "trashed_#{item.id}", detail: trashed_detail(item), actions: restore_button(item, type:)}
   end

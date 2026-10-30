@@ -21,6 +21,9 @@
     <% end %>
   <% end %>
   <%= render(Core::UI::RowListComponent.new(label: t(".list"), empty_text: t(".empty"))) do |list| %>
+    <% @trash.series_groups.each do |group| %>
+      <% list.with_row(**trashed_series_row(group, type: @trash.type)) { trashed_series_title(group) } %>
+    <% end if @pagy.page == 1 %>
     <% @items.each do |item| %>
       <% list.with_row(**trashed_row(item, type: @trash.type)) { item.title } %>
     <% end %>

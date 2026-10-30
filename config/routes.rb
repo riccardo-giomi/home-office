@@ -20,6 +20,7 @@ Rails.application.routes.draw do
         resource :state, only: :update
         resource :materialization, only: :create
       end
+      resource :restoration, only: :update
     end
     resources :tasks, except: :index
     resource :done_todos, only: :destroy

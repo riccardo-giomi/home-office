@@ -117,4 +117,58 @@ class Planner::TrashesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "main", text: /The trash is empty/
   end
+
+  describe "series" do
+    let(:member) { users(:member) }
+    let(:gym) do
+      Planner::Series.create!(user: member, title: "Gym", starts_on: Date.new(2026, 10, 5), time_zone: "UTC", rrule: "FREQ=WEEKLY;INTERVAL=2;BYDAY=MO", start_time: "18:00", duration_minutes: 60, tracks_done: 1)
+    end
+
+    before do
+      member.update!(locale: "en", time_zone: "UTC", time_format: "24h", date_format: "dmy")
+      sign_in_as member
+      gym.materialize(Date.new(2026, 10, 19))
+      Planner::Recurrence::Delete.new(series: gym, item: gym.occurrence(Date.new(2026, 10, 5)), scope: "all").call
+      Planner::Event.create!(user: member, title: "Alone", day: Date.new(2026, 10, 7)).trash
+    end
+
+    it "lists a series as one row, with its rule in words, and not the events trashed with it" do
+      get planner_trash_path
+      assert_response :success
+      assert_select "main ol > li", 2
+      assert_select "li#trashed_series_#{gym.id}", text: /Series: Gym \(every 2 weeks on Mon\)/
+      assert_select "li", text: /Alone/
+      assert_select "li", text: /Gym/, count: 1
+    end
+
+    it "offers to restore it, naming it for a reader" do
+      get planner_trash_path
+      assert_select "li#trashed_series_#{gym.id} form[action='#{planner_series_restoration_path(gym)}'] button", text: /Restore\s*Gym/
+    end
+
+    it "counts it in all and in events, and lists it under those tabs only" do
+      get planner_trash_path(type: "event")
+      assert_select "ul[aria-label='Show'] a", text: /All \(2\)/
+      assert_select "ul[aria-label='Show'] a[aria-current=true]", text: /Events \(2\)/
+      assert_select "li#trashed_series_#{gym.id}"
+      get planner_trash_path(type: "task")
+      assert_select "li#trashed_series_#{gym.id}", 0
+      get planner_trash_path(type: "todo")
+      assert_select "li#trashed_series_#{gym.id}", 0
+    end
+
+    it "shows it on the first page only, so a long list does not repeat it" do
+      30.times { |n| Planner::Event.create!(user: member, title: "Extra #{n}", day: Date.new(2026, 10, 7)).trash }
+      get planner_trash_path
+      assert_select "li#trashed_series_#{gym.id}", 1
+      get planner_trash_path(page: 2)
+      assert_select "li#trashed_series_#{gym.id}", 0
+    end
+
+    it "is emptied with the rest, and the notice counts it" do
+      delete planner_trash_path
+      assert_equal "Trash emptied: 2 items deleted for good.", flash[:notice]
+      assert_equal 0, Planner::Series.where(user_id: member.id).count
+    end
+  end
 end
