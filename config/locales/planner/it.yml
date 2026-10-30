@@ -288,15 +288,25 @@ it:
         title: Programma
         title_with_period: 'Programma: %{period}'
     series:
+      deleted:
+        all: La serie è stata spostata nel cestino.
+        following: Questo evento e i successivi sono stati rimossi.
+        past: Questo evento e i precedenti sono stati rimossi.
       scope:
         all: Tutti gli eventi
         following: Questo e i successivi
         hints:
+          delete:
+            all: Ogni evento della serie, prima e dopo questo.
+            following: Questo e tutti i successivi. Quelli prima restano.
+            past: Questo e tutti i precedenti. Quelli dopo restano.
+            this: Solo questo. Gli altri restano.
           edit:
             all: Ogni evento della serie. Il giorno resta quello di ciascuno.
             following: Questo e tutti i successivi. Un nuovo giorno li sposta per sempre.
             this: Solo questo. Gli altri restano.
         legend: Applica a
+        past: Questo e i precedenti
         this: Questo evento
     states:
       update:

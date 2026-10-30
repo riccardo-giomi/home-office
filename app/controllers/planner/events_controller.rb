@@ -42,6 +42,23 @@ class Planner::EventsController < Planner::ItemsController
     render :edit, status: :unprocessable_content
   end
 
+  # Removes an occurrence of a series: this one, or more of them, as the scope
+  # says (Planner::Recurrence::Delete).
+  def destroy
+    return super unless @item.occurrence?
+
+    choice = Planner::Recurrence::ScopeChoice.of(params.dig(:apply, :scope),
+      allowed: Planner::Recurrence::ScopeChoice::DELETE)
+    if Planner::Recurrence::Delete.new(series: occurrence_series, item: @item, scope: choice.scope).call
+      notice = (choice.scope == "this") ? kind_t("deleted") : t("planner.series.deleted.#{choice.scope}")
+      return dialog_done(notice) if in_dialog?
+
+      redirect_to back_path_or_default(@item), notice:, status: :see_other
+    else
+      render :edit, status: :unprocessable_content
+    end
+  end
+
   private
 
   def item_class = Planner::Event

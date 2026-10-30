@@ -143,4 +143,76 @@ class Planner::SeriesScopesTest < ActionDispatch::IntegrationTest
       assert_equal "Theirs", theirs.reload.title
     end
   end
+
+  describe "deleting" do
+    def remove(path = unsaved_occurrence_path, scope: nil, headers: {}, **params)
+      delete path, headers:, params: {apply: ({scope:} if scope)}.compact.merge(params)
+    end
+
+    it "offers the four scopes in the delete confirmation, this event chosen, ids of their own" do
+      get edit_planner_series_occurrence_path(rent, "2026-11-05")
+      assert_select "dialog form[method=post] fieldset#delete-scope input[type=radio][name='apply[scope]']", 4
+      assert_equal %w[this following past all], css_select("fieldset#delete-scope input").map { |radio| radio["value"] }
+      assert_select "fieldset#delete-scope input[value=this][checked]"
+      ids = css_select("input[type=radio]").map { |radio| radio["id"] }
+      assert_equal ids.uniq, ids
+    end
+
+    it "skips only this date by default, for an unsaved occurrence, saving no event" do
+      assert_no_difference "Planner::Event.count" do
+        remove
+      end
+      assert_equal [Date.new(2026, 11, 5)], Planner::SeriesExclusion.where(series_id: rent.id).pluck(:excluded_on)
+      assert_redirected_to planner_calendar_path(date: "2026-11-05")
+      assert_equal "Event moved to the trash.", flash[:notice]
+      assert_response :see_other
+    end
+
+    it "trashes the event of a row, through the address of the event too" do
+      row = rent.materialize(Date.new(2026, 11, 5))
+      remove planner_event_path(row), scope: "this"
+      assert_predicate Planner::Event.includes(:entity).find(row.id), :trashed?
+      assert_equal 1, Planner::SeriesExclusion.where(series_id: rent.id).count
+    end
+
+    it "cuts the series for following events, and says so" do
+      remove scope: "following"
+      assert_equal Date.new(2026, 11, 4), rent.reload.ends_on
+      assert_equal "This and the following events were removed.", flash[:notice]
+    end
+
+    it "cuts it for past events" do
+      remove scope: "past"
+      assert_equal Date.new(2026, 11, 6), rent.reload.from_on
+      assert_equal "This and the earlier events were removed.", flash[:notice]
+    end
+
+    it "moves the whole series to the trash for all, and says so" do
+      remove scope: "all"
+      assert_predicate rent.reload, :trashed?
+      assert_equal "The series moved to the trash.", flash[:notice]
+    end
+
+    it "takes a junk scope for this event only" do
+      remove scope: "everything"
+      assert_nil rent.reload.deleted_at
+      assert_equal Planner::SeriesExclusion.where(series_id: rent.id).count, 1
+    end
+
+    it "closes the dialog and refreshes the page behind" do
+      remove scope: "following", headers: frame
+      assert_select "turbo-stream[action=close_dialog]", 1
+      assert_select "turbo-stream[action=refresh]", 1
+    end
+
+    it "is not found for another user's series or a date the rule does not give, and removes nothing" do
+      theirs = Planner::Series.create!(user: users(:other_admin), title: "Theirs", starts_on: Date.new(2026, 10, 5), time_zone: "Europe/Rome", rrule: "FREQ=DAILY")
+      remove planner_series_occurrence_path(theirs, "2026-10-06"), scope: "all"
+      assert_response :not_found
+      remove planner_series_occurrence_path(rent, "2026-11-06"), scope: "all"
+      assert_response :not_found
+      assert_nil theirs.reload.deleted_at
+      assert_nil rent.reload.deleted_at
+    end
+  end
 end

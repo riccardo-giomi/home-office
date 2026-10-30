@@ -175,6 +175,18 @@ describe Planner::Recurrence::Edit do
       _([kept.series_id, kept.occurrence_on, kept.day]).must_equal [nil, nil, date("2026-10-13")]
     end
 
+    it "does not restart a count, nor detach the events a delete of the past trashed, when the first one left is edited" do
+      counted = Planner::Series.create!(user:, title: "Course", starts_on: date("2026-10-05"), time_zone: "Europe/Rome", rrule: "FREQ=WEEKLY;BYDAY=MO;COUNT=6")
+      early = counted.materialize(date("2026-10-05"))
+      Planner::Recurrence::Delete.new(series: counted, item: counted.occurrence(date("2026-10-12")), scope: "past").call
+      ok, = edit(counted.reload, "2026-10-19", "following", title: "Course, part 2")
+      _(ok).must_equal true
+      counted.reload
+      _([counted.starts_on, counted.from_on, counted.title]).must_equal [date("2026-10-05"), date("2026-10-13"), "Course, part 2"]
+      _(Planner::Event.find(early.id).series_id).must_equal counted.id
+      _(counted.dates(date("2026-10-01")..date("2026-12-31")).size).must_equal 4
+    end
+
     it "says why when the new day is taken by another event of the series, not what the database said" do
       weekly = Planner::Series.create!(user:, title: "Gym", starts_on: date("2026-10-05"), time_zone: "Europe/Rome", rrule: "FREQ=WEEKLY;BYDAY=MO,WE", start_time: "18:00", duration_minutes: 60)
       weekly.materialize(date("2026-10-07"))

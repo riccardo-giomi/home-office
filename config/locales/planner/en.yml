@@ -288,15 +288,25 @@ en:
         title: Schedule
         title_with_period: 'Schedule: %{period}'
     series:
+      deleted:
+        all: The series moved to the trash.
+        following: This and the following events were removed.
+        past: This and the earlier events were removed.
       scope:
         all: All events
         following: This and following events
         hints:
+          delete:
+            all: Every event of the series, before and after this one.
+            following: This one and every later one. Earlier events stay.
+            past: This one and every earlier one. Later events stay.
+            this: Only this one. The others stay.
           edit:
             all: Every event of the series. The day stays as it is for each.
             following: This one and every later one. A new day moves them for good.
             this: Only this one. The others stay.
         legend: Apply to
+        past: This and past events
         this: This event
     states:
       update:

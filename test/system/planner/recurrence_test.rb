@@ -242,6 +242,19 @@ class Planner::RecurrenceSystemTest < ApplicationSystemTestCase
       assert_no_text "Flat rent"
     end
 
+    it "removes this and the following events from the delete confirmation, which asks which ones" do
+      visit edit_planner_series_occurrence_path(rent, next_month.iso8601)
+      click_button I18n.t("planner.kinds.event.delete")
+      within("#delete-item") do
+        assert_selector "fieldset#delete-scope input[type=radio]", count: 4
+        assert_selector "input[value=this][checked]"
+        choose I18n.t("planner.series.scope.following")
+        click_button I18n.t("planner.kinds.event.delete_confirm")
+      end
+      assert_text I18n.t("planner.series.deleted.following")
+      assert_equal next_month - 1, rent.reload.ends_on
+    end
+
     it "tells the user the rule cannot change for one event only" do
       visit edit_planner_series_occurrence_path(rent, next_month.iso8601)
       select I18n.t("planner.repeat.frequencies.weekly"), from: "repeat_frequency"

@@ -12,6 +12,8 @@
           <p class="mb-4"><%= kind_t(@item, "delete_warning", title: item_title_was(@item)) %></p>
           <%= form_with url: item_path(@item), method: :delete do %>
             <%= hidden_field_tag :back, back_param if back_param %>
+            <%# What an event of a series asks before it goes: which of the series' events %>
+            <%= render "planner/series/scope_fields", scopes: Planner::Recurrence::ScopeChoice::DELETE, choice: Planner::Recurrence::ScopeChoice.new, kind: "delete", id: "delete-scope", namespace: "delete" if @item.occurrence? %>
             <%= render(Core::UI::ButtonComponent.new(type: :submit, variant: :danger)) { kind_t(@item, "delete_confirm") } %>
           <% end %>
         <% end %>
