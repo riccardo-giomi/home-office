@@ -255,6 +255,24 @@ en:
           one: once
           other: "%{count} times"
         until: until %{date}
+    repeat:
+      ends:
+        count: After a number of times
+        legend: Ends
+        never: Never
+        until: On a date
+      frequencies:
+        daily: Daily
+        monthly: Monthly
+        never: Does not repeat
+        weekly: Weekly
+        yearly: Yearly
+      interval_hint: Every 2 means every other day, week, month or year.
+      legend: Repeat
+      monthly:
+        day: The same day of the month
+        legend: Monthly on
+        weekday: The same weekday of the month, such as the 2nd Tuesday
     restorations:
       update:
         restored: "“%{title}” restored."

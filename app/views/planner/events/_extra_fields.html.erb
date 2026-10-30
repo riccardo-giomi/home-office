@@ -1,1 +1,5 @@
 <%= render Core::UI::FieldComponent.new(form:, attribute: :tracks_done, label: item.class.human_attribute_name(:tracks_done), as: :check_box) %>
+<%# An event that exists and is not part of a series cannot become a repeating one, and one made to be linked is a single event %>
+<% if item.new_record? && linked_source.nil? %>
+  <%= render "planner/events/repeat_fields", item:, never: true %>
+<% end %>

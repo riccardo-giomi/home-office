@@ -1,0 +1,45 @@
+<%# The Repeats fields (repeat[...]). Every field shows without JavaScript; repeat-fields hides what the chosen frequency does not
+    use and reads the rule back in words, from the server, so the words are the ones the lists use. %>
+<%# A new form starts with the weekday of its day ticked: the rule of a weekly event is on that day unless told otherwise %>
+<% repeat_form.weekdays = [Planner::Recurrence::Rule::WEEKDAYS.fetch(item.day.cwday - 1)] if never && repeat_form.weekdays.blank? && item.day %>
+<%= fields_for :repeat, repeat_form do |repeat| %>
+  <div data-controller="repeat-fields" data-repeat-fields-url-value="<%= planner_recurrence_summary_path %>">
+    <%= render(Core::UI::FieldsetComponent.new(legend: t("planner.repeat.legend"), id: "repeat-fields")) do %>
+      <%= render Core::UI::FieldComponent.new(form: repeat, attribute: :frequency, label: Planner::Recurrence::Form.human_attribute_name(:frequency), as: :select,
+            choices: [*("never" if never), *Planner::Recurrence::Rule::FREQUENCIES].map { |frequency| [t("planner.repeat.frequencies.#{frequency}"), frequency] },
+            data: {repeat_fields_target: "frequency"}) %>
+      <div data-repeat-fields-target="part" data-frequencies="daily weekly monthly yearly">
+        <%= render Core::UI::FieldComponent.new(form: repeat, attribute: :interval, label: Planner::Recurrence::Form.human_attribute_name(:interval), as: :number_field,
+              hint: t("planner.repeat.interval_hint"), min: 1, max: 99) %>
+      </div>
+      <div data-repeat-fields-target="part" data-frequencies="weekly">
+        <%= render(Core::UI::FieldsetComponent.new(legend: Planner::Recurrence::Form.human_attribute_name(:weekdays), id: "repeat-weekdays")) do %>
+          <% repeat_weekdays.each do |code, name| %>
+            <%= render Core::UI::ChoiceComponent.new(form: repeat, attribute: :weekdays, value: code, label: name, type: :check_box) %>
+          <% end %>
+        <% end %>
+      </div>
+      <div data-repeat-fields-target="part" data-frequencies="monthly">
+        <%= render(Core::UI::FieldsetComponent.new(legend: t("planner.repeat.monthly.legend"), id: "repeat-monthly")) do %>
+          <% %w[day weekday].each do |mode| %>
+            <%= render Core::UI::ChoiceComponent.new(form: repeat, attribute: :monthly, value: mode, label: t("planner.repeat.monthly.#{mode}"), type: :radio_button) %>
+          <% end %>
+        <% end %>
+      </div>
+      <div data-repeat-fields-target="part" data-frequencies="daily weekly monthly yearly">
+        <%= render(Core::UI::FieldsetComponent.new(legend: t("planner.repeat.ends.legend"), id: "repeat-ends")) do %>
+          <% %w[never until count].each do |mode| %>
+            <%= render Core::UI::ChoiceComponent.new(form: repeat, attribute: :ends, value: mode, label: t("planner.repeat.ends.#{mode}"), type: :radio_button) %>
+          <% end %>
+          <div data-repeat-fields-target="end" data-ends="until">
+            <%= render Core::UI::FieldComponent.new(form: repeat, attribute: :until_on, label: Planner::Recurrence::Form.human_attribute_name(:until_on), as: :date_field) %>
+          </div>
+          <div data-repeat-fields-target="end" data-ends="count">
+            <%= render Core::UI::FieldComponent.new(form: repeat, attribute: :count, label: Planner::Recurrence::Form.human_attribute_name(:count), as: :number_field, min: 1, max: 999) %>
+          </div>
+        <% end %>
+      </div>
+      <p data-repeat-fields-target="summary" aria-live="polite" class="mb-2 font-semibold"><%= repeat_summary(repeat_form, item) %></p>
+    <% end %>
+  </div>
+<% end %>

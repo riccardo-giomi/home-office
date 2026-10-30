@@ -31,4 +31,21 @@ describe Core::UI::ErrorSummaryComponent do
     render_inline(Core::UI::ErrorSummaryComponent.new(record: ExampleUser.new(email_address: "a@example.com")))
     assert_no_selector "#error-summary"
   end
+
+  it "lists the errors of other records too, each linked to its own field" do
+    user = ExampleUser.new(email_address: "")
+    user.valid?
+    repeat = Planner::Recurrence::Form.new(frequency: "daily", interval: 0)
+    repeat.rule_for(Date.new(2026, 10, 5))
+    render_inline(Core::UI::ErrorSummaryComponent.new(record: user, also: [repeat]))
+    assert_selector "#error-summary a[href='#example_user_email_address']"
+    assert_selector "#error-summary a[href='#repeat_interval']", text: "Interval must be a number from 1 to 99"
+  end
+
+  it "renders when only another record has errors" do
+    repeat = Planner::Recurrence::Form.new(frequency: "daily", interval: 0)
+    repeat.rule_for(Date.new(2026, 10, 5))
+    render_inline(Core::UI::ErrorSummaryComponent.new(record: ExampleUser.new, also: [repeat]))
+    assert_selector "#error-summary"
+  end
 end

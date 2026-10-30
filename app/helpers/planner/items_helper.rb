@@ -43,6 +43,20 @@ module Planner::ItemsHelper
   # An occurrence of a series that is not saved yet.
   def unsaved_occurrence?(item) = item.new_record? && item.occurrence?
 
+  # The seven weekdays of the repeat fields, as [code, name], starting from the
+  # first weekday of the user.
+  def repeat_weekdays
+    names = I18n.t("date.day_names")
+    first = effective_preferences.first_weekday
+    (0..6).map { |offset| (first + offset) % 7 }.map do |wday|
+      [Planner::Recurrence::Rule::WEEKDAYS.fetch((wday - 1) % 7), names.fetch(wday)]
+    end
+  end
+
+  # The rule of the repeat fields in words, for a form drawn again with what was
+  # typed. Nothing when the fields say nothing yet.
+  def repeat_summary(form, item) = form.rule_for(item.day || Date.current)&.summary
+
   # In the dialog the page lives in the frame the dialog holds; a full page
   # needs no frame (its own forms and links must not be captured by one).
   def item_frame(&block) = in_dialog? ? turbo_frame_tag(Planner::ItemDialog::FRAME_ID, &block) : capture(&block)

@@ -255,6 +255,24 @@ it:
           one: una volta
           other: "%{count} volte"
         until: fino al %{date}
+    repeat:
+      ends:
+        count: Dopo un certo numero di volte
+        legend: Fine
+        never: Mai
+        until: In una data
+      frequencies:
+        daily: Ogni giorno
+        monthly: Ogni mese
+        never: Non si ripete
+        weekly: Ogni settimana
+        yearly: Ogni anno
+      interval_hint: Ogni 2 vuol dire un giorno, una settimana, un mese o un anno sì e uno no.
+      legend: Ripetizione
+      monthly:
+        day: Lo stesso giorno del mese
+        legend: Ogni mese
+        weekday: Lo stesso giorno della settimana del mese, come il 2º martedì
     restorations:
       update:
         restored: "«%{title}» ripristinato."

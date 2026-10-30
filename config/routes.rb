@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     resource :calendar, only: :show
     resource :agenda, only: :show
     resource :schedule, only: :show
+    resource :recurrence_summary, only: :show
     resources :events, except: :index
     # An unsaved occurrence has no id: it is named by its series and the date
     # the rule gave it.
