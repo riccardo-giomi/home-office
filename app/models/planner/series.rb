@@ -28,8 +28,16 @@ class Planner::Series < ApplicationRecord
   validate :rule_is_offered
   validate :span_is_ordered
   validate :ends_the_same_day
+  validate :start_is_recent, on: :entry, if: :tracks_done?
 
   include Planner::Series::Occurrences
+
+  # How far back a series that tracks done can start, when it is made from the
+  # form (`save(context: :entry)`).
+  #
+  # Such a series is ticked off one event at a time, so a start more than a year
+  # back is almost certainly a typo.
+  TRACKED_HISTORY = 1.year
 
   scope :owned_by, ->(user) { where(user:) }
 
@@ -137,6 +145,10 @@ class Planner::Series < ApplicationRecord
   end
 
   private
+
+  def start_is_recent
+    errors.add(:starts_on, :too_far_back) if starts_on && starts_on < Date.current - TRACKED_HISTORY
+  end
 
   def rule_is_offered
     errors.add(:rrule, :invalid) unless rule

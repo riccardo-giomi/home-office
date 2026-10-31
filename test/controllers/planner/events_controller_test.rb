@@ -49,12 +49,31 @@ class Planner::EventsControllerTest < ActionDispatch::IntegrationTest
   end
 
   describe "repeating events" do
-    before { sign_in_as admin }
+    # The days of these examples are fixed, and a series that tracks done cannot
+    # start more than a year back.
+    before do
+      travel_to Time.zone.local(2026, 10, 12, 12)
+      sign_in_as admin
+    end
 
     def repeat_params(**overrides) = {frequency: "weekly", interval: "1", weekdays: ["MO", "WE"], ends: "never"}.merge(overrides)
 
     def create_repeating(repeat = repeat_params, **event)
       post planner_events_path, params: {planner_event: {title: "Gym", day: "2026-10-05", start_time: "18:00", end_time: "19:00", tracks_done: "1", priority: "high"}.merge(event), repeat:}
+    end
+
+    it "refuses a series that tracks done and starts more than a year back, on the day field" do
+      assert_no_difference "Planner::Series.count" do
+        create_repeating(repeat_params, day: "2025-10-11")
+      end
+      assert_response :unprocessable_content
+      assert_select "#error-summary a[href='#planner_event_day']", text: /more than a year back/
+    end
+
+    it "accepts a series that does not track done, however far back it starts" do
+      assert_difference "Planner::Series.count", 1 do
+        create_repeating(repeat_params, day: "2020-10-05", tracks_done: "0")
+      end
     end
 
     it "offers the repeat fields on the new form, set to never" do

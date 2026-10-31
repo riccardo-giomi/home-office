@@ -41,13 +41,15 @@ class Planner::Recurrence::Form
 
   # The rule these fields describe for an event on `anchor`.
   #
-  # It is nil when the fields do not repeat, or when they are wrong (see
+  # The last day must not be before `not_before`, the first day the rule can
+  # give (the anchor unless the caller says otherwise), or `too_early` is the
+  # error. It is nil when the fields do not repeat, or when they are wrong (see
   # `errors`).
-  def rule_for(anchor)
+  def rule_for(anchor, not_before: anchor, too_early: :before_start)
     errors.clear
     return unless repeating?
 
-    check_ends(anchor)
+    check_ends(not_before, too_early)
     errors.add(:interval, :out_of_range) unless Planner::Recurrence::Rule::INTERVALS.cover?(interval)
     return if errors.any?
 
@@ -61,10 +63,10 @@ class Planner::Recurrence::Form
 
   RULE_ERRORS = {frequency: :frequency, weekdays: :weekdays, interval: :interval, count: :count}.freeze
 
-  def check_ends(anchor)
+  def check_ends(not_before, too_early)
     case ends
     when "until"
-      errors.add(:until_on, until_on ? :before_start : :blank) if until_on.nil? || until_on < anchor
+      errors.add(:until_on, until_on ? too_early : :blank) if until_on.nil? || until_on < not_before
     when "count"
       errors.add(:count, :out_of_range) unless Planner::Recurrence::Rule::COUNTS.cover?(count)
     end

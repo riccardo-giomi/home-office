@@ -139,7 +139,7 @@ class Planner::Recurrence::Edit
   # The series' own when nothing about it was touched, else what the fields say.
   def new_rule(anchor, day, previous)
     old = @series.rule
-    rule = (@form.same_rule_as?(Planner::Recurrence::Form.from_rule(old)) && anchor == day) ? old : rule_from_form(anchor)
+    rule = (@form.same_rule_as?(Planner::Recurrence::Form.from_rule(old)) && anchor == day) ? old : rule_from_form(anchor, too_early: :before_occurrence)
     return unless rule
 
     # A count is shared out: the new part has what the earlier one did not use.
@@ -191,8 +191,8 @@ class Planner::Recurrence::Edit
   #
   # None given is said in words: a request that skips the select can ask for
   # "does not repeat".
-  def rule_from_form(anchor)
-    rule = @form.rule_for(anchor)
+  def rule_from_form(anchor, **options)
+    rule = @form.rule_for(anchor, **options)
     @form.errors.add(:frequency, :invalid) if rule.nil? && @form.errors.empty?
     rule
   end
@@ -213,12 +213,15 @@ class Planner::Recurrence::Edit
 
   # A new rule for the whole chain.
   #
-  # The first part keeps its anchor and takes everything over.
+  # The first part keeps its anchor and takes everything over, with the template
+  # of the part that was edited. The last day of the rule can be any day from
+  # the first one the series shows, not only from the occurrence that was
+  # edited.
   def collapse(parts)
-    rule = rule_from_form(@item.occurrence_on)
+    root = parts.find { |part| part.chain_id.nil? } || parts.first
+    rule = rule_from_form(@item.occurrence_on, not_before: [root.starts_on, root.from_on].compact.max)
     return false unless rule
 
-    root = parts.find { |part| part.chain_id.nil? } || parts.first
     last = parts.max_by(&:starts_on)
     (parts - [root]).each do |part|
       Planner::Event.where(series_id: part.id).update_all(series_id: root.id)
@@ -228,7 +231,8 @@ class Planner::Recurrence::Edit
     # A count shared out between the parts is the count of the whole again,
     # unless the user typed another.
     rule = rule.with(count: root.rule.count) if rule.count && root.rule.count && @form.count == @series.rule.count
-    root.update!(series_changes.merge(rrule: rule.to_rrule, ends_on: last.ends_on))
+    template = @series.slice(:title, :notes, :priority, :tracks_done, :start_time, :duration_minutes)
+    root.update!(template.merge(series_changes).merge(rrule: rule.to_rrule, ends_on: last.ends_on))
     save_item(root, @item.occurrence_on)
     reconcile(root)
     true

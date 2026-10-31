@@ -20,6 +20,7 @@ it:
             interval:
               out_of_range: deve essere un numero da 1 a 99
             until_on:
+              before_occurrence: non può essere prima di questo evento. Per chiudere prima l'intera serie, scegli Tutti gli eventi
               before_start: non può essere prima del primo giorno
               blank: deve essere una data
             weekdays:
@@ -59,6 +60,8 @@ it:
               before_start: non può essere prima del primo giorno
             rrule:
               invalid: non è una regola di ripetizione prevista
+            starts_on:
+              too_far_back: non può essere più di un anno fa per un evento con la casella «fatto»
   planner:
     agendas:
       show:
@@ -302,9 +305,9 @@ it:
             past: Questo e tutti i precedenti. Quelli dopo restano.
             this: Solo questo. Gli altri restano.
           edit:
-            all: Ogni evento della serie. Il giorno resta quello di ciascuno.
-            following: Questo e tutti i successivi. Un nuovo giorno li sposta per sempre.
-            this: Solo questo. Gli altri restano.
+            all: 'Ogni evento della serie, precedenti e successivi, anche quelli passati. Il giorno non cambia: per spostare l''inizio, modifica il primo evento con «Questo e i successivi».'
+            following: Questo e tutti i successivi, dal giorno che indichi. Un numero di volte conta da questo.
+            this: Solo questo. Gli altri e la regola di ripetizione restano.
         legend: Applica a
         past: Questo e i precedenti
         this: Questo evento

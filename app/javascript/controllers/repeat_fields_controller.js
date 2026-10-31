@@ -8,9 +8,13 @@ import { Controller } from "@hotwired/stimulus"
 //
 // It also reads the rule back in words, in a polite live region. The words come
 // from the server, the one place that knows them: the same text the lists show.
+//
+// On the form of an occurrence of a series it also follows the scope chosen
+// ("Apply to"): the rule is for several events, so its fields are off for "This
+// event", and the day is the event's own, so it is off for "All events".
 export default class extends Controller {
   static targets = ["frequency", "part", "end", "summary"]
-  static values = { url: String }
+  static values = { url: String, followDay: Boolean }
 
   connect() {
     this.form = this.element.closest("form")
@@ -18,6 +22,7 @@ export default class extends Controller {
     this.form.addEventListener("input", this.listener)
     this.form.addEventListener("change", this.listener)
     this.showFields()
+    this.followScope()
   }
 
   disconnect() {
@@ -26,26 +31,42 @@ export default class extends Controller {
     clearTimeout(this.timer)
   }
 
-  // The repeat fields and the day (the day-based parts of the rule follow it).
+  // The repeat fields, the day (the day-based parts of the rule follow it) and
+  // the scope.
   concerns(field) {
-    return field.name?.startsWith("repeat[") || field.name?.endsWith("[day]")
+    return field.name?.startsWith("repeat[") || field.name?.endsWith("[day]") || field.name === "apply[scope]"
   }
 
   update(event) {
     this.followDay(event?.target)
+    this.followScope()
     this.showFields()
     clearTimeout(this.timer)
     this.timer = setTimeout(() => this.refreshSummary(), 250)
   }
 
-  // Until the user ticks a weekday, the one ticked is the weekday of the day
-  // they chose.
+  // On the form of a new event, until the user ticks a weekday, the one ticked
+  // is the weekday of the day they chose. The weekdays of an event that is
+  // already part of a series are the ones of its rule, and stay.
   followDay(field) {
+    if (!this.followDayValue) return
     if (field?.name === "repeat[weekdays][]") return void (this.weekdaysChosen = true)
     if (this.weekdaysChosen || !field?.name?.endsWith("[day]") || !field.value) return
 
     const code = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"][new Date(`${field.value}T12:00:00`).getDay()]
     this.element.querySelectorAll("input[name='repeat[weekdays][]']").forEach((box) => { box.checked = box.value === code })
+  }
+
+  // The fields that the scope chosen cannot change are off: the rule for "This
+  // event", the day for "All events". A form with no scope has them all on.
+  followScope() {
+    const scope = this.form.querySelector("input[name='apply[scope]']:checked")?.value
+    this.ruleOff = scope === "this"
+    if (!scope) return
+
+    this.element.querySelectorAll("input, select").forEach((field) => { field.disabled = this.ruleOff })
+    const day = this.form.querySelector("[name$='[day]']")
+    if (day) day.disabled = scope === "all"
   }
 
   showFields() {
@@ -56,6 +77,9 @@ export default class extends Controller {
   }
 
   async refreshSummary() {
+    // The fields are off, so there is nothing to read back.
+    if (this.ruleOff) return
+
     const turn = (this.turn = (this.turn || 0) + 1)
     const params = new URLSearchParams()
     for (const [name, value] of new FormData(this.form)) {

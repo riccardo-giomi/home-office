@@ -8,6 +8,20 @@ describe Planner::Series do
     Planner::Series.new({user:, title: "Rent", starts_on: Date.new(2026, 10, 5), time_zone: "Europe/Rome", rrule:}.merge(attrs))
   end
 
+  describe "when it is made from the form" do
+    it "tracks done from at most a year back" do
+      _(build(tracks_done: 1, starts_on: Date.current - 1.year)).must_be :valid?, "exactly a year back is allowed"
+      series = build(tracks_done: 1, starts_on: Date.current - 1.year - 1.day)
+      _(series.valid?(:entry)).must_equal false
+      _(series.errors.of_kind?(:starts_on, :too_far_back)).must_equal true
+    end
+
+    it "does not limit a series that does not track done, nor one that is not made from the form" do
+      _(build(tracks_done: 0, starts_on: Date.current - 5.years).valid?(:entry)).must_equal true
+      _(build(tracks_done: 1, starts_on: Date.current - 5.years)).must_be :valid?
+    end
+  end
+
   describe "validity" do
     it "needs only a title, an anchor day, a zone and a rule" do
       series = build

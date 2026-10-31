@@ -3,7 +3,7 @@
 <%# A new form starts with the weekday of its day ticked: the rule of a weekly event is on that day unless told otherwise %>
 <% repeat_form.weekdays = [Planner::Recurrence::Rule::WEEKDAYS.fetch(item.day.cwday - 1)] if never && repeat_form.weekdays.blank? && item.day %>
 <%= fields_for :repeat, repeat_form do |repeat| %>
-  <div data-controller="repeat-fields" data-repeat-fields-url-value="<%= planner_recurrence_summary_path %>">
+  <div data-controller="repeat-fields" data-repeat-fields-url-value="<%= planner_recurrence_summary_path %>" data-repeat-fields-follow-day-value="<%= never %>">
     <%= render(Core::UI::FieldsetComponent.new(legend: t("planner.repeat.legend"), id: "repeat-fields")) do %>
       <%= render Core::UI::FieldComponent.new(form: repeat, attribute: :frequency, label: Planner::Recurrence::Form.human_attribute_name(:frequency), as: :select,
             choices: [*("never" if never), *Planner::Recurrence::Rule::FREQUENCIES].map { |frequency| [t("planner.repeat.frequencies.#{frequency}"), frequency] },

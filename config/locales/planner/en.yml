@@ -20,6 +20,7 @@ en:
             interval:
               out_of_range: must be a number from 1 to 99
             until_on:
+              before_occurrence: must not be before this event. To end the whole series earlier, choose All events
               before_start: must not be before the first day
               blank: must be a date
             weekdays:
@@ -59,6 +60,8 @@ en:
               before_start: must not be before the first day
             rrule:
               invalid: is not a repeat rule this app offers
+            starts_on:
+              too_far_back: must not be more than a year back for an event that tracks done
   planner:
     agendas:
       show:
@@ -298,13 +301,13 @@ en:
         hints:
           delete:
             all: Every event of the series, before and after this one.
-            following: This one and every later one. Earlier events stay.
-            past: This one and every earlier one. Later events stay.
-            this: Only this one. The others stay.
+            following: This event and every later one. Earlier events are not changed.
+            past: This event and every earlier one. Later events are not changed.
+            this: Only this one. The others are not changed.
           edit:
-            all: Every event of the series. The day stays as it is for each.
-            following: This one and every later one. A new day moves them for good.
-            this: Only this one. The others stay.
+            all: 'Every event of the series, including earlier and later ones. The day cannot be changed: to move the start, edit the first event with “This and following events”.'
+            following: This event and every later one, from the day you set. A number of times counts from this one.
+            this: Only this event. The other events and the recurrence rule are not changed.
         legend: Apply to
         past: This and past events
         this: This event

@@ -59,6 +59,21 @@ describe Planner::Recurrence::Edit do
       _(shown([rent]).first(4).map(&:first)).must_equal %w[2026-10-05 2026-11-10 2026-12-10 2027-01-10]
     end
 
+    it "refuses a last day before the occurrence, and says to choose all events" do
+      form = repeat(rent, ends: "until", until_on: date("2026-10-20"))
+      ok, = edit(rent, "2026-11-05", "following", form:)
+      _(ok).must_equal false
+      _(form.errors.of_kind?(:until_on, :before_occurrence)).must_equal true
+      _(rent.reload.ends_on).must_be_nil
+    end
+
+    it "forgets what was done in the events it reaches when they stop tracking it, and only in them" do
+      rows = %w[2026-10-05 2026-11-05 2026-12-05].map { |day| rent.materialize(date(day)).tap { |row| row.mark_done(true) && row.save! } }
+      ok, = edit(rent, "2026-11-05", "following", tracks_done: "0")
+      _(ok).must_equal true
+      _(rows.map { |row| Planner::Event.find(row.id).done? }).must_equal [true, false, false]
+    end
+
     it "moves the day of the first occurrence in the series itself" do
       ok, = edit(rent, "2026-10-05", "following", day: "2026-10-12")
       _(ok).must_equal true
@@ -278,6 +293,38 @@ describe Planner::Recurrence::Edit do
       _([rent.rrule, rent.starts_on, rent.ends_on, rent.chain_id]).must_equal ["FREQ=MONTHLY;INTERVAL=2;BYMONTHDAY=5", date("2026-10-05"), nil, nil]
       _(row_old.reload.series_id).must_equal rent.id
       _([row_new.reload.series_id, row_new.day]).must_equal [nil, date("2026-12-10")] # the 10th is not a day of the new rule
+    end
+
+    it "ends the whole series on a day before the occurrence that was edited, which stays as an event of its own" do
+      ok, item = edit(rent, "2026-12-05", "all", form: repeat(rent, ends: "until", until_on: date("2026-11-20")))
+      _(ok).must_equal true
+      _(rent.reload.rrule).must_equal "FREQ=MONTHLY;BYMONTHDAY=5;UNTIL=20261120"
+      _([item.persisted?, item.series_id, item.day]).must_equal [true, nil, date("2026-12-05")]
+      _(rent.dates(date("2026-10-01")..date("2027-03-31")).map(&:to_s)).must_equal %w[2026-10-05 2026-11-05]
+    end
+
+    it "refuses a last day before the first day of the series, and changes nothing" do
+      form = repeat(rent, ends: "until", until_on: date("2026-10-01"))
+      ok, = edit(rent, "2026-12-05", "all", form:)
+      _(ok).must_equal false
+      _(form.errors.of_kind?(:until_on, :before_start)).must_equal true
+      _(rent.reload.rrule).must_equal "FREQ=MONTHLY;BYMONTHDAY=5"
+    end
+
+    it "puts the chain back with the template of the part that was edited" do
+      edit(rent, "2026-11-05", "following", title: "Rent and bills")
+      later = Planner::Series.where(chain_id: rent.id).sole
+      ok, = edit(later, "2026-12-05", "all", form: repeat(later, interval: 2))
+      _(ok).must_equal true
+      _(rent.reload.title).must_equal "Rent and bills"
+    end
+
+    it "forgets what was done in every event of the series when it stops tracking it" do
+      rows = %w[2026-10-05 2026-11-05 2026-12-05].map { |day| rent.materialize(date(day)).tap { |row| row.mark_done(true) && row.save! } }
+      ok, = edit(rent, "2026-11-05", "all", tracks_done: "0")
+      _(ok).must_equal true
+      _(rows.map { |row| Planner::Event.find(row.id).done? }).must_equal [false, false, false]
+      _(rent.reload.tracks_done).must_equal 0
     end
 
     it "refuses an invalid occurrence, and changes nothing" do

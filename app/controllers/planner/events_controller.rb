@@ -13,12 +13,18 @@ class Planner::EventsController < Planner::ItemsController
     rule = repeat_form.rule_for(@item.day) if @item.day
     if @item.errors.empty? && rule
       series = Planner::Series.from_event(@item, rule)
-      if series.save
+      if series.save(context: :entry)
         return dialog_done(kind_t("created")) if in_dialog?
 
         return redirect_to back_path_or_default(@item), notice: kind_t("created")
       end
-      series.errors.full_messages.each { |message| @item.errors.add(:base, message) }
+      series.errors.each do |error|
+        if error.attribute == :starts_on
+          @item.errors.add(:day, error.message)
+        else
+          @item.errors.add(:base, error.full_message)
+        end
+      end
     end
     render :new, status: :unprocessable_content
   end

@@ -255,12 +255,20 @@ class Planner::RecurrenceSystemTest < ApplicationSystemTestCase
       assert_equal next_month - 1, rent.reload.ends_on
     end
 
-    it "tells the user the rule cannot change for one event only" do
+    it "turns the rule off for this event, and the day off for all of them" do
       visit edit_planner_series_occurrence_path(rent, next_month.iso8601)
-      select I18n.t("planner.repeat.frequencies.weekly"), from: "repeat_frequency"
-      click_button I18n.t("planner.kinds.event.submit")
-      assert_selector "#error-summary a[href='#repeat_frequency']"
-      assert_equal 0, Planner::Event.where(series_id: rent.id).count
+      assert_selector "input[value=this][checked]"
+      assert_selector "#repeat_frequency:disabled"
+      assert_no_selector "#planner_event_day:disabled"
+      choose I18n.t("planner.series.scope.following")
+      assert_no_selector "#repeat_frequency:disabled"
+      assert_no_selector "#planner_event_day:disabled"
+      choose I18n.t("planner.series.scope.all")
+      assert_no_selector "#repeat_frequency:disabled"
+      assert_selector "#planner_event_day:disabled"
+      choose I18n.t("planner.series.scope.this")
+      assert_selector "#repeat_frequency:disabled"
+      assert_no_selector "#planner_event_day:disabled"
     end
 
     it "fits a 320 px screen and has no axe violations in either theme" do
@@ -275,6 +283,54 @@ class Planner::RecurrenceSystemTest < ApplicationSystemTestCase
         sleep 0.4
         assert_accessible(within: "#delete-item")
       end
+    end
+  end
+
+  describe "the weekdays of an occurrence" do
+    let(:standup) do
+      Planner::Series.create!(user: admin, title: "Standup", starts_on: Date.current.beginning_of_week, time_zone: "UTC",
+        rrule: "FREQ=WEEKLY;BYDAY=MO,WE,FR", start_time: "09:00", duration_minutes: 15)
+    end
+    let(:monday) { Date.current.beginning_of_week + 7 }
+
+    before do
+      standup
+      sign_in_through_form admin
+    end
+
+    # The browser's own time input depends on its language, so the value is set
+    # directly.
+    def set_time(id, value)
+      page.execute_script("const field = document.getElementById(arguments[0]); field.value = arguments[1]; field.dispatchEvent(new Event('input', {bubbles: true}))", id, value)
+    end
+
+    it "stay as the rule says when the day changes, and for this event the day and the time move on their own" do
+      visit edit_planner_series_occurrence_path(standup, monday.iso8601)
+      assert_selector "input[name='repeat[weekdays][]']:checked", count: 3, visible: :all
+      fill_in "planner_event_day", with: monday + 1
+      set_time "planner_event_start_time", "19:30"
+      set_time "planner_event_end_time", "20:00"
+      assert_selector "input[name='repeat[weekdays][]']:checked", count: 3, visible: :all
+      click_button I18n.t("planner.kinds.event.submit")
+      assert_text I18n.t("planner.kinds.event.updated")
+      moved = Planner::Event.find_by!(series_id: standup.id)
+      assert_equal [monday, monday + 1, "19:30"], [moved.occurrence_on, moved.day, moved.start_time]
+      assert_equal "FREQ=WEEKLY;BYDAY=MO,WE,FR", standup.reload.rrule
+    end
+
+    it "stay as the rule says for the following events too, from a new day" do
+      visit edit_planner_series_occurrence_path(standup, monday.iso8601)
+      choose I18n.t("planner.series.scope.following")
+      fill_in "planner_event_day", with: monday + 1
+      assert_selector "input[name='repeat[weekdays][]']:checked", count: 3, visible: :all
+    end
+
+    it "follow the day on the form of a new event, until one is ticked by hand" do
+      visit new_planner_event_path
+      select I18n.t("planner.repeat.frequencies.weekly"), from: "repeat_frequency"
+      fill_in "planner_event_day", with: Date.current.beginning_of_week + 10
+      assert_selector "input[name='repeat[weekdays][]']:checked", count: 1
+      assert_selector "input[name='repeat[weekdays][]'][value=TH]:checked"
     end
   end
 
