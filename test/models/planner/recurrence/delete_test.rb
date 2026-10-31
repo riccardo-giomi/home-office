@@ -147,4 +147,28 @@ describe Planner::Recurrence::Delete do
   it "does not know a scope it was not given" do
     _(-> { Planner::Recurrence::Delete.new(series: rent, item: rent.occurrence(date("2026-11-05")), scope: "some").call }).must_raise ArgumentError
   end
+
+  describe "after a catch-up" do
+    before do
+      travel_to Time.utc(2026, 12, 10, 12)
+      rent.catch_up(date("2026-12-09"))
+    end
+
+    def live_days = Planner::Event.owned_by(user).kept.where(series_id: rent.id).order(:day).pluck(:day).map(&:to_s)
+
+    it "trashes the events from the cut on, and no later catch-up makes them again" do
+      ok, = remove(rent, "2026-11-05", "following")
+      _(ok).must_equal true
+      _(live_days).must_equal %w[2026-10-05]
+      _(Planner::Series.catch_up(user, today: date("2026-12-10"))).must_equal 0
+      _(trashed_event_days).must_equal %w[2026-11-05 2026-12-05]
+    end
+
+    it "trashes the events up to the cut and keeps the later ones" do
+      ok, = remove(rent, "2026-11-05", "past")
+      _(ok).must_equal true
+      _(live_days).must_equal %w[2026-12-05]
+      _(Planner::Series.catch_up(user, today: date("2026-12-10"))).must_equal 0
+    end
+  end
 end

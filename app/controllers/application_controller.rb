@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::Base
   include Authentication
   include RequestPreferences
+  # Keep under RequestPreferences so that the timezone is set correctly.
+  include Core::CatchUp
 
   helper_method :current_selection
 

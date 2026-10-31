@@ -21,7 +21,7 @@ module Planner::Occurrences
       .pluck(:series_id, :occurrence_on).group_by(&:first)
     series.flat_map do |one|
       skip = (excluded.fetch(one.id, []) + taken.fetch(one.id, [])).map(&:last)
-      one.dates(range, skip:).map { |date| one.build_occurrence(date) }
+      one.unsaved_dates(range, skip:).map { |date| one.build_occurrence(date) }
     end
   end
   private_class_method :unsaved_occurrences

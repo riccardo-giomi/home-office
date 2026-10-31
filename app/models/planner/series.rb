@@ -31,6 +31,7 @@ class Planner::Series < ApplicationRecord
   validate :start_is_recent, on: :entry, if: :tracks_done?
 
   include Planner::Series::Occurrences
+  include Planner::Series::CatchUp
 
   # How far back a series that tracks done can start, when it is made from the
   # form (`save(context: :entry)`).
@@ -123,9 +124,15 @@ class Planner::Series < ApplicationRecord
   # Takes the whole group out of the trash: the parts of the chain that were
   # trashed by the same action, and the events trashed at that moment. An event
   # trashed earlier stays in the trash.
+  #
+  # A series that was caught up before it was trashed gets
+  # `materialized_through` set to yesterday, if it was earlier. The days it
+  # spent in the trash are not counted as missed.
   def restore_group
     group = self.class.where(user_id:, deleted_at:).where("id = :key OR chain_id = :key", key: chain_key)
     self.class.transaction do
+      group.where.not(materialized_through: nil)
+        .update_all(["materialized_through = MAX(materialized_through, ?)", Date.current - 1])
       Core::Entity.where(id: Planner::Item.where(series_id: group.select(:id)).select(:id), deleted_at:)
         .update_all(deleted_at: nil)
       group.update_all(deleted_at: nil)

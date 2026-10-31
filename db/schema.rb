@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_29_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_140000) do
   create_table "core_entities", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "record_type", null: false
@@ -92,6 +92,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_29_120000) do
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.date "materialized_through"
     t.index ["id", "user_id"], name: "index_planner_series_on_id_and_user_id", unique: true
     t.index ["user_id", "chain_id"], name: "index_planner_series_on_user_id_and_chain_id"
     t.index ["user_id", "deleted_at"], name: "index_planner_series_trash", where: "deleted_at IS NOT NULL"
@@ -100,6 +101,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_29_120000) do
     t.check_constraint "from_on IS NULL OR from_on >= starts_on", name: "chk_planner_series_from"
     t.check_constraint "length(rrule) BETWEEN 1 AND 255", name: "chk_planner_series_rrule"
     t.check_constraint "length(trim(title)) BETWEEN 1 AND 255", name: "chk_planner_series_title"
+    t.check_constraint "materialized_through IS NULL OR materialized_through = date(materialized_through)", name: "chk_planner_series_materialized_format"
     t.check_constraint "priority BETWEEN 0 AND 3", name: "chk_planner_series_priority"
     t.check_constraint "start_time IS NULL OR start_time GLOB '[0-2][0-9]:[0-5][0-9]'", name: "chk_planner_series_start_time"
     t.check_constraint "starts_on = date(starts_on) AND (from_on IS NULL OR from_on = date(from_on)) AND (ends_on IS NULL OR ends_on = date(ends_on))", name: "chk_planner_series_date_format"

@@ -29,6 +29,16 @@ module Planner::Series::Occurrences
     found - (skip || skipped(found))
   end
 
+  # The dates in `range` that are unsaved occurrences: dates of the rule after
+  # `materialized_through` that have no event and are not excluded.
+  #
+  # A date up to and including `materialized_through` that has no event is not
+  # an occurrence: a change of the rule moved it away, or it was deleted.
+  def unsaved_dates(range, skip: nil)
+    range = [range.first, materialized_through&.next_day].compact.max..range.last
+    (range.first > range.last) ? [] : dates(range, skip:)
+  end
+
   # An unsaved event, as it would be if the date were touched now.
   def build_occurrence(date)
     event = Planner::Event.new(user_id:, series: self, occurrence_on: date, day: date, title:, notes:, priority:, tracks_done:)
@@ -42,7 +52,7 @@ module Planner::Series::Occurrences
   # The row for the date, else an unsaved occurrence, else nil (the rule does
   # not give the date, or it is skipped).
   def occurrence(date)
-    events.includes(:entity).find_by(occurrence_on: date) || (build_occurrence(date) if dates(date..date).any?)
+    events.includes(:entity).find_by(occurrence_on: date) || (build_occurrence(date) if unsaved_dates(date..date).any?)
   end
 
   # The row for the date, made now if it was unsaved.

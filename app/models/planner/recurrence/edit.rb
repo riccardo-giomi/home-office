@@ -16,6 +16,10 @@
 # - A row that the changed rule no longer gives becomes an event of its own.
 #   Nothing is deleted.
 # - A rule change on "all" puts the chain back into one series.
+# - Dates up to and including `materialized_through` are not recalculated. A new
+#   part copies the value of the part it was split from, and a collapsed chain
+#   gets the latest value of its parts, so a new rule neither creates nor
+#   removes occurrences in the past.
 class Planner::Recurrence::Edit
   SCOPES = %w[this following all].freeze
   FIELDS = %i[title notes priority tracks_done].freeze
@@ -108,7 +112,8 @@ class Planner::Recurrence::Edit
     if previous
       @series.update!(ends_on: [day, anchor].min - 1)
       target = Planner::Series.create!(@series.slice(:user_id, :title, :notes, :priority, :tracks_done, :start_time, :duration_minutes, :time_zone)
-        .merge(series_changes).merge(starts_on: anchor, ends_on: old_ends_on, rrule: rule.to_rrule, chain_id: @series.chain_key))
+        .merge(series_changes).merge(starts_on: anchor, ends_on: old_ends_on, rrule: rule.to_rrule, chain_id: @series.chain_key,
+          materialized_through: @series.materialized_through))
       Planner::Event.where(series_id: @series.id, occurrence_on: day..).update_all(series_id: target.id)
       Planner::SeriesExclusion.where(series_id: @series.id, excluded_on: day..).update_all(series_id: target.id)
     elsif @series.from_on && anchor == day
@@ -232,7 +237,8 @@ class Planner::Recurrence::Edit
     # unless the user typed another.
     rule = rule.with(count: root.rule.count) if rule.count && root.rule.count && @form.count == @series.rule.count
     template = @series.slice(:title, :notes, :priority, :tracks_done, :start_time, :duration_minutes)
-    root.update!(template.merge(series_changes).merge(rrule: rule.to_rrule, ends_on: last.ends_on))
+    root.update!(template.merge(series_changes).merge(rrule: rule.to_rrule, ends_on: last.ends_on,
+      materialized_through: parts.filter_map(&:materialized_through).max))
     save_item(root, @item.occurrence_on)
     reconcile(root)
     true

@@ -334,4 +334,50 @@ describe Planner::Recurrence::Edit do
       _(rent.reload.title).must_equal "Rent"
     end
   end
+
+  describe "after a catch-up" do
+    before { travel_to Time.utc(2026, 12, 10, 12) }
+
+    def made_days = Planner::Event.where(user_id: user.id, title: ["Rent", "Rent 2"]).order(:day).pluck(:day).map(&:to_s)
+
+    it "gives the part a following edit starts the watermark of the one it split from" do
+      rent.catch_up(date("2026-12-09"))
+      ok, = edit(rent, "2026-11-05", "following", day: "2026-11-10", title: "Rent 2")
+      _(ok).must_equal true
+      newer = Planner::Series.where(chain_id: rent.id).sole
+      _(newer.materialized_through).must_equal date("2026-12-09")
+      before = made_days
+      _(Planner::Series.catch_up(user, today: date("2026-12-10"))).must_equal 0
+      _(made_days).must_equal before
+      _(made_days.count("2026-11-10")).must_equal 1
+    end
+
+    it "leaves the past events a changed rule no longer gives as events of their own" do
+      rent.catch_up(date("2026-12-09"))
+      edit(rent, "2026-11-05", "following", day: "2026-11-10", title: "Rent 2")
+      _(Planner::Event.where(user_id: user.id, title: "Rent", series_id: nil).order(:day).pluck(:day).map(&:to_s)).must_equal %w[2026-12-05]
+    end
+
+    it "keeps the past when all change the rule: no past day appears, none goes" do
+      rent.catch_up(date("2026-12-09"))
+      edit(rent, "2026-11-05", "following", title: "Rent 2")
+      rent.reload.update_columns(materialized_through: date("2026-10-31"))
+      newer = Planner::Series.where(chain_id: rent.id).sole
+      ok, = edit(newer, "2026-12-05", "all", form: repeat(newer, interval: 2))
+      _(ok).must_equal true
+      _(rent.reload.materialized_through).must_equal date("2026-12-09")
+      before = made_days
+      _(Planner::Series.catch_up(user, today: date("2026-12-10"))).must_equal 0
+      _(made_days).must_equal before
+      _(made_days).must_equal %w[2026-10-05 2026-11-05 2026-12-05]
+    end
+
+    it "changes the titles of the past events when all change only the title" do
+      rent.catch_up(date("2026-12-09"))
+      ok, = edit(rent, "2026-12-05", "all", title: "Flat rent")
+      _(ok).must_equal true
+      _(Planner::Event.where(series_id: rent.id).pluck(:title).uniq).must_equal ["Flat rent"]
+      _(Planner::Event.where(series_id: rent.id).count).must_equal 3
+    end
+  end
 end

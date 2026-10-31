@@ -53,6 +53,25 @@ describe "Planner::Series in the trash" do
       _(Planner::Event.includes(:entity).find(earlier.id)).must_be :trashed?
     end
 
+    it "does not make the days it spent in the trash into events that were missed" do
+      travel_to Time.utc(2026, 10, 11, 12)
+      gym = series(starts_on: Date.new(2026, 10, 1), rrule: "FREQ=DAILY", tracks_done: 1)
+      gym.catch_up(Date.new(2026, 10, 10))
+      Planner::Recurrence::Delete.new(series: gym, item: gym.occurrence(Date.new(2026, 10, 10)), scope: "all").call
+      travel_to Time.utc(2026, 11, 20, 12)
+      gym.reload.restore_group
+      _(Planner::Series.catch_up(user, today: Date.new(2026, 11, 20))).must_equal 0
+      _(Planner::Event.owned_by(user).kept.where(series_id: gym.id).where("day > ?", Date.new(2026, 10, 10)).count).must_equal 0
+    end
+
+    it "still catches up a series that was never caught up before it went to the trash" do
+      travel_to Time.utc(2026, 10, 11, 12)
+      gym = series(starts_on: Date.new(2026, 10, 1), rrule: "FREQ=DAILY", tracks_done: 1)
+      trash_all(gym, "2026-10-05")
+      gym.reload.restore_group
+      _(Planner::Series.catch_up(user, today: Date.new(2026, 10, 11))).must_be :>, 0
+    end
+
     it "puts the series back among those that are shown" do
       gym = series
       trash_all(gym)

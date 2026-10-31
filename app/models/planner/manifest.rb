@@ -16,6 +16,9 @@ Planner::Manifest = Core::ModuleManifest.new(
       group_key: "planner.nav.groups.planner")
   ],
   purge: ->(now) { Planner::Series.purge_expired(now) },
+  catch_up: lambda do |user, today|
+    Planner::CatchUp.run(user, today:) if Planner::CatchUp.lazy?
+  end,
   trash: Core::TrashSource.new(
     title_key: "planner.nav.groups.planner",
     route: :planner_trash_path,

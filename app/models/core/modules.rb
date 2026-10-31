@@ -35,6 +35,17 @@ module Core::Modules
     # need the entities it takes along.
     def purge_expired(now = Time.current) = all.filter_map(&:purge).each { |hook| hook.call(now) }
 
+    # Calls the `catch_up` hook of every module for the user. An error raised by
+    # a hook is reported with `Rails.error.report` and does not stop the
+    # request.
+    def catch_up(user, today:)
+      all.filter_map(&:catch_up).each do |hook|
+        hook.call(user, today)
+      rescue => error
+        Rails.error.report(error, handled: true)
+      end
+    end
+
     def trash_total(user) = trash_sources.sum { |source| source.total.call(user) }
   end
 end
