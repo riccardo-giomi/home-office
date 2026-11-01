@@ -4,8 +4,9 @@ Core::NavItem = Data.define(
   # placement: :main (the top of the sidebar) or :footer (beside the account box
   # at the bottom).
   #
-  # badge: for a view of exceptions, a callable that takes the user and returns
-  # how many there are. The sidebar shows the number when it is above zero.
+  # badge: a callable that takes the user and returns a number. The entry
+  # shows a counter with that number beside its label when the number is
+  # above zero.
   #
   # badge_label_key: words it for readers, with `count`.
   def initialize(

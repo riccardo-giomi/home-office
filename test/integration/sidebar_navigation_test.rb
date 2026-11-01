@@ -26,7 +26,7 @@ class SidebarNavigationTest < ActionDispatch::IntegrationTest
     assert_select "header button[aria-controls=sidebar]", 0
   end
 
-  it "shows the total in the trash beside the Trash entry, as text with a spoken label, and nothing when it is empty" do
+  it "shows the total in the trash beside the Trash entry, as text with a label for screen readers, and nothing when it is empty" do
     sign_in_as users(:admin)
     get root_path
     assert_select "nav#sidebar a[href='#{trash_path}'] .badge", text: /4/

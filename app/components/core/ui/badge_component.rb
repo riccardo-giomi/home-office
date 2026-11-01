@@ -1,6 +1,8 @@
-# A count beside a label (a menu link, a button) for a view that holds
-# exceptions: it shows only when there is something in it. The number is text,
-# the spoken label says what is counted, and it stops at 99+.
+# A counter beside a label (menu link, button).
+#
+# It renders only when `count` is a positive number. The number is text and is
+# capped at 99 (shown as 99+) so it cannot overflow; the `label` for screen
+# readers says what is counted.
 class Core::UI::BadgeComponent < ApplicationComponent
   CAP = 99
 

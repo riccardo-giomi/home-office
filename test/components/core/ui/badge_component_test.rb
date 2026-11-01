@@ -5,7 +5,7 @@ describe Core::UI::BadgeComponent do
 
   def badge(count, label: "#{count} tasks") = render_inline(Core::UI::BadgeComponent.new(count:, label:))
 
-  it "shows the number, with a spoken label for readers that cannot see the dot" do
+  it "shows the number, with a label for screen readers" do
     badge(3)
     assert_selector "span.badge", text: /3/
     assert_selector "span[aria-hidden=true]", text: "3"
