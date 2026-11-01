@@ -1,0 +1,26 @@
+<% content_for :title, t(".title") %>
+<%# Marking an item done saves it and redirects here; morphing keeps the focus on the checkbox %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<div class="w-full" data-controller="focus-fallback">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title")) %>
+  <nav class="mb-4" aria-label="<%= t(".views") %>">
+    <%= render Core::UI::TabsComponent.new(items: agenda_views_with_important_events) %>
+  </nav>
+  <%= render(Core::UI::PageToolbarComponent.new) do |toolbar| %>
+    <% toolbar.with_leading do %>
+      <nav aria-label="<%= t(".horizon") %>">
+        <%= render Core::UI::TabsComponent.new(items: important_events_horizon_items(@important_events)) %>
+      </nav>
+    <% end %>
+    <% toolbar.with_trailing do %>
+      <nav aria-label="<%= t(".minimum") %>">
+        <%= render Core::UI::TabsComponent.new(items: important_events_minimum_items(@important_events)) %>
+      </nav>
+    <% end %>
+  <% end %>
+  <%= render Core::UI::AgendaListComponent.new(
+        days: @events_by_day.keys.map { |date| {date:, entries: entries_by_day(@events_by_day).fetch(date, [])} },
+        today: Date.current, empty_text: t(".empty.#{@important_events.horizon}")
+      ) %>
+  <%= item_dialog %>
+</div>

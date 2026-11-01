@@ -105,11 +105,32 @@ en:
       day: Day hours
       label: Hours shown
       rest: Other hours
+    important_events:
+      horizons:
+        1y: 1 year
+        30d: 30 days
+        6m: 6 months
+        7d: 7 days
+      index:
+        empty:
+          1y: Nothing important in the next year.
+          30d: Nothing important in the next 30 days.
+          6m: Nothing important in the next 6 months.
+          7d: Nothing important in the next 7 days.
+        horizon: Horizon
+        minimum: Priority
+        title: Important
+        views: Agenda views
+      minimums:
+        high: Urgent and high
+        urgent: Urgent
+      tab: Important
     items:
       back:
         agenda: Back to agenda
         calendar: Back to calendar
         forgotten_tasks: Back to forgotten tasks
+        important_events: Back to important
         missed_events: Back to missed events
         schedule: Back to schedule
         todos: Back to todos
@@ -226,6 +247,10 @@ en:
         other: "%{count} forgotten tasks"
       groups:
         planner: Planner
+      important_events: Important
+      important_events_badge:
+        one: "%{count} important event"
+        other: "%{count} important events"
       missed_events: Missed events
       missed_events_badge:
         one: "%{count} missed event"

@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     resource :calendar, only: :show
     resource :agenda, only: :show
     resource :schedule, only: :show
+    resources :important_events, only: :index
     resources :forgotten_tasks, only: :index
     resources :missed_events, only: :index
     resource :recurrence_summary, only: :show

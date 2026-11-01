@@ -262,6 +262,13 @@ module SharedItemPages
           assert_select "a[href='#{back}']", text: "Back to missed events"
         end
 
+        it "links back to the important events it came from, by its name" do
+          back = "/planner/important_events?horizon=30d"
+          get polymorphic_path(sample, back:)
+          assert_response :success
+          assert_select "a[href='#{back}']", text: "Back to important"
+        end
+
         it "ignores a back address that is not one of our listing pages" do
           ["https://evil.example/", "//evil.example", "/admin/users", "/planner/calendar/../../session", "javascript:alert(1)", "/planner/calendar?x=<b>", "/planner/calendarx"].each do |back|
             get polymorphic_path(sample, back:)

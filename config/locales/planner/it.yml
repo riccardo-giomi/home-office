@@ -105,11 +105,32 @@ it:
       day: Ore della giornata
       label: Ore mostrate
       rest: Altre ore
+    important_events:
+      horizons:
+        1y: 1 anno
+        30d: 30 giorni
+        6m: 6 mesi
+        7d: 7 giorni
+      index:
+        empty:
+          1y: Niente di importante nel prossimo anno.
+          30d: Niente di importante nei prossimi 30 giorni.
+          6m: Niente di importante nei prossimi 6 mesi.
+          7d: Niente di importante nei prossimi 7 giorni.
+        horizon: Orizzonte
+        minimum: Priorità
+        title: Importanti
+        views: Viste dell'agenda
+      minimums:
+        high: Urgenti e alti
+        urgent: Urgenti
+      tab: Importanti
     items:
       back:
         agenda: Torna all'agenda
         calendar: Torna al calendario
         forgotten_tasks: Torna alle attività dimenticate
+        important_events: Torna agli importanti
         missed_events: Torna agli eventi mancati
         schedule: Torna al programma
         todos: Torna a Da fare
@@ -226,6 +247,10 @@ it:
         other: "%{count} attività dimenticate"
       groups:
         planner: Planner
+      important_events: Importanti
+      important_events_badge:
+        one: "%{count} evento importante"
+        other: "%{count} eventi importanti"
       missed_events: Eventi mancati
       missed_events_badge:
         one: "%{count} evento mancato"

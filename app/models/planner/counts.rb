@@ -18,6 +18,8 @@ class Planner::Counts
     @today = today
   end
 
+  def important = (@important ||= Planner::ImportantEvents.new(@user, today: @today).count)
+
   def forgotten = (@forgotten ||= Planner::Task.owned_by(@user).forgotten(@today).count)
 
   def missed = (@missed ||= Planner::Event.owned_by(@user).missed(@today).count)

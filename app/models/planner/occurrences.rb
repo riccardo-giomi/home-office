@@ -6,11 +6,22 @@ module Planner::Occurrences
   def self.for(user, range)
     rows = Planner::Event.owned_by(user).kept.on_days(range).to_a
     series = Planner::Series.owned_by(user).kept.overlapping(range).to_a
-    (rows + unsaved_occurrences(series, range)).sort_by do |event|
+    chronological(rows + unsaved_occurrences(series, range))
+  end
+
+  # Sorts by day.
+  #
+  # On the same day, events without a time come first, then the others by time.
+  def self.chronological(events)
+    events.sort_by do |event|
       [event.day, event.starts_at ? 1 : 0, event.starts_at.to_i, event.id.to_i]
     end
   end
 
+  # The unsaved occurrences of the series inside the range.
+  #
+  # It runs one query for each kind of data (exclusions, events), not one for
+  # each series.
   def self.unsaved_occurrences(series, range)
     return [] if series.empty?
 
@@ -24,5 +35,4 @@ module Planner::Occurrences
       one.unsaved_dates(range, skip:).map { |date| one.build_occurrence(date) }
     end
   end
-  private_class_method :unsaved_occurrences
 end

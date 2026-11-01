@@ -14,7 +14,7 @@
       </div>
     <% end %>
   <% end %>
-  <%= render period_nav(@period, label: t(".nav"), path: ->(**params) { planner_agenda_path(**params) }) %>
+  <%= render period_nav(@period, label: t(".nav"), path: ->(**params) { planner_agenda_path(**params) }, extra_views: [important_events_tab]) %>
   <%= render Core::UI::AgendaListComponent.new(
         days: @period.range.map { |date| {date:, entries: entries_by_day(@events_by_day).fetch(date, [])} },
         today: Date.current, now: (Time.current if @period.range.cover?(Date.current)), scroll: params[:date].blank?, empty_text: t(".empty.#{@period.view}")

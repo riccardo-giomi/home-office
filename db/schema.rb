@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_01_120000) do
   create_table "core_entities", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "record_type", null: false
@@ -56,6 +56,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_140000) do
     t.index ["series_id", "occurrence_on"], name: "index_planner_items_on_series_id_and_occurrence_on", unique: true
     t.index ["user_id", "type", "day", "starts_at"], name: "index_planner_items_on_day"
     t.index ["user_id", "type", "position"], name: "index_planner_items_position", unique: true
+    t.index ["user_id", "type", "priority", "day"], name: "index_planner_items_important"
     t.check_constraint "(series_id IS NULL) = (occurrence_on IS NULL)", name: "chk_planner_items_series_pair"
     t.check_constraint "(starts_at IS NULL) = (ends_at IS NULL) AND (starts_at IS NULL) = (time_zone IS NULL)", name: "chk_planner_items_times_paired"
     t.check_constraint "day IS NOT NULL OR type = 'Planner::Todo'", name: "chk_planner_items_day_required"

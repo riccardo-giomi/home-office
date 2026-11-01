@@ -31,6 +31,12 @@ describe Planner::BackLocation do
     _(Planner::BackLocation.parse("/planner/missed_events").page).must_equal :missed_events
   end
 
+  it "accepts the important events, with their filters" do
+    path = "/planner/important_events?horizon=30d&minimum=high"
+    _(Planner::BackLocation.parse(path)&.path).must_equal path
+    _(Planner::BackLocation.parse("/planner/important_events").page).must_equal :important_events
+  end
+
   it "does not accept the item pages themselves" do
     assert_nil Planner::BackLocation.parse("/planner/tasks/1")
   end

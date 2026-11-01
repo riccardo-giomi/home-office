@@ -9,7 +9,7 @@
 # Only those pages (and a plain query string) are accepted, so the
 # parameter can never send anyone to another page or site.
 class Planner::BackLocation
-  ALLOWED = %r{\A/planner/(?<page>calendar|agenda|schedule|todos|forgotten_tasks|missed_events)(?:\?[A-Za-z0-9_=&%.:-]*)?\z}
+  ALLOWED = %r{\A/planner/(?<page>calendar|agenda|schedule|todos|forgotten_tasks|missed_events|important_events)(?:\?[A-Za-z0-9_=&%.:-]*)?\z}
 
   attr_reader :path, :page
 
