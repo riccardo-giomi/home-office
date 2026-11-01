@@ -44,12 +44,15 @@ Planner::Manifest = Core::ModuleManifest.new(
   linkable_kinds: %w[event task todo].map do |key|
     klass = Planner::Item.sti_class_for("Planner::#{key.camelize}")
     routes = Rails.application.routes.url_helpers
-    # The page around the record's day, in the view every device has (the day).
-    # A todo has no day: its list is the page.
+    # Default URIs for Items.
+    #
+    # Each address carries `at=<id>`, so the target page shows that record.
+    #
+    # A todo has no view or date, it simply defaults to the todos page.
     homes = {
-      "event" => ->(item) { routes.planner_calendar_path(view: "day", date: item.day.iso8601) },
-      "task" => ->(item) { routes.planner_schedule_path(view: "day", date: item.day.iso8601) },
-      "todo" => ->(_item) { routes.planner_todos_path }
+      "event" => ->(item) { routes.planner_calendar_path(view: "day", date: item.day.iso8601, at: item.id) },
+      "task" => ->(item) { routes.planner_schedule_path(view: "day", date: item.day.iso8601, at: item.id) },
+      "todo" => ->(item) { routes.planner_todos_path(at: item.id) }
     }
     Core::LinkableKind.new(
       key:,

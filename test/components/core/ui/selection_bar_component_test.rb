@@ -37,7 +37,7 @@ describe Core::UI::SelectionBarComponent do
 
   it "leads to the page and view that hold each record, on a page without that dialog" do
     bar(:dentist)
-    assert_selector "a[href='/planner/calendar?date=2026-10-07&view=day']:not([data-turbo-frame])", text: "Dentist"
+    assert_selector "a[href='/planner/calendar?at=#{planner_items(:dentist).id}&date=2026-10-07&view=day']:not([data-turbo-frame])", text: "Dentist"
   end
 
   it "wraps a very long title" do

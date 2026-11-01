@@ -55,6 +55,12 @@ class Core::UI::EntryComponentPreview < ViewComponent::Preview
     render(entry(title: "Gym", compact: true, starts_at: Time.utc(2026, 10, 12, 16), ends_at: Time.utc(2026, 10, 12, 16, 30), time_zone: "Europe/Rome", statuses: [REPEATS]))
   end
 
+  # The entry named by `at` in the address: it scrolls to the center of the
+  # screen and its background is highlighted for two seconds
+  def revealed
+    render(entry(title: "Evening class", reveal: true, starts_at: Time.utc(2026, 10, 7, 18), ends_at: Time.utc(2026, 10, 7, 19), time_zone: "UTC"))
+  end
+
   # A todo has no moment of its own: no time line at all
   def without_time
     render(entry(title: "Water the plants", show_time: false, statuses: [{priority: :high, label: "High priority"}]))

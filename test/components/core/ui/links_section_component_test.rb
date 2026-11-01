@@ -89,8 +89,8 @@ describe Core::UI::LinksSectionComponent do
 
   it "has a link to the page that holds each other end, in its own view, leaving the dialog when there is one" do
     section(:dentist)
-    assert_selector "a[href='/planner/schedule?date=2026-10-07&view=day'][data-turbo-frame=_top]", text: "Show in Schedule"
-    assert_selector "a[href='/planner/todos'][data-turbo-frame=_top]", text: "Show in Todos"
+    assert_selector "a[href='/planner/schedule?at=#{planner_items(:pay_rent_task).id}&date=2026-10-07&view=day'][data-turbo-frame=_top]", text: "Show in Schedule"
+    assert_selector "a[href='/planner/todos?at=#{planner_items(:water_plants_todo).id}'][data-turbo-frame=_top]", text: "Show in Todos"
   end
 
   it "has none for an end in the trash, which has no page" do

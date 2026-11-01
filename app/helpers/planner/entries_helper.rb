@@ -28,9 +28,14 @@ module Planner::EntriesHelper
       check: (completion_check(item) if item.tracks_done? && item.active?),
       muted: !item.active?,
       statuses: entry_statuses(item),
-      commands: (select_command(item) unless unsaved_occurrence?(item))
+      commands: (select_command(item) unless unsaved_occurrence?(item)),
+      reveal: reveal?(item)
     }
   end
+
+  # True when the address asks for this item: `at` holds the id of the item to
+  # show. An unsaved occurrence has no id, so no address can name it.
+  def reveal?(item) = params[:at].present? && item.id.to_s == params[:at]
 
   STATE_ICONS = {"abandoned" => :minus_circle, "cancelled" => :x_circle}.freeze
 

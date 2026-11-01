@@ -88,12 +88,12 @@ describe "the booted registry" do
     _(Core::Modules.linkable_kinds.map(&:new_route)).must_equal %i[new_planner_event_path new_planner_task_path new_planner_todo_path]
   end
 
-  it "tells where each kind lives: its page and view around the record, by default" do
+  it "tells where each kind lives: its page and view around the record, and which record to show" do
     sample = {"event" => :dentist, "task" => :pay_rent_task, "todo" => :water_plants_todo}
     paths = Core::Modules.linkable_kinds.to_h { |kind| [kind.key, kind.home.call(planner_items(sample.fetch(kind.key)))] }
-    _(paths["event"]).must_equal "/planner/calendar?date=2026-10-07&view=day"
-    _(paths["task"]).must_equal "/planner/schedule?date=2026-10-07&view=day"
-    _(paths["todo"]).must_equal "/planner/todos"
+    _(paths["event"]).must_equal "/planner/calendar?at=#{planner_items(:dentist).id}&date=2026-10-07&view=day"
+    _(paths["task"]).must_equal "/planner/schedule?at=#{planner_items(:pay_rent_task).id}&date=2026-10-07&view=day"
+    _(paths["todo"]).must_equal "/planner/todos?at=#{planner_items(:water_plants_todo).id}"
     I18n.with_locale(:en) do
       _(Core::Modules.linkable_kinds.map { |kind| I18n.t(kind.home_label_key) }).must_equal ["Show in Calendar", "Show in Schedule", "Show in Todos"]
     end

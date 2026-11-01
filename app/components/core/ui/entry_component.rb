@@ -18,6 +18,10 @@
 #
 # commands: small buttons at the end of the same line, above the link that
 # covers the entry. The page decides which entries get them.
+#
+# reveal: true when the address of the page asks for this entry (`at=<id>`).
+# When the page opens, the entry scrolls to the center of the screen and its
+# background is highlighted for two seconds.
 class Core::UI::EntryComponent < ApplicationComponent
   renders_one :check
   renders_one :commands
@@ -25,7 +29,19 @@ class Core::UI::EntryComponent < ApplicationComponent
   # The size of the icons and controls of the line at the top.
   STRIP_ICON = "size-6"
 
-  def initialize(title:, href:, starts_at: nil, ends_at: nil, time_zone: nil, done: false, muted: false, compact: false, link_data: {}, statuses: [], show_time: true)
+  # Controllers and classes added to an entry when `reveal` is true:
+  #
+  # `scroll-into-view` scrolls it to the center of the screen and `highlight`
+  # swaps the background classes. The classes are written in full in this file
+  # so that Tailwind includes them in the stylesheet.
+  REVEAL = {
+    controller: "highlight scroll-into-view",
+    highlight_on_class: "bg-primary/20",
+    highlight_off_class: "bg-base-100",
+    scroll_into_view_block_value: "center"
+  }.freeze
+
+  def initialize(title:, href:, starts_at: nil, ends_at: nil, time_zone: nil, done: false, muted: false, compact: false, link_data: {}, statuses: [], show_time: true, reveal: false)
     @title = title
     @href = href
     @starts_at = starts_at
@@ -37,10 +53,11 @@ class Core::UI::EntryComponent < ApplicationComponent
     @link_data = link_data
     @statuses = statuses
     @show_time = show_time
+    @reveal = reveal
   end
 
   def call
-    tag.div(class: "@container relative h-full min-w-0", title: tooltip) do
+    tag.div(class: "@container relative h-full min-w-0", title: tooltip, data: (REVEAL if @reveal)) do
       safe_join([lead, tag.div(title_link), time].compact)
     end
   end
