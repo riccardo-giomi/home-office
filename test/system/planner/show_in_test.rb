@@ -10,10 +10,11 @@ class Planner::ShowInSystemTest < ApplicationSystemTestCase
   end
 
   # True when the whole entry is inside the visible part of the page. The page
-  # scrolls after it opens, so the test waits for this.
+  # scrolls right after it opens, so the test waits one second for this: a
+  # scroll that comes later, when the highlight ends, does not count.
   def assert_in_view(title)
     entry = find("main a", text: title)
-    page.document.synchronize(3) do
+    page.document.synchronize(1) do
       on_screen = entry.evaluate_script("(function (element) { const box = element.getBoundingClientRect(); return box.top >= 0 && box.bottom <= window.innerHeight })(this)")
       raise Capybara::ExpectationNotMet, "#{title} is not on the screen" unless on_screen
     end

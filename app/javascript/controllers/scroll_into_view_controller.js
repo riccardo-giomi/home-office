@@ -9,7 +9,10 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static values = { block: { type: String, default: "start" } }
 
+  // Waits for the next frame: right after rendering a new page, Turbo focuses
+  // its heading and scrolls to the top, which would undo a scroll made while the
+  // controller connects.
   connect() {
-    this.element.scrollIntoView({ block: this.blockValue })
+    requestAnimationFrame(() => this.element.scrollIntoView({ block: this.blockValue }))
   }
 }

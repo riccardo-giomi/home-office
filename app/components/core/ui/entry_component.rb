@@ -34,8 +34,12 @@ class Core::UI::EntryComponent < ApplicationComponent
   # `scroll-into-view` scrolls it to the center of the screen and `highlight`
   # swaps the background classes. The classes are written in full in this file
   # so that Tailwind includes them in the stylesheet.
+  #
+  # `highlight` comes last on purpose. It removes itself from the list when it
+  # finishes, and Stimulus reconnects a controller whose position in the list
+  # changes, which would scroll the page a second time.
   REVEAL = {
-    controller: "highlight scroll-into-view",
+    controller: "scroll-into-view highlight",
     highlight_on_class: "bg-primary/20",
     highlight_off_class: "bg-base-100",
     scroll_into_view_block_value: "center"

@@ -228,7 +228,7 @@ describe Core::UI::EntryComponent do
 
   it "marks the entry it was asked to reveal, and only that one" do
     render_inline(entry(reveal: true))
-    assert_selector "div[data-controller='highlight scroll-into-view'][data-scroll-into-view-block-value=center]"
+    assert_selector "div[data-controller='scroll-into-view highlight'][data-scroll-into-view-block-value=center]"
     assert_selector "div[data-highlight-on-class='bg-primary/20'][data-highlight-off-class=bg-base-100]"
     render_inline(entry)
     assert_no_selector "[data-controller]"
