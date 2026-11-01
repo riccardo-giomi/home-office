@@ -25,6 +25,15 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
     assert_selector "td", text: I18n.t("core.ui.entry.all_day")
   end
 
+  it "writes the date of the Day field above it in the user's format, and follows the field" do
+    admin.update!(date_format: "dmy")
+    visit new_planner_event_path
+    fill_in field(:day), with: Date.new(2026, 12, 1)
+    assert_selector "p[id$=_day_readout]", text: "Tuesday 01/12/2026"
+    fill_in field(:day), with: Date.new(2027, 1, 12)
+    assert_selector "p[id$=_day_readout]", text: "Tuesday 12/01/2027"
+  end
+
   it "fills the end 30 minutes after the start until the end is typed" do
     visit new_planner_event_path
     fill_in field(:start_time), with: Time.utc(2000, 1, 1, 9, 30)

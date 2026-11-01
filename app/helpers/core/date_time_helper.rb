@@ -26,9 +26,10 @@ module Core::DateTimeHelper
     tag.time(local.strftime("#{date_pattern} #{time_pattern}"), datetime: local.iso8601)
   end
 
-  private
-
+  # The strftime pattern of the user's date format.
   def date_pattern = Core::DateTimePatterns::DATE.fetch(preferences.date_format)
+
+  private
 
   def time_pattern = Core::DateTimePatterns::TIME.fetch(preferences.time_format)
 

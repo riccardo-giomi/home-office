@@ -3,7 +3,7 @@
 class ExampleUser
   include ActiveModel::Model
 
-  attr_accessor :email_address, :password, :role
+  attr_accessor :email_address, :password, :role, :day
 
   validates :email_address, presence: true
   validates :password, length: {minimum: 12}, allow_blank: true

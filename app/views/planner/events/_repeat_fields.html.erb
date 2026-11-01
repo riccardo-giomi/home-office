@@ -32,7 +32,7 @@
             <%= render Core::UI::ChoiceComponent.new(form: repeat, attribute: :ends, value: mode, label: t("planner.repeat.ends.#{mode}"), type: :radio_button) %>
           <% end %>
           <div data-repeat-fields-target="end" data-ends="until">
-            <%= render Core::UI::FieldComponent.new(form: repeat, attribute: :until_on, label: Planner::Recurrence::Form.human_attribute_name(:until_on), as: :date_field) %>
+            <%= render Core::UI::DateFieldComponent.new(form: repeat, attribute: :until_on, label: Planner::Recurrence::Form.human_attribute_name(:until_on)) %>
           </div>
           <div data-repeat-fields-target="end" data-ends="count">
             <%= render Core::UI::FieldComponent.new(form: repeat, attribute: :count, label: Planner::Recurrence::Form.human_attribute_name(:count), as: :number_field, min: 1, max: 999) %>

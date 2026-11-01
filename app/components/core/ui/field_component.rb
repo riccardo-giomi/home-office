@@ -13,6 +13,12 @@ class Core::UI::FieldComponent < ApplicationComponent
 
   def field_id = @form.field_id(@attribute)
 
+  # Markup between the label and the control. Nothing by default.
+  def readout = nil
+
+  # Attributes of the element that wraps the field. None by default.
+  def root_attributes = {}
+
   def errors
     object = @form.object
     object.respond_to?(:errors) ? object.errors.messages_for(@attribute) : []
@@ -28,11 +34,14 @@ class Core::UI::FieldComponent < ApplicationComponent
 
   private
 
+  # The ids of the elements that describe the input, in the order a screen
+  # reader reads them.
+  def described_by = [@hint && "#{field_id}_hint", errors.any? && "#{field_id}_error"].select(&:itself)
+
   def input_attributes
-    describedby = [@hint && "#{field_id}_hint", errors.any? && "#{field_id}_error"].select(&:itself).join(" ").presence
     {
       class: CLASSES.fetch(@as, "input w-full"),
-      "aria-describedby": describedby,
+      "aria-describedby": described_by.join(" ").presence,
       "aria-invalid": ("true" if errors.any?)
     }.merge(@input_options).compact
   end

@@ -216,7 +216,7 @@ en:
       mdy: Month/day/year (12/31/2026)
       ymd: Year-month-day (2026-12-31)
     edit:
-      date_format_hint: Date fields inside forms always use your browser's own format.
+      date_format_hint: Date fields inside forms use your browser's own format. The date in your format is written above each field.
       day_hours_hint: The grids show your day from the start of the first hour to the end of the last hour. Each hour is labeled by when it starts.
       example: 'Example, now:'
       groups:

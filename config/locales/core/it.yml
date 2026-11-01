@@ -216,7 +216,7 @@ it:
       mdy: Mese/giorno/anno (12/31/2026)
       ymd: Anno-mese-giorno (2026-12-31)
     edit:
-      date_format_hint: I campi data dentro i moduli usano sempre il formato del tuo browser.
+      date_format_hint: I campi data dentro i moduli usano il formato del tuo browser. La data nel tuo formato è scritta sopra ogni campo.
       day_hours_hint: Le griglie mostrano la giornata dall'inizio della prima ora alla fine dell'ultima. Ogni ora è indicata da quando inizia.
       example: 'Esempio, adesso:'
       groups:

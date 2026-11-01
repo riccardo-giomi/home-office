@@ -1,4 +1,4 @@
-<div class="mb-4">
+<div class="mb-4" <%= tag.attributes(root_attributes) %>>
   <% if @as == :check_box %>
     <div class="flex items-center gap-2 min-h-6">
       <%= control %>
@@ -6,6 +6,7 @@
     </div>
   <% else %>
     <%= @form.label @attribute, @label, class: "label mb-1 text-base-content" %>
+    <%= readout %>
     <%= control %>
   <% end %>
   <% if @hint %><p id="<%= field_id %>_hint" class="text-sm mt-1"><%= @hint %></p><% end %>
