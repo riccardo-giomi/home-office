@@ -93,6 +93,12 @@ it:
           one: "%{count} da fare completato spostato nel cestino."
           other: "%{count} da fare completati spostati nel cestino."
           zero: Nessun da fare completato da eliminare.
+    forgotten_tasks:
+      index:
+        back: Torna al programma
+        empty: Nessuna attività dimenticata.
+        intro: Attività di giorni passati ancora da fare. Spuntale, dai loro un nuovo giorno o abbandonale.
+        title: Attività dimenticate
     hours:
       all: Tutte le ore
       day: Ore della giornata
@@ -102,6 +108,7 @@ it:
       back:
         agenda: Torna all'agenda
         calendar: Torna al calendario
+        forgotten_tasks: Torna alle attività dimenticate
         schedule: Torna al programma
         todos: Torna a Da fare
       priorities:
@@ -205,10 +212,17 @@ it:
       agenda: Agenda
       calendar: Calendario
       events: Eventi
+      forgotten_tasks: Attività dimenticate
+      forgotten_tasks_badge:
+        one: "%{count} attività dimenticata"
+        other: "%{count} attività dimenticate"
       groups:
         planner: Planner
       schedule: Programma
       todos: Da fare
+    paged_agenda_lists:
+      index:
+        pages: Pagine
     periods:
       next:
         day: Giorno successivo
@@ -286,6 +300,7 @@ it:
         restored: "«%{title}» ripristinato."
     schedules:
       show:
+        forgotten: Attività dimenticate
         nav: Navigazione del programma
         new: Nuova attività
         title: Programma

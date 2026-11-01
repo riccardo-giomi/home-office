@@ -20,6 +20,12 @@ describe Planner::BackLocation do
     assert_nil Planner::BackLocation.parse("/planner/todosx")
   end
 
+  it "accepts the list of forgotten tasks, with its page" do
+    _(Planner::BackLocation.parse("/planner/forgotten_tasks?page=2")&.path).must_equal "/planner/forgotten_tasks?page=2"
+    _(Planner::BackLocation.parse("/planner/forgotten_tasks").page).must_equal :forgotten_tasks
+    assert_nil Planner::BackLocation.parse("/planner/forgotten_tasksx")
+  end
+
   it "does not accept the item pages themselves" do
     assert_nil Planner::BackLocation.parse("/planner/tasks/1")
   end

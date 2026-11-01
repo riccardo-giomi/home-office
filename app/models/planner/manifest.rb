@@ -11,6 +11,11 @@ Planner::Manifest = Core::ModuleManifest.new(
     Core::NavItem.new(label_key: "planner.nav.schedule",
       route: :planner_schedule_path, icon: :checklist,
       group_key: "planner.nav.groups.planner"),
+    Core::NavItem.new(label_key: "planner.nav.forgotten_tasks",
+      route: :planner_forgotten_tasks_path, icon: :warning,
+      group_key: "planner.nav.groups.planner",
+      badge: ->(user) { Planner::Counts.for(user).forgotten },
+      badge_label_key: "planner.nav.forgotten_tasks_badge"),
     Core::NavItem.new(label_key: "planner.nav.todos",
       route: :planner_todos_path, icon: :queue_list,
       group_key: "planner.nav.groups.planner")

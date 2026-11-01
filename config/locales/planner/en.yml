@@ -93,6 +93,12 @@ en:
           one: "%{count} done todo moved to the trash."
           other: "%{count} done todos moved to the trash."
           zero: No done todos to delete.
+    forgotten_tasks:
+      index:
+        back: Back to schedule
+        empty: Nothing was forgotten.
+        intro: Tasks from earlier days that are still open. Tick them off, give them a new day or abandon them.
+        title: Forgotten tasks
     hours:
       all: All hours
       day: Day hours
@@ -102,6 +108,7 @@ en:
       back:
         agenda: Back to agenda
         calendar: Back to calendar
+        forgotten_tasks: Back to forgotten tasks
         schedule: Back to schedule
         todos: Back to todos
       priorities:
@@ -205,10 +212,17 @@ en:
       agenda: Agenda
       calendar: Calendar
       events: Events
+      forgotten_tasks: Forgotten tasks
+      forgotten_tasks_badge:
+        one: "%{count} forgotten task"
+        other: "%{count} forgotten tasks"
       groups:
         planner: Planner
       schedule: Schedule
       todos: Todos
+    paged_agenda_lists:
+      index:
+        pages: Pages
     periods:
       next:
         day: Next day
@@ -286,6 +300,7 @@ en:
         restored: "“%{title}” restored."
     schedules:
       show:
+        forgotten: Forgotten tasks
         nav: Schedule navigation
         new: New task
         title: Schedule

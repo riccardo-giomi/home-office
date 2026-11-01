@@ -34,4 +34,31 @@ describe Planner::Task do
     task.mark_done(false)
     _(task.done?).must_equal false
   end
+
+  describe ".forgotten" do
+    let(:user) { users(:admin) }
+    let(:today) { Date.new(2026, 10, 9) }
+
+    def forgotten = Planner::Task.owned_by(user).forgotten(today).map(&:title)
+
+    it "has the open tasks of a day before today" do
+      _(forgotten).must_include "Pay the rent"
+    end
+
+    it "leaves out today's, the future's, the done, the abandoned and the trashed" do
+      Planner::Task.create!(user:, title: "Today", day: today)
+      Planner::Task.create!(user:, title: "Tomorrow", day: today + 1)
+      _(forgotten).wont_include "Today"
+      _(forgotten).wont_include "Tomorrow"
+      _(forgotten).wont_include "Call the bank"
+      _(forgotten).wont_include "Sort the attic"
+      _(forgotten).wont_include "Thrown away task"
+    end
+
+    it "is not another user's, and not an event or a todo" do
+      _(forgotten).wont_include "Someone else's chore"
+      _(forgotten).wont_include "Dentist"
+      _(forgotten).wont_include "Water the plants"
+    end
+  end
 end

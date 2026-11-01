@@ -8,6 +8,9 @@
     <% toolbar.with_leading do %>
       <%= new_item_button(Planner::Task, t(".new")) %>
     <% end %>
+    <% toolbar.with_trailing do %>
+      <%= forgotten_tasks_button %>
+    <% end %>
   <% end %>
   <%= render period_nav(@period, label: t(".nav"), path: method(:planner_schedule_path), hours: true) %>
   <%= render "planner/time_grid", period: @period, entries_by_day: entries_by_day(@tasks_by_day), path: method(:planner_schedule_path), scroll: params[:date].blank?, more_href: ->(date) { planner_schedule_path(view: "day", date: date.iso8601) } %>

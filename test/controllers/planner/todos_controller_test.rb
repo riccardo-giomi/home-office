@@ -131,11 +131,11 @@ class Planner::TodosControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  it "is the last entry of the Planner group of the sidebar" do
+  it "is the last entry of the Planner group of the sidebar, after the list of forgotten tasks" do
     sign_in_as admin
     get root_path
     links = css_select("nav#sidebar a").map { |link| link.xpath("text()").text.squish }
-    assert_equal ["Schedule", "Todos", "Users"], links.values_at(links.index("Todos") - 1, links.index("Todos"), links.index("Todos") + 1)
+    assert_equal ["Forgotten tasks", "Todos", "Users"], links.values_at(links.index("Todos") - 1, links.index("Todos"), links.index("Todos") + 1)
   end
 
   describe "in Italian" do

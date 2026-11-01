@@ -1,11 +1,15 @@
-# Where a visit to an item began: the calendar, the agenda, the schedule or the
-# todos, with its view and date.
+# The page a visit to an item started from, with its view and date: the
+# Calendar, the Agenda, the Schedule, the Todos, or one of the lists of late
+# items.
+#
+# The "Back" link of the item goes there.
 #
 # The item pages carry it in a `back` parameter and return to it.
+#
 # Only those pages (and a plain query string) are accepted, so the
 # parameter can never send anyone to another page or site.
 class Planner::BackLocation
-  ALLOWED = %r{\A/planner/(?<page>calendar|agenda|schedule|todos)(?:\?[A-Za-z0-9_=&%.:-]*)?\z}
+  ALLOWED = %r{\A/planner/(?<page>calendar|agenda|schedule|todos|forgotten_tasks)(?:\?[A-Za-z0-9_=&%.:-]*)?\z}
 
   attr_reader :path, :page
 

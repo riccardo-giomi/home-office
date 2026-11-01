@@ -1,0 +1,13 @@
+<% content_for :title, t("planner.#{@kind}.index.title") %>
+<%# Marking an item done or changing it in the dialog refreshes this page; morphing keeps the scroll position and the focus %>
+<% turbo_refreshes_with method: :morph, scroll: :preserve %>
+<div class="w-full" data-controller="focus-fallback">
+  <%= render Core::UI::PageHeaderComponent.new(title: t("planner.#{@kind}.index.title"), back_href: back_path, back_label: t("planner.#{@kind}.index.back")) %>
+  <p class="mb-4"><%= t("planner.#{@kind}.index.intro") %></p>
+  <%= render Core::UI::AgendaListComponent.new(
+        days: @items_by_day.keys.map { |date| {date:, entries: entries_by_day(@items_by_day).fetch(date, [])} },
+        today: Date.current, empty_text: t("planner.#{@kind}.index.empty")
+      ) %>
+  <%= render Core::UI::PaginationComponent.new(pagy: @pagy, label: t("planner.paged_agenda_lists.index.pages")) %>
+  <%= item_dialog %>
+</div>
