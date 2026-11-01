@@ -78,6 +78,7 @@ en:
       show:
         done_label: 'Done: %{title}'
         in_agenda: Show in Agenda
+        missed: Missed events
         nav: Calendar navigation
         new: New event
         title: Calendar
@@ -109,6 +110,7 @@ en:
         agenda: Back to agenda
         calendar: Back to calendar
         forgotten_tasks: Back to forgotten tasks
+        missed_events: Back to missed events
         schedule: Back to schedule
         todos: Back to todos
       priorities:
@@ -208,6 +210,12 @@ en:
       abandoned: Abandoned
       cancelled: Cancelled
       done: Done
+    missed_events:
+      index:
+        back: Back to calendar
+        empty: Nothing was missed.
+        intro: Events you wanted to see done on days that are over. Tick them off, give them a new day or abandon them.
+        title: Missed events
     nav:
       agenda: Agenda
       calendar: Calendar
@@ -218,6 +226,10 @@ en:
         other: "%{count} forgotten tasks"
       groups:
         planner: Planner
+      missed_events: Missed events
+      missed_events_badge:
+        one: "%{count} missed event"
+        other: "%{count} missed events"
       schedule: Schedule
       todos: Todos
     paged_agenda_lists:

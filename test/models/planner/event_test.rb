@@ -183,4 +183,31 @@ describe Planner::Event do
       _(titles).must_equal ["Someone else's secret"]
     end
   end
+
+  describe ".missed" do
+    let(:today) { Date.new(2026, 10, 9) }
+
+    def missed = Planner::Event.owned_by(user).missed(today).map(&:title)
+
+    it "has the active tracked events of a day before today that are not done" do
+      build(title: "Pay", day: Date.new(2026, 10, 8), tracks_done: 1).save!
+      _(missed).must_equal ["Pay"]
+    end
+
+    it "leaves out untracked, done, today's, future, abandoned, cancelled and trashed events" do
+      build(title: "Untracked", day: Date.new(2026, 10, 8)).save!
+      build(title: "Done", day: Date.new(2026, 10, 8), tracks_done: 1, done_at: Time.current).save!
+      build(title: "Today", day: today, tracks_done: 1).save!
+      build(title: "Tomorrow", day: today + 1, tracks_done: 1).save!
+      build(title: "Dropped", day: Date.new(2026, 10, 8), tracks_done: 1).tap(&:save!).change_state("abandoned")
+      build(title: "Called off", day: Date.new(2026, 10, 8), tracks_done: 1).tap(&:save!).change_state("cancelled")
+      build(title: "Trashed", day: Date.new(2026, 10, 8), tracks_done: 1).tap(&:save!).trash
+      _(missed).must_be :empty?
+    end
+
+    it "is only the user's own" do
+      Planner::Event.create!(user: users(:admin), title: "Not mine", day: Date.new(2026, 10, 8), tracks_done: 1)
+      _(missed).must_be :empty?
+    end
+  end
 end

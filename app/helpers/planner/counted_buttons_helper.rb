@@ -9,6 +9,13 @@ module Planner::CountedButtonsHelper
     )
   end
 
+  def missed_events_button
+    counted_button(
+      planner_missed_events_path, t("planner.calendars.show.missed"),
+      Planner::Counts.for(Current.user).missed, "missed_events"
+    )
+  end
+
   private
 
   def counted_button(href, label, count, kind)

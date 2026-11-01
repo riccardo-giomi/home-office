@@ -32,7 +32,7 @@ class Planner::AgendasControllerTest < ActionDispatch::IntegrationTest
       assert_select "li", text: /Dentist/ do
         assert_select "span.badge[role=img][aria-label='Urgent priority']"
       end
-      assert_select "main span.badge", count: 1
+      assert_select "main span.badge[role=img]", count: 1
     end
 
     it "says so when the month is empty" do

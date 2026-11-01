@@ -159,6 +159,7 @@ ignore_unused:
   - "planner.forgotten_tasks.index.*"
   - "planner.link_homes.*"
   - "planner.link_kinds.*"
+  - "planner.missed_events.index.*"
   - "planner.nav.*"
   - "planner.recurrence.summary.*"
   - "planner.trash.counts.*"

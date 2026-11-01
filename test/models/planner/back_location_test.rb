@@ -26,6 +26,11 @@ describe Planner::BackLocation do
     assert_nil Planner::BackLocation.parse("/planner/forgotten_tasksx")
   end
 
+  it "accepts the list of missed events" do
+    _(Planner::BackLocation.parse("/planner/missed_events")&.path).must_equal "/planner/missed_events"
+    _(Planner::BackLocation.parse("/planner/missed_events").page).must_equal :missed_events
+  end
+
   it "does not accept the item pages themselves" do
     assert_nil Planner::BackLocation.parse("/planner/tasks/1")
   end

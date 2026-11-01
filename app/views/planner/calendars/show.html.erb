@@ -9,7 +9,10 @@
       <%= new_item_button(Planner::Event, t(".new")) %>
     <% end %>
     <% toolbar.with_trailing do %>
-      <%= render(Core::UI::ButtonComponent.new(variant: :secondary, href: planner_agenda_path(**@period.to_params))) { t(".in_agenda") } %>
+      <div class="flex flex-wrap gap-2">
+        <%= missed_events_button %>
+        <%= render(Core::UI::ButtonComponent.new(variant: :secondary, href: planner_agenda_path(**@period.to_params))) { t(".in_agenda") } %>
+      </div>
     <% end %>
   <% end %>
   <%= render period_nav(@period, label: t(".nav"), path: method(:planner_calendar_path), hours: true) %>

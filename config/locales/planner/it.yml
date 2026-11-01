@@ -78,6 +78,7 @@ it:
       show:
         done_label: 'Fatto: %{title}'
         in_agenda: Mostra in Agenda
+        missed: Eventi mancati
         nav: Navigazione del calendario
         new: Nuovo evento
         title: Calendario
@@ -109,6 +110,7 @@ it:
         agenda: Torna all'agenda
         calendar: Torna al calendario
         forgotten_tasks: Torna alle attività dimenticate
+        missed_events: Torna agli eventi mancati
         schedule: Torna al programma
         todos: Torna a Da fare
       priorities:
@@ -208,6 +210,12 @@ it:
       abandoned: Abbandonato
       cancelled: Annullato
       done: Fatto
+    missed_events:
+      index:
+        back: Torna al calendario
+        empty: Nessun evento mancato.
+        intro: Eventi che volevi vedere fatti in giorni ormai passati. Spuntali, dai loro un nuovo giorno o abbandonali.
+        title: Eventi mancati
     nav:
       agenda: Agenda
       calendar: Calendario
@@ -218,6 +226,10 @@ it:
         other: "%{count} attività dimenticate"
       groups:
         planner: Planner
+      missed_events: Eventi mancati
+      missed_events_badge:
+        one: "%{count} evento mancato"
+        other: "%{count} eventi mancati"
       schedule: Programma
       todos: Da fare
     paged_agenda_lists:
