@@ -18,7 +18,8 @@ Planner::Item.owned_by(demo_user).destroy_all
 # series.
 Planner::Series.purge(Planner::Series.owned_by(demo_user))
 
-# A few events around today so the list has something to show
+# A few events around today for the list to show. Two are for the lists of late
+# and important events: an invoice that was not sent, and an urgent deadline.
 [
   {title: "Dentist", days: 2, times: %w[09:30 10:15]},
   {title: "Team lunch", days: 5, times: %w[12:30 14:00]},
@@ -27,10 +28,13 @@ Planner::Series.purge(Planner::Series.owned_by(demo_user))
   {title: "Call with the client", days: 0, times: %w[11:00 12:00], tracks_done: true},
   {title: "Gym", days: 0, times: %w[18:00 19:00], tracks_done: true},
   {title: "Pay the rent", days: 9, tracks_done: 1},
-  {title: "Rent paid last month", days: -20, tracks_done: 1, done: true}
+  {title: "Rent paid last month", days: -20, tracks_done: 1, done: true},
+  {title: "Send the invoice", days: -4, tracks_done: 1},
+  {title: "Client deadline", days: 3, priority: :urgent}
 ].each do |attrs|
   Planner::Event.create!(user: demo_user, title: attrs[:title]) do |event|
-    event.assign_attributes(day: Date.current + attrs[:days], tracks_done: attrs.fetch(:tracks_done, 0), state: attrs.fetch(:state, "active"))
+    event.assign_attributes(day: Date.current + attrs[:days], tracks_done: attrs.fetch(:tracks_done, 0),
+      state: attrs.fetch(:state, "active"), priority: attrs.fetch(:priority, :normal))
     event.start_time, event.end_time = attrs[:times] if attrs[:times]
     event.mark_done(true) if attrs[:done]
   end
@@ -123,8 +127,10 @@ second_tuesday = last_month + ((2 - last_month.wday) % 7) + 7
   series.update_columns(deleted_at: Time.current - attrs[:trashed])
 end
 
-# The practice has one occurrence done, one with notes of its own and one
-# skipped.
+# Piano practice has one occurrence done, one with notes of its own and one
+# skipped. It has `tracks_done` enabled and started a week ago, so the first
+# request of the day saves the other past occurrences as events, and the Missed
+# events list shows them.
 piano = Planner::Series.owned_by(demo_user).find_by!(title: "Piano practice")
 yesterday = piano.materialize(today - 1)
 yesterday.mark_done(true)

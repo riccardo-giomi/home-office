@@ -54,7 +54,7 @@ describe "db/seeds.rb" do
     load_seed_as_development
     load_seed_as_development
     demo = User.find_by!(email_address: "demo-user@example.com")
-    _(Planner::Event.owned_by(demo).kept.where(series_id: nil).count).must_equal 8
+    _(Planner::Event.owned_by(demo).kept.where(series_id: nil).count).must_equal 10
     _(Planner::Event.owned_by(demo).where.not(starts_at: nil)).wont_be_empty
     _(Planner::Event.owned_by(demo).where(tracks_done: 1)).wont_be_empty
     _(Planner::Event.where.not(user: demo).count).must_equal Planner::Event.where(user_id: users(:admin).id).count + Planner::Event.where(user_id: users(:other_admin).id).count
@@ -71,6 +71,16 @@ describe "db/seeds.rb" do
     _(piano.events.order(:occurrence_on).map(&:occurrence_on)).must_equal [Date.current - 1, Date.current + 1]
     _(piano.events.find_by!(occurrence_on: Date.current - 1)).must_be :done?
     _(Planner::SeriesExclusion.where(series_id: piano.id).pluck(:excluded_on)).must_equal [Date.current + 2]
+  end
+
+  it "gives the demo user something for the lists of what is late and of what is important, and a series to catch up" do
+    load_seed_as_development
+    demo = User.find_by!(email_address: "demo-user@example.com")
+    _(Planner::Event.owned_by(demo).missed(Date.current).map(&:title)).must_include "Send the invoice"
+    _(Planner::Task.owned_by(demo).forgotten(Date.current).count).must_be :>=, 2
+    _(Planner::ImportantEvents.new(demo, today: Date.current).entries.map(&:title)).must_include "Client deadline"
+    piano = Planner::Series.find_by!(user: demo, title: "Piano practice")
+    _(piano.materialized_through).must_be_nil
   end
 
   it "gives the demo user a todo list in order, with a priority mix and one done, one set however often it runs" do
