@@ -184,6 +184,23 @@ describe Planner::Event do
     end
   end
 
+  describe "#reveal_key" do
+    it "is the id of a saved event" do
+      event = build(title: "Pay", day: Date.new(2026, 10, 8)).tap(&:save!)
+      _(event.reveal_key).must_equal event.id.to_s
+      assert_nil event.occurrence_key
+    end
+
+    it "is the series and the date of the rule for an unsaved occurrence, and the same name once it is saved" do
+      series = Planner::Series.create!(user:, title: "Gym", starts_on: Date.new(2026, 10, 9), time_zone: "UTC", rrule: "FREQ=DAILY")
+      unsaved = series.occurrence(Date.new(2026, 10, 9))
+      _(unsaved.reveal_key).must_equal "series-#{series.id}-2026-10-09"
+      saved = series.materialize(Date.new(2026, 10, 9))
+      _(saved.reveal_key).must_equal saved.id.to_s
+      _(saved.occurrence_key).must_equal "series-#{series.id}-2026-10-09"
+    end
+  end
+
   describe ".missed" do
     let(:today) { Date.new(2026, 10, 9) }
 

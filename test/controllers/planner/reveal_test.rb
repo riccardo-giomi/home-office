@@ -39,9 +39,27 @@ class Planner::RevealTest < ActionDispatch::IntegrationTest
     assert_empty revealed
   end
 
-  it "does not mark an unsaved occurrence, which has no id" do
-    Planner::Series.create!(user: admin, title: "Gym", starts_on: Date.new(2026, 10, 9), time_zone: "Europe/Rome", rrule: "FREQ=DAILY")
-    get planner_calendar_path(view: "day", date: "2026-10-09", at: "")
-    assert_empty revealed
+  describe "an occurrence of a series" do
+    let(:series) { Planner::Series.create!(user: admin, title: "Gym", starts_on: Date.new(2026, 10, 9), time_zone: "Europe/Rome", rrule: "FREQ=DAILY") }
+
+    it "marks an unsaved occurrence, named by its series and date" do
+      get planner_calendar_path(view: "day", date: "2026-10-09", at: "series-#{series.id}-2026-10-09")
+      assert_equal ["Gym"], revealed.map { |entry| entry.css("a").first.text.strip }
+    end
+
+    it "marks nothing for the series and another date, or for an empty name" do
+      get planner_calendar_path(view: "day", date: "2026-10-09", at: "series-#{series.id}-2026-10-10")
+      assert_empty revealed
+      get planner_calendar_path(view: "day", date: "2026-10-09", at: "")
+      assert_empty revealed
+    end
+
+    it "marks the saved occurrence by its id, and by the name it had before it was saved" do
+      saved = series.materialize(Date.new(2026, 10, 9))
+      get planner_calendar_path(view: "day", date: "2026-10-09", at: saved.id)
+      assert_equal 1, revealed.size
+      get planner_calendar_path(view: "day", date: "2026-10-09", at: "series-#{series.id}-2026-10-09")
+      assert_equal 1, revealed.size
+    end
   end
 end

@@ -57,9 +57,9 @@ Planner::Manifest = Core::ModuleManifest.new(
     #
     # A todo has no view or date, it simply defaults to the todos page.
     homes = {
-      "event" => ->(item) { routes.planner_calendar_path(view: "day", date: item.day.iso8601, at: item.id) },
-      "task" => ->(item) { routes.planner_schedule_path(view: "day", date: item.day.iso8601, at: item.id) },
-      "todo" => ->(item) { routes.planner_todos_path(at: item.id) }
+      "event" => ->(item) { routes.planner_calendar_path(view: "day", date: item.day.iso8601, at: item.reveal_key) },
+      "task" => ->(item) { routes.planner_schedule_path(view: "day", date: item.day.iso8601, at: item.reveal_key) },
+      "todo" => ->(item) { routes.planner_todos_path(at: item.reveal_key) }
     }
     Core::LinkableKind.new(
       key:,

@@ -33,9 +33,9 @@ module Planner::EntriesHelper
     }
   end
 
-  # True when the address asks for this item: `at` holds the id of the item to
-  # show. An unsaved occurrence has no id, so no address can name it.
-  def reveal?(item) = params[:at].present? && item.id.to_s == params[:at]
+  # True when the address asks for this item: `at` holds its id or, for an
+  # occurrence of a series, its occurrence key (see Planner::Item#reveal_key).
+  def reveal?(item) = params[:at].present? && [item.id&.to_s, item.occurrence_key].include?(params[:at])
 
   STATE_ICONS = {"abandoned" => :minus_circle, "cancelled" => :x_circle}.freeze
 

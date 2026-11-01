@@ -37,6 +37,15 @@ class Planner::Item < ApplicationRecord
   # Whether this is an instance of a repeating series.
   def occurrence? = series_id.present?
 
+  # Names an occurrence by its series and the date the rule gave it. It is the
+  # same before and after the occurrence is saved.
+  def occurrence_key = ("series-#{series_id}-#{occurrence_on.iso8601}" if occurrence?)
+
+  # The value of `at` in an address that asks a page to show this item: the id of
+  # a saved item, or the occurrence key of an unsaved occurrence, which has no
+  # id.
+  def reveal_key = (new_record? && occurrence?) ? occurrence_key : id.to_s
+
   # Whether the item has a day and times of its own to show.
   def timed? = true
 

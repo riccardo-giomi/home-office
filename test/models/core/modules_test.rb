@@ -99,6 +99,12 @@ describe "the booted registry" do
     end
   end
 
+  it "names an unsaved occurrence in the address by its series and date, as it has no id" do
+    series = Planner::Series.create!(user: users(:admin), title: "Gym", starts_on: Date.new(2026, 10, 9), time_zone: "UTC", rrule: "FREQ=DAILY")
+    home = Core::Modules.linkable_kinds.find { |kind| kind.key == "event" }.home
+    _(home.call(series.occurrence(Date.new(2026, 10, 9)))).must_equal "/planner/calendar?at=series-#{series.id}-2026-10-09&date=2026-10-09&view=day"
+  end
+
   it "tells in which dialog each kind opens" do
     _(Core::Modules.linkable_kinds.map(&:dialog_frame).uniq).must_equal ["item-dialog-frame"]
     _(Core::LinkableKind.dialog_frame_of(planner_items(:dentist))).must_equal "item-dialog-frame"

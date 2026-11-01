@@ -28,6 +28,14 @@ class Planner::ShowInSystemTest < ApplicationSystemTestCase
     assert_in_view "Evening class"
   end
 
+  it "opens the day of the calendar with an evening occurrence that was never saved in view" do
+    series = Planner::Series.create!(user: admin, title: "Evening yoga", starts_on: Date.current, time_zone: "UTC", rrule: "FREQ=DAILY", start_time: "18:00", duration_minutes: 60)
+    visit planner_series_occurrence_path(series, Date.current.iso8601)
+    click_link "Show in Calendar"
+    assert_selector "h1", text: "Calendar"
+    assert_in_view "Evening yoga"
+  end
+
   it "opens the day of the schedule with an evening task in view" do
     task = Planner::Task.create!(user: admin, title: "Evening call", day: Date.current, start_time: "18:00", end_time: "19:00")
     visit planner_task_path(task)
