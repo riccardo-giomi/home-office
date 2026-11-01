@@ -12,7 +12,7 @@ module Core::NavigationHelper
     end
   end
 
-  # Links kept beside the account box at the bottom of the sidebar
+  # Links kept beside the account box at the bottom of the sidebar.
   def navigation_footer_items
     return [] unless Current.user
 
@@ -25,7 +25,8 @@ module Core::NavigationHelper
 
   def sidebar_item(item)
     Core::UI::SidebarComponent::Item.new(
-      t(item.label_key), public_send(item.route), item.icon, nav_badge(item)
+      t(item.label_key), public_send(item.route), item.icon, nav_badge(item),
+      (t(item.subgroup_key) if item.subgroup_key)
     )
   end
 

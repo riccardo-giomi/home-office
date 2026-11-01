@@ -77,4 +77,42 @@ describe Core::UI::SidebarComponent do
     assert_no_selector "nav a[href='/zero'] span.badge", visible: :all
     assert_no_selector "nav a[href='/'] span.badge", visible: :all
   end
+
+  describe "sub-headings" do
+    def subgrouped
+      item = Core::UI::SidebarComponent::Item
+      [Core::UI::SidebarComponent::Group.new("Planner", [
+        item.new("Calendar", "/planner/calendar", :calendar, nil, "Events"), item.new("Agenda", "/planner/agenda", :list, nil, "Events"),
+        item.new("Schedule", "/planner/schedule", :checklist, nil, "Tasks"), item.new("Forgotten", "/planner/forgotten_tasks", :warning, nil, "Tasks"),
+        item.new("Todo list", "/planner/todos", :queue_list, nil, "Todos")
+      ])]
+    end
+
+    it "draws a static heading before each run of items, each run its own list labelled by it" do
+      render_sidebar("/planner/agenda", groups: subgrouped)
+      assert_selector "nav p.menu-title", count: 4, visible: :all
+      assert_selector "nav p#subgroup-events", text: "Events", visible: :all
+      assert_selector "nav ul[aria-labelledby=subgroup-events] a", count: 2, visible: :all
+      assert_selector "nav ul[aria-labelledby=subgroup-tasks] a", text: "Forgotten", visible: :all
+      assert_no_selector "nav p#subgroup-events a, nav p#subgroup-events button", visible: :all
+    end
+
+    it "draws a heading above a run of one item" do
+      render_sidebar("/", groups: subgrouped)
+      assert_selector "nav p#subgroup-todos", text: "Todos", visible: :all
+      assert_selector "nav ul[aria-labelledby=subgroup-todos] a", count: 1, text: "Todo list", visible: :all
+    end
+
+    it "draws no heading for an item with no subgroup, and gives its list the group's label" do
+      item = Core::UI::SidebarComponent::Item
+      render_sidebar("/", groups: [Core::UI::SidebarComponent::Group.new("Planner", [item.new("Calendar", "/c", :calendar)])])
+      assert_selector "nav p.menu-title", count: 1, visible: :all
+      assert_selector "nav ul[aria-labelledby=group-planner] a", count: 1, text: "Calendar", visible: :all
+    end
+
+    it "still marks the current page inside a subgroup" do
+      render_sidebar("/planner/schedule", groups: subgrouped)
+      assert_selector "nav ul[aria-labelledby=subgroup-tasks] a[aria-current=page]", text: "Schedule", visible: :all
+    end
+  end
 end

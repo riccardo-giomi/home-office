@@ -6,15 +6,18 @@
   <div class="flex-1 overflow-y-auto p-2">
     <% @groups.each do |group| %>
       <% if group.label %><p id="<%= group_id(group) %>" class="menu-title px-3 pt-4 text-base-content/70"><%= group.label %></p><% end %>
-      <ul class="menu w-full p-0" <%= tag.attributes(aria: {labelledby: (group_id(group) if group.label)}) %>>
-        <% group.items.each do |item| %>
-          <li>
-            <%= link_to item.path, class: ["min-h-6", ("font-bold menu-active" if current?(item))], aria: {current: ("page" if current?(item))} do %>
-              <%= render Core::UI::IconComponent.new(name: item.icon) %><%= item.label %><%= render Core::UI::BadgeComponent.new(count: item.badge.count, label: item.badge.label) if item.badge %>
-            <% end %>
-          </li>
-        <% end %>
-      </ul>
+      <% runs(group).each do |run| %>
+        <% if run.heading %><p id="<%= subgroup_id(run) %>" class="menu-title px-3 pt-3 pb-0 text-xs text-base-content/70"><%= run.heading %></p><% end %>
+        <ul class="menu w-full p-0" <%= tag.attributes(aria: {labelledby: (run.heading ? subgroup_id(run) : (group_id(group) if group.label))}) %>>
+          <% run.items.each do |item| %>
+            <li>
+              <%= link_to item.path, class: ["min-h-6", ("font-bold menu-active" if current?(item))], aria: {current: ("page" if current?(item))} do %>
+                <%= render Core::UI::IconComponent.new(name: item.icon) %><%= item.label %><%= render Core::UI::BadgeComponent.new(count: item.badge.count, label: item.badge.label) if item.badge %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
     <% end %>
   </div>
   <div class="border-t border-base-300 p-2">

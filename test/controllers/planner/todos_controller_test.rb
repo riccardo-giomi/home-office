@@ -135,7 +135,7 @@ class Planner::TodosControllerTest < ActionDispatch::IntegrationTest
     sign_in_as admin
     get root_path
     links = css_select("nav#sidebar a").map { |link| link.xpath("text()").text.squish }
-    assert_equal ["Forgotten tasks", "Todos", "Users"], links.values_at(links.index("Todos") - 1, links.index("Todos"), links.index("Todos") + 1)
+    assert_equal ["Forgotten tasks", "Todo list", "Users"], links.values_at(links.index("Todo list") - 1, links.index("Todo list"), links.index("Todo list") + 1)
   end
 
   describe "in Italian" do
@@ -144,10 +144,11 @@ class Planner::TodosControllerTest < ActionDispatch::IntegrationTest
       sign_in_as admin
     end
 
-    it "calls the list and the sidebar entry Da fare, and says empty without a plural" do
+    it "calls the list Da fare and its sidebar entry Lista under the heading Da fare, and says empty without a plural" do
       get planner_todos_path
       assert_select "h1", "Da fare"
-      assert_select "nav#sidebar a", text: "Da fare"
+      assert_select "nav#sidebar p.menu-title", text: "Da fare"
+      assert_select "nav#sidebar a", text: "Lista"
       Planner::Todo.owned_by(admin).delete_all
       get planner_todos_path
       assert_select "main", text: /La lista è vuota\. Aggiungi il primo\./

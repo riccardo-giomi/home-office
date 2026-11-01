@@ -12,7 +12,27 @@ class Core::UI::SidebarComponentPreview < ViewComponent::Preview
     render(Core::UI::SidebarComponent.new(groups:, footer_items:, current_path: "/", open: true)) { "member@example.com" }
   end
 
+  # The Planner group divided by sub-headings (Events, Tasks, Todos).
+  def open_panel_with_sub_headings
+    render(Core::UI::SidebarComponent.new(groups: subgrouped_groups, footer_items:, current_path: "/planner/schedule", open: true)) { "member@example.com" }
+  end
+
   private
+
+  def subgrouped_groups
+    item = Core::UI::SidebarComponent::Item
+    badge = Core::UI::SidebarComponent::Badge
+    [
+      Core::UI::SidebarComponent::Group.new(nil, [item.new("Home", "/", :home)]),
+      Core::UI::SidebarComponent::Group.new("Planner", [
+        item.new("Calendar", "/planner/calendar", :calendar, nil, "Events"), item.new("Agenda", "/planner/agenda", :list, nil, "Events"),
+        item.new("Important", "/planner/important_events", :warning, badge.new(3, "3 important events"), "Events"),
+        item.new("Missed events", "/planner/missed_events", :warning, badge.new(12, "12 missed events"), "Events"),
+        item.new("Schedule", "/planner/schedule", :checklist, nil, "Tasks"), item.new("Forgotten tasks", "/planner/forgotten_tasks", :warning, badge.new(2, "2 forgotten tasks"), "Tasks"),
+        item.new("Todo list", "/planner/todos", :queue_list, nil, "Todos")
+      ])
+    ]
+  end
 
   def groups
     item = Core::UI::SidebarComponent::Item

@@ -256,7 +256,11 @@ en:
         one: "%{count} missed event"
         other: "%{count} missed events"
       schedule: Schedule
-      todos: Todos
+      subgroups:
+        events: Events
+        tasks: Tasks
+        todos: Todos
+      todos: Todo list
     paged_agenda_lists:
       index:
         pages: Pages

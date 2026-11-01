@@ -126,7 +126,7 @@ class Planner::SchedulesControllerTest < ActionDispatch::IntegrationTest
     it "is the first entry of the Tasks group, before the forgotten tasks and the Todos" do
       get planner_schedule_path
       links = css_select("nav#sidebar a").map { |link| link.xpath("text()").text.squish }
-      assert_equal ["Schedule", "Forgotten tasks", "Todos"], links[links.index("Schedule")..links.index("Todos")]
+      assert_equal ["Schedule", "Forgotten tasks", "Todo list"], links[links.index("Schedule")..links.index("Todo list")]
     end
   end
 end

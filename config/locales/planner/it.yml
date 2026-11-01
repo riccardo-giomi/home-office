@@ -256,7 +256,11 @@ it:
         one: "%{count} evento mancato"
         other: "%{count} eventi mancati"
       schedule: Programma
-      todos: Da fare
+      subgroups:
+        events: Eventi
+        tasks: Attività
+        todos: Da fare
+      todos: Lista
     paged_agenda_lists:
       index:
         pages: Pagine
