@@ -12,7 +12,7 @@ class Planner::MissedEventsSystemTest < ApplicationSystemTestCase
 
   def late_item(title, days_ago) = Planner::Event.create!(user: admin, title:, day: Date.current - days_ago, tracks_done: 1)
 
-  def clear_items = nil
+  def clear_items = Core::Entity.where(id: Planner::Event.where(user: admin, tracks_done: 1, done_at: nil).select(:id)).delete_all
 
   def abandon_label = I18n.t("planner.kinds.event.abandon")
 

@@ -28,10 +28,10 @@ class Planner::EventsSystemTest < ApplicationSystemTestCase
   it "writes the date of the Day field above it in the user's format, and follows the field" do
     admin.update!(date_format: "dmy")
     visit new_planner_event_path
-    fill_in field(:day), with: Date.new(2026, 12, 1)
-    assert_selector "p[id$=_day_readout]", text: "Tuesday 01/12/2026"
-    fill_in field(:day), with: Date.new(2027, 1, 12)
-    assert_selector "p[id$=_day_readout]", text: "Tuesday 12/01/2027"
+    fill_in field(:day), with: Date.new(2026, 9, 1)
+    assert_selector "p[id$=_day_readout]", text: "Tuesday 01/09/2026"
+    fill_in field(:day), with: Date.new(2026, 1, 12)
+    assert_selector "p[id$=_day_readout]", text: "Monday 12/01/2026"
   end
 
   it "fills the end 30 minutes after the start until the end is typed" do
