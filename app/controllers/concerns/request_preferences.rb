@@ -30,6 +30,7 @@ module RequestPreferences
   def use_effective_preferences(&block)
     remember_detected_time_zone
     mirror_theme_cookie
+    Current.first_weekday = effective_preferences.first_weekday
     I18n.with_locale(effective_preferences.locale) do
       Time.use_zone(effective_preferences.time_zone, &block)
     end
