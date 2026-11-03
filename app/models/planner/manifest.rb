@@ -41,12 +41,17 @@ Planner::Manifest = Core::ModuleManifest.new(
   catch_up: lambda do |user, today|
     Planner::CatchUp.run(user, today:) if Planner::CatchUp.lazy?
   end,
+  dashboard: ->(user, today) { Planner::Dashboard.cards(user, today) },
   trash: Core::TrashSource.new(
     title_key: "planner.nav.groups.planner",
     route: :planner_trash_path,
     labels_key: "planner.trash.counts",
     counts: ->(user) { Planner::Trash.new(user).counts },
-    total: ->(user) { Planner::Trash.new(user).total }
+    total: ->(user) { Planner::Trash.new(user).total },
+    kind_path: lambda do |kind|
+      Rails.application.routes.url_helpers.planner_trash_path(type: kind)
+    end,
+    kinds_key: "planner.trash.kinds"
   ),
   linkable_kinds: %w[event task todo].map do |key|
     klass = Planner::Item.sti_class_for("Planner::#{key.camelize}")

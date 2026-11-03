@@ -1,7 +1,7 @@
 # What a module tells Core about itself, so Core never edits to add a module.
 Core::ModuleManifest = Data.define(
   :name, :navigation, :setup_steps, :trash, :linkable_kinds, :purge,
-  :catch_up
+  :catch_up, :dashboard
 ) do
   # trash: a Core::TrashSource, when the module keeps things in a trash.
   # linkable_kinds: Core::LinkableKind entries, one for each kind of record
@@ -12,8 +12,11 @@ Core::ModuleManifest = Data.define(
   # catch_up: a callable that takes the signed-in user and today's date. Core
   # calls it on the requests of a signed-in user, so that a module can update
   # what depends on the date.
+  #
+  # dashboard: a callable that takes the signed-in user and today's date, and
+  # returns an array of Core::DashboardCard for the home page.
   def initialize(
     name:, navigation: [], setup_steps: [], trash: nil, linkable_kinds: [],
-    purge: nil, catch_up: nil
+    purge: nil, catch_up: nil, dashboard: nil
   ) = super
 end

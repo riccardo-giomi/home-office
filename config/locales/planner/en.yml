@@ -88,6 +88,24 @@ en:
         done: 'Marked done: %{title}'
         not_done: 'Marked not done: %{title}'
         refused: That item cannot be ticked.
+    dashboard:
+      events:
+        important: Important
+        missed: Missed events
+        this_week: This week
+        title: Events
+        today: Today
+      tasks:
+        forgotten: Forgotten tasks
+        this_week: This week
+        title: Tasks
+        today: Today
+      todos:
+        title: Todos
+        total:
+          one: "%{count} to do"
+          other: "%{count} to do"
+        urgent: Urgent
     done_todos:
       destroy:
         deleted:

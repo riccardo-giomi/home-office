@@ -46,6 +46,37 @@ module Core::Modules
       end
     end
 
+    # Returns the cards of the home page: the cards of each module in module
+    # order, followed by the Trash card.
+    #
+    # There is no Trash card if no trash source has a `kind_path`.
+    def dashboard_cards(user, today:)
+      cards = all.filter_map(&:dashboard).flat_map { |hook| hook.call(user, today) }
+      trash = trash_card(user)
+      trash ? cards + [trash] : cards
+    end
+
     def trash_total(user) = trash_sources.sum { |source| source.total.call(user) }
+
+    private
+
+    def trash_card(user)
+      sources = trash_sources.select(&:kind_path)
+      return if sources.empty?
+
+      lines = sources.flat_map do |source|
+        source.counts.call(user).map do |kind, count|
+          Core::DashboardLine.new(
+            label_key: "#{source.kinds_key}.#{kind}", count:,
+            href: source.kind_path.call(kind)
+          )
+        end
+      end
+      Core::DashboardCard.new(
+        title_key: "core.dashboard.trash.title",
+        href: Rails.application.routes.url_helpers.trash_path,
+        total: trash_total(user), total_key: "core.dashboard.trash.total", lines:
+      )
+    end
   end
 end

@@ -88,6 +88,24 @@ it:
         done: 'Segnato come fatto: %{title}'
         not_done: 'Segnato come non fatto: %{title}'
         refused: Questo elemento non può essere spuntato.
+    dashboard:
+      events:
+        important: Importanti
+        missed: Eventi mancati
+        this_week: Questa settimana
+        title: Eventi
+        today: Oggi
+      tasks:
+        forgotten: Attività dimenticate
+        this_week: Questa settimana
+        title: Attività
+        today: Oggi
+      todos:
+        title: Da fare
+        total:
+          one: "%{count} da fare"
+          other: "%{count} da fare"
+        urgent: Urgenti
     done_todos:
       destroy:
         deleted:

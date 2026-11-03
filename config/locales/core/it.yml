@@ -83,6 +83,12 @@ it:
         updated: Utente aggiornato.
   core:
     app_name: Home Office
+    dashboard:
+      trash:
+        title: Cestino
+        total:
+          one: "%{count} elemento"
+          other: "%{count} elementi"
     nav:
       groups:
         admin: Amministrazione
@@ -186,6 +192,7 @@ it:
             other: "%{count} voci tra le %{from} e le %{to}"
   home:
     show:
+      cards: Panoramica
       signed_in_as: Accesso eseguito come %{email}.
       title: Home Office
   links:

@@ -153,9 +153,11 @@ ignore_missing:
 ignore_unused:
   - "activemodel.*"
   - "activerecord.*"
+  - "core.dashboard.*"
   - "core.nav.*"
   - "core.preferences.defaults.*"
   - "core.ui.time_grid.outside.*"
+  - "planner.dashboard.*"
   - "planner.forgotten_tasks.index.*"
   - "planner.important_events.horizons.*"
   - "planner.important_events.minimums.*"

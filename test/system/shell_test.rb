@@ -3,6 +3,9 @@ require "application_system_test_case"
 class ShellTest < ApplicationSystemTestCase
   it "starts with the skip link, which moves focus into the page" do
     sign_in_through_form users(:member)
+    # Chrome starts Tab from the position of the last click, even on the next
+    # page, and the home page has links at that position now.
+    visit root_path
     find("body").send_keys(:tab)
     assert_equal I18n.t("core.ui.skip_link"), evaluate_script("document.activeElement.textContent.trim()")
     send_keys(:enter)

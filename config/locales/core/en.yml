@@ -83,6 +83,12 @@ en:
         updated: User updated.
   core:
     app_name: Home Office
+    dashboard:
+      trash:
+        title: Trash
+        total:
+          one: "%{count} item"
+          other: "%{count} items"
     nav:
       groups:
         admin: Admin
@@ -186,6 +192,7 @@ en:
             other: "%{count} entries between %{from} and %{to}"
   home:
     show:
+      cards: Overview
       signed_in_as: Signed in as %{email}.
       title: Home Office
   links:
