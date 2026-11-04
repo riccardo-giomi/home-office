@@ -88,4 +88,53 @@ class HomeTest < ApplicationSystemTestCase
     end
     assert_equal ["This week", "Today", "Important", "Missed events", "Tasks", "Today"], walked
   end
+
+  describe "refreshing when the page comes back" do
+    # Only the browser sets the visibility of the page, so the test sets it with
+    # the event the browser sends
+    def show_page(state)
+      execute_script(<<~JS, state)
+        const state = arguments[0]
+        Object.defineProperty(document, "visibilityState", { configurable: true, get: () => state })
+        Object.defineProperty(document, "hidden", { configurable: true, get: () => state === "hidden" })
+        document.dispatchEvent(new Event("visibilitychange"))
+      JS
+    end
+
+    before do
+      Planner::Item.delete_all
+      sign_in_through_form users(:member)
+      visit root_path
+      assert_selector "main article li a", text: "0 Urgent"
+    end
+
+    it "shows what changed while it was away, keeping the place and the focus" do
+      Planner::Todo.create!(user: users(:member), title: "Behind your back", priority: "urgent")
+      find("main [data-controller~=refresh-after-absence]").execute_script("this.dataset.refreshAfterAbsenceSecondsValue = 0")
+      execute_script("window.scrollTo(0, 40)")
+      find("main article li a", text: "0 Urgent").send_keys(:tab) # focus is somewhere on the page
+      focused = evaluate_script("document.activeElement.outerHTML")
+      show_page("hidden")
+      show_page("visible")
+      assert_selector "main article li a", text: "1 Urgent"
+      assert_selector "main article h2", text: "1 to do"
+      assert_equal focused, evaluate_script("document.activeElement.outerHTML")
+    end
+
+    it "does not refresh a page seen a moment ago" do
+      Planner::Todo.create!(user: users(:member), title: "Behind your back", priority: "urgent")
+      show_page("hidden")
+      show_page("visible")
+      sleep 0.5
+      assert_selector "main article li a", text: "0 Urgent"
+    end
+
+    it "never refreshes while the page is hidden" do
+      Planner::Todo.create!(user: users(:member), title: "Behind your back", priority: "urgent")
+      find("main [data-controller~=refresh-after-absence]").execute_script("this.dataset.refreshAfterAbsenceSecondsValue = 0")
+      show_page("hidden")
+      sleep 0.5
+      assert_selector "main article li a", text: "0 Urgent"
+    end
+  end
 end
