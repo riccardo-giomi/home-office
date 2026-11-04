@@ -87,10 +87,16 @@ class Planner::Recurrence::Delete
 
   def parts = @series.chain.reject { |part| part.trashed? || part.id == @series.id }.then { |others| (@scope == "all") ? [@series, *others] : others }
 
+  # The statements run no callbacks, so each one sends the message to the
+  # home page.
   def trash_part(part)
-    Planner::Series.where(id: part.id).update_all(deleted_at: @moment)
+    Core::Overview.announce(@series.user_id) { Planner::Series.where(id: part.id).update_all(deleted_at: @moment) }
     trash_rows(Planner::Event.where(series_id: part.id))
   end
 
-  def trash_rows(rows) = Core::Entity.where(id: rows.select(:id), deleted_at: nil).update_all(deleted_at: @moment)
+  def trash_rows(rows)
+    Core::Overview.announce(@series.user_id) do
+      Core::Entity.where(id: rows.select(:id), deleted_at: nil).update_all(deleted_at: @moment)
+    end
+  end
 end

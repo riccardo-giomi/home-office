@@ -7,7 +7,9 @@ class Planner::DoneTodosController < ApplicationController
     done = Planner::Todo.owned_by(Current.user).kept.where.not(done_at: nil)
     # One statement over the entities of those todos. It is the one place where
     # `trash` is not called for each record.
-    count = Core::Entity.where(id: done.select(:id)).update_all(deleted_at: Time.current)
+    count = Core::Overview.announce(Current.user.id) do
+      Core::Entity.where(id: done.select(:id)).update_all(deleted_at: Time.current)
+    end
     redirect_to planner_todos_path, notice: t(".deleted", count:), status: :see_other
   end
 end

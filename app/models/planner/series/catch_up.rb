@@ -79,6 +79,8 @@ module Planner::Series::CatchUp
       )
     end
     Planner::Item.insert_all!(rows)
+    # The statements above run no callbacks. The new events can be missed ones.
+    Core::Overview.refresh(user_id)
     found.size
   end
 end

@@ -25,6 +25,10 @@ class Planner::Item < ApplicationRecord
   validates :title, presence: true, length: {maximum: 255}
   validates :tracks_done, inclusion: {in: [0, 1]}
 
+  # The home page shows counts of items, so a change sends it a message.
+  after_save { Core::Overview.refresh(user_id) if changes_counts? }
+  after_destroy { Core::Overview.refresh(user_id) }
+
   scope :owned_by, ->(user) { where(user:) }
   # Walks index_planner_items_on_day in order (user_id, type, day, starts_at);
   # every view places an item on its own local day.
@@ -70,6 +74,20 @@ class Planner::Item < ApplicationRecord
   end
 
   private
+
+  # Whether the save that just ran changed something that the home page counts.
+  #
+  # An update does if it changed one of the columns that the counts read. A new
+  # row does, except an occurrence saved as it was drawn: it is the same event
+  # on the same day, and the unsaved one was already counted. It is not the
+  # same if it is not active, if it is on another day, or if it is late and
+  # open, which makes it a missed event.
+  def changes_counts?
+    return saved_changes.keys.intersect?(Planner::Counts::ITEM_ATTRIBUTES) unless previously_new_record?
+
+    late_and_open = tracks_done? && !done? && day.present? && day < Date.current
+    !(occurrence? && active? && day == occurrence_on && !late_and_open)
+  end
 
   def can_change_state_to?(to)
     STATE_CHANGES.fetch(to, []).include?(state) && (to != "cancelled" || is_a?(Planner::Event))

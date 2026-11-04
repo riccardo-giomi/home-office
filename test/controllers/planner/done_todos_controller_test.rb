@@ -27,6 +27,12 @@ class Planner::DoneTodosControllerTest < ActionDispatch::IntegrationTest
     [planner_items(:water_plants_todo), planner_items(:call_mom_todo), task, event, foreign].each { |item| refute_predicate item.reload, :trashed? }
   end
 
+  it "tells the home page of the user, once" do
+    stream = Core::Overview.stream(admin.id)
+    broadcasts = capture_turbo_stream_broadcasts(stream) { delete planner_done_todos_path }
+    assert_equal 1, broadcasts.size
+  end
+
   it "counts them in the notice" do
     planner_items(:call_mom_todo).update_columns(done_at: Time.current)
     delete planner_done_todos_path

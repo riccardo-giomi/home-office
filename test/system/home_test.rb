@@ -91,7 +91,7 @@ class HomeTest < ApplicationSystemTestCase
 
   describe "refreshing when the page comes back" do
     # Only the browser sets the visibility of the page, so the test sets it with
-    # the event the browser sends
+    # the event that the browser sends
     def show_page(state)
       execute_script(<<~JS, state)
         const state = arguments[0]

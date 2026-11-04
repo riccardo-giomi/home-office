@@ -2,8 +2,8 @@
 #
 # Each card has a few counts and links to the lists they count.
 #
-# The counts come from Planner::Counts, the object the sidebar uses too, so each
-# number is queried once for a request.
+# The counts come from Planner::Counts, the object that the sidebar uses too,
+# so each number is queried once for a request.
 module Planner::Dashboard
   Line = Core::DashboardLine
   Card = Core::DashboardCard

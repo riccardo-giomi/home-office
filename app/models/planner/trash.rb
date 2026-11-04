@@ -55,9 +55,11 @@ class Planner::Trash
   # Returns how many were deleted.
   def empty!
     groups = all_series_groups.size
-    Planner::Series.transaction do
-      Planner::Series.purge(Planner::Series.owned_by(@user).trashed)
-      Core::Entity.where(id: scope.select(:id)).delete_all + groups
+    Core::Overview.announce(@user.id) do
+      Planner::Series.transaction do
+        Planner::Series.purge(Planner::Series.owned_by(@user).trashed)
+        Core::Entity.where(id: scope.select(:id)).delete_all + groups
+      end
     end
   end
 

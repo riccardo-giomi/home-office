@@ -18,7 +18,13 @@ module Core::SoftDeletable
     #
     # Uses delete_all: no callbacks and no renumbering.
     # The database cascade removes the records and their links.
-    def purge_expired(now = Time.current) = purgeable(now).delete_all
+    #
+    # The number of things in the trash changes, so the message for the home
+    # page goes to each user who lost something.
+    def purge_expired(now = Time.current)
+      users = purgeable(now).distinct.pluck(:user_id)
+      purgeable(now).delete_all.tap { users.each { |id| Core::Overview.refresh(id) } }
+    end
   end
 
   def trashed? = deleted_at.present?
@@ -27,7 +33,9 @@ module Core::SoftDeletable
   #
   # Skips validations on purpose: a record that became invalid with old data
   # can still be trashed and restored.
-  def trash = update_columns(deleted_at: Time.current)
+  #
+  # Both send the message to the home page: `update_columns` runs no callbacks.
+  def trash = Core::Overview.announce(user_id) { update_columns(deleted_at: Time.current) }
 
-  def restore = update_columns(deleted_at: nil)
+  def restore = Core::Overview.announce(user_id) { update_columns(deleted_at: nil) }
 end

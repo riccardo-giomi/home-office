@@ -30,6 +30,11 @@ class Planner::Series < ApplicationRecord
   validate :ends_the_same_day
   validate :start_is_recent, on: :entry, if: :tracks_done?
 
+  # Its unsaved occurrences are events of the home page counts, so any change
+  # to the series can change a number.
+  after_save { Core::Overview.refresh(user_id) }
+  after_destroy { Core::Overview.refresh(user_id) }
+
   include Planner::Series::Occurrences
   include Planner::Series::CatchUp
 
@@ -81,7 +86,10 @@ class Planner::Series < ApplicationRecord
 
   # When the first part of a chain goes, the next remaining part becomes the
   # first: it gets no `chain_id`, and the others point to it.
+  #
+  # The statements below run no callbacks, so the message is sent at the end.
   def self.purge_ids(ids)
+    users = where(id: ids).distinct.pluck(:user_id)
     where(id: ids, chain_id: nil).pluck(:id).each do |root|
       head, *rest = where(chain_id: root).where.not(id: ids).order(:starts_on, :id).to_a
       next unless head
@@ -91,7 +99,7 @@ class Planner::Series < ApplicationRecord
     end
     Core::Entity.where(id: Planner::Item.where(series_id: ids).select(:id)).where.not(deleted_at: nil).delete_all
     Planner::Item.where(series_id: ids).update_all(series_id: nil, occurrence_on: nil)
-    where(id: ids).delete_all
+    where(id: ids).delete_all.tap { users.each { |id| Core::Overview.refresh(id) } }
   end
 
   # Purges the series that sat in the trash past their time.
@@ -130,12 +138,14 @@ class Planner::Series < ApplicationRecord
   # spent in the trash are not counted as missed.
   def restore_group
     group = self.class.where(user_id:, deleted_at:).where("id = :key OR chain_id = :key", key: chain_key)
-    self.class.transaction do
-      group.where.not(materialized_through: nil)
-        .update_all(["materialized_through = MAX(materialized_through, ?)", Date.current - 1])
-      Core::Entity.where(id: Planner::Item.where(series_id: group.select(:id)).select(:id), deleted_at:)
-        .update_all(deleted_at: nil)
-      group.update_all(deleted_at: nil)
+    Core::Overview.announce(user_id) do
+      self.class.transaction do
+        group.where.not(materialized_through: nil)
+          .update_all(["materialized_through = MAX(materialized_through, ?)", Date.current - 1])
+        Core::Entity.where(id: Planner::Item.where(series_id: group.select(:id)).select(:id), deleted_at:)
+          .update_all(deleted_at: nil)
+        group.update_all(deleted_at: nil)
+      end
     end
   end
 

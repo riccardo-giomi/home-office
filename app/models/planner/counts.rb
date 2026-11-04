@@ -7,6 +7,11 @@
 # date in the time zone of the user and the week starts on the first weekday of
 # the user. The request sets both before the first call.
 class Planner::Counts
+  # The columns of `planner_items` that the numbers read. A save that changes
+  # none of them cannot change a number, so it sends no message to the home
+  # page (see Planner::Item). A column that a count starts to read goes here.
+  ITEM_ATTRIBUTES = %w[state done_at day priority tracks_done series_id occurrence_on].freeze
+
   def self.for(user)
     Current.counts ||= {}
     Current.counts[user.id] ||= new(user, today: Date.current, first_weekday: Current.first_weekday || 1)
