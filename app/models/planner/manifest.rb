@@ -44,7 +44,7 @@ Planner::Manifest = Core::ModuleManifest.new(
   dashboard: ->(user, today) { Planner::Dashboard.cards(user, today) },
   mcp_tools: [
     Planner::Mcp::ListItems, Planner::Mcp::GetItem, Planner::Mcp::CreateItem, Planner::Mcp::UpdateItems,
-    Planner::Mcp::TrashItems, Planner::Mcp::RestoreItems
+    Planner::Mcp::TrashItems, Planner::Mcp::RestoreItems, Planner::Mcp::LinkItems, Planner::Mcp::UnlinkItems
   ],
   mcp_overview: ->(user, today) { Planner::Mcp::Overview.call(user, today) },
   trash: Core::TrashSource.new(
