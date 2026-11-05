@@ -56,6 +56,16 @@ module Core::Modules
       trash ? cards + [trash] : cards
     end
 
+    # The tools of every module.
+    def mcp_tools = all.flat_map(&:mcp_tools)
+
+    # What each module reports for the MCP overview, by the name of the module.
+    #
+    # A module with no `mcp_overview` is left out.
+    def mcp_overview(user, today:)
+      all.select(&:mcp_overview).to_h { |manifest| [manifest.name, manifest.mcp_overview.call(user, today)] }
+    end
+
     def trash_total(user) = trash_sources.sum { |source| source.total.call(user) }
 
     private

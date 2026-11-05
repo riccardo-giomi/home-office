@@ -84,3 +84,5 @@ gem "pagy", "~> 43.7"
 gem "positioning", "~> 0.4.8"
 
 gem "rrule", "= 0.8.0"
+
+gem "mcp", "= 1.7.0"
