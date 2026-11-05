@@ -5,4 +5,9 @@ namespace :home_office do
   rescue Core::Setup::Error => error
     abort error.message
   end
+
+  desc "Copy the primary database to HOME_OFFICE_BACKUP_DIR (storage/backups) and print the path"
+  task backup: :environment do
+    puts Core::Backup.call
+  end
 end

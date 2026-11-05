@@ -25,6 +25,16 @@ production:
     class: Core::PurgeTrashJob
     schedule: <%= (ENV["HOME_OFFICE_PURGE_SCHEDULE"].presence || "every hour").to_json %>
 
+  # Copies the database. Daily by default, and not when a copy of the day
+  # exists.
+  #
+  # HOME_OFFICE_BACKUP_SCHEDULE takes any Solid Queue schedule; an empty value
+  # means the default. HOME_OFFICE_BACKUP_KEEP is the number of copies that
+  # stay (14).
+  backup:
+    class: Core::BackupJob
+    schedule: <%= (ENV["HOME_OFFICE_BACKUP_SCHEDULE"].presence || "every day at 3am").to_json %>
+
   # Makes the past occurrences of series into events, only when
   # HOME_OFFICE_CATCH_UP is `job`. Minute 5, so it does not start together with
   # the purge.

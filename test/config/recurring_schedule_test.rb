@@ -53,4 +53,17 @@ describe "config/recurring.yml" do
       _(catch_up("job", "*/30 * * * *")["schedule"]).must_equal "*/30 * * * *"
     end
   end
+
+  describe "backup" do
+    def backup(schedule = nil) = entry("backup", "HOME_OFFICE_BACKUP_SCHEDULE", schedule)
+
+    it "runs every day at 3am unless told otherwise" do
+      _(backup).must_equal({"class" => "Core::BackupJob", "schedule" => "every day at 3am"})
+      _(cron?("every day at 3am")).must_equal true
+    end
+
+    it "takes the schedule from HOME_OFFICE_BACKUP_SCHEDULE" do
+      _(backup("30 2 * * *")["schedule"]).must_equal "30 2 * * *"
+    end
+  end
 end
