@@ -24,3 +24,14 @@ production:
   purge_trash:
     class: Core::PurgeTrashJob
     schedule: <%= (ENV["HOME_OFFICE_PURGE_SCHEDULE"].presence || "every hour").to_json %>
+
+  # Makes the past occurrences of series into events, only when
+  # HOME_OFFICE_CATCH_UP is `job`. Minute 5, so it does not start together with
+  # the purge.
+  #
+  # HOME_OFFICE_CATCH_UP_SCHEDULE takes any Solid Queue schedule.
+<% if Core::CatchUpMode.job? %>
+  catch_up:
+    class: Core::CatchUpJob
+    schedule: <%= (ENV["HOME_OFFICE_CATCH_UP_SCHEDULE"].presence || "every hour at minute 5").to_json %>
+<% end %>

@@ -5,6 +5,7 @@ require_relative "test_helpers/session_test_helper"
 require_relative "test_helpers/query_counting"
 require_relative "test_helpers/catch_up_mode"
 require_relative "test_helpers/mcp_tokens"
+require_relative "test_helpers/asserts_recurring_entry"
 
 ENV["HOME_OFFICE_CATCH_UP"] = "off"
 
