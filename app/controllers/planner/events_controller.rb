@@ -9,22 +9,10 @@ class Planner::EventsController < Planner::ItemsController
     return super unless repeating?
 
     @item = item_class.new(item_params.merge(user: Current.user))
-    @item.validate
-    rule = repeat_form.rule_for(@item.day) if @item.day
-    if @item.errors.empty? && rule
-      series = Planner::Series.from_event(@item, rule)
-      if series.save(context: :entry)
-        return dialog_done(kind_t("created")) if in_dialog?
+    if Planner::Recurrence::Create.new(event: @item, form: repeat_form).call
+      return dialog_done(kind_t("created")) if in_dialog?
 
-        return redirect_to back_path_or_default(@item), notice: kind_t("created")
-      end
-      series.errors.each do |error|
-        if error.attribute == :starts_on
-          @item.errors.add(:day, error.message)
-        else
-          @item.errors.add(:base, error.full_message)
-        end
-      end
+      return redirect_to back_path_or_default(@item), notice: kind_t("created")
     end
     render :new, status: :unprocessable_content
   end
@@ -68,8 +56,6 @@ class Planner::EventsController < Planner::ItemsController
   private
 
   def item_class = Planner::Event
-
-  def permitted_attributes = super + [:day, :start_time, :end_time, :tracks_done]
 
   def repeating? = params[:linked_to].blank? && repeat_form.repeating?
 

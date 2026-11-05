@@ -20,9 +20,8 @@ class Planner::OccurrencesController < Planner::EventsController
   # One occurrence of a series, named by the series and the date the rule gave
   # it.
   def set_item
-    series = Planner::Series.owned_by(Current.user).kept.find(params[:series_id])
-    @item = series.occurrence(Date.iso8601(params[:on])) || raise(ActiveRecord::RecordNotFound)
-    raise ActiveRecord::RecordNotFound if @item.persisted? && @item.trashed?
+    @item = Planner::ItemRef.find(Current.user, series_id: params[:series_id], on: Date.iso8601(params[:on])) ||
+      raise(ActiveRecord::RecordNotFound)
   rescue Date::Error
     raise ActiveRecord::RecordNotFound
   end

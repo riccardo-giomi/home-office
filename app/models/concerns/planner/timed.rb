@@ -20,6 +20,10 @@ module Planner::Timed
     validate :times_are_consistent
   end
 
+  class_methods do
+    def editable_attributes = super + %i[day start_time end_time]
+  end
+
   def start_time = defined?(@start_time) ? @start_time : clock_time(starts_at)
 
   def end_time = defined?(@end_time) ? @end_time : clock_time(ends_at)

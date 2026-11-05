@@ -23,12 +23,8 @@ class Core::LinkCandidates
     @found ||= begin
       scope = @kind.scope.call(@user)
       scope = scope.where.not(id: @except_id) if @except_id
-      scope = scope.where(scope.arel_table[:title].matches("%#{escaped}%", "\\")) if @term.present?
+      scope = Core::TitleMatch.apply(scope, @term)
       scope.order(:title, :id).limit(LIMIT + 1).to_a
     end
   end
-
-  # Escape what would pass for a LIKE wildcard or escape character in the
-  # search term.
-  def escaped = @term.gsub(/[\\%_]/) { |char| "\\#{char}" }
 end

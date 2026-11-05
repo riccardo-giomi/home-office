@@ -36,6 +36,11 @@ class Planner::Item < ApplicationRecord
 
   def self.kind = model_name.element
 
+  # The fields of an item that a person or an agent may set.
+  #
+  # A kind adds its own.
+  def self.editable_attributes = %i[title notes priority]
+
   def done? = done_at.present?
 
   # Whether this is an instance of a repeating series.

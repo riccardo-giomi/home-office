@@ -66,12 +66,9 @@ class Planner::ItemsController < ApplicationController
   # nothing.
   def initial_attributes = {day: Date.current}
 
-  # What every kind may set; a kind adds its own.
-  def permitted_attributes = %i[title notes priority]
-
   # Never user_id, state, time_zone or done_at: those are not for the form to
   # set.
-  def item_params = params.expect(item_class.model_name.param_key => permitted_attributes)
+  def item_params = params.expect(item_class.model_name.param_key => item_class.editable_attributes)
 
   def back_path_or_default(item) = back_location&.path || default_back_path(item)
 

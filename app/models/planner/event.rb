@@ -14,6 +14,9 @@ class Planner::Event < Planner::Item
     kept.where(state: "active", tracks_done: 1, done_at: nil).where(day: ...today)
   end
 
+  # The fields of an event that a person or an agent may set.
+  def self.editable_attributes = super + [:tracks_done]
+
   # An event has the done box only when the user turns it on.
   before_validation :forget_done_without_tracking
 
