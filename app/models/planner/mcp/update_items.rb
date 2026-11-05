@@ -2,8 +2,9 @@
 #
 # For an occurrence of a repeating event, the scope "this" (the default) changes
 # that occurrence, saving it first if it was only a date. The scope "all"
-# changes the series (title, notes, priority, times) and the occurrences that
-# were not changed on their own.
+# changes the series (title, notes, priority, times) and every occurrence that
+# is already saved, but only the fields given: a saved occurrence keeps the
+# others.
 class Planner::Mcp::UpdateItems < Core::Mcp::Tool
   Writing = Planner::Mcp::Writing
 
