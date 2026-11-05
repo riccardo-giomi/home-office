@@ -6,5 +6,8 @@
     <% grid.with_card do %>
       <%= render Core::UI::CardLinkComponent.new(href: edit_preferences_path, title: t(".preferences.title"), caption: t(".preferences.caption"), lines: []) %>
     <% end %>
+    <% grid.with_card do %>
+      <%= render Core::UI::CardLinkComponent.new(href: mcp_tokens_path, title: t(".tokens.title"), caption: t(".tokens.caption"), lines: [t(".tokens.count", count: @token_count)]) %>
+    <% end %>
   <% end %>
 </div>

@@ -1,0 +1,6 @@
+<%= render(Core::UI::ModalComponent.new(id: "revoke-token-#{token.id}", title: t("mcp_tokens.index.revoke_title"), trigger: safe_join([t("mcp_tokens.index.revoke"), tag.span(" #{token.name}", class: "sr-only")]), trigger_variant: :danger, trigger_size: :xs)) do %>
+  <p class="mb-4"><%= t("mcp_tokens.index.revoke_warning", name: token.name) %></p>
+  <%= form_with url: mcp_token_path(token), method: :delete do %>
+    <%= render(Core::UI::ButtonComponent.new(type: :submit, variant: :danger)) { t("mcp_tokens.index.revoke_confirm") } %>
+  <% end %>
+<% end %>

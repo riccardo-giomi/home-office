@@ -8,14 +8,17 @@ class SettingsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_path
   end
 
-  it "shows a card for Preferences" do
+  it "shows a card for Preferences and one for the access tokens, with how many there are" do
     sign_in_as users(:member)
     get settings_path
     assert_response :success
     assert_select "title", "Settings | Home Office"
     assert_select "h1", "Settings"
-    assert_select "ul[aria-label='Settings'] > li", 1
+    assert_select "ul[aria-label='Settings'] > li", 2
     assert_select "a[href='#{edit_preferences_path}']", text: /Preferences/
+    assert_select "a[href='#{mcp_tokens_path}']", text: /Access tokens/ do
+      assert_select "span", text: "#{users(:member).mcp_tokens.count} #{"token".pluralize(users(:member).mcp_tokens.count)}"
+    end
   end
 
   it "has no link back home, the sidebar is the way" do

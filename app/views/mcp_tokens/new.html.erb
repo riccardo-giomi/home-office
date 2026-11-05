@@ -1,0 +1,14 @@
+<% content_for :title, t(".title") %>
+<div class="w-full max-w-md">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title"), back_href: mcp_tokens_path, back_label: t("mcp_tokens.back")) %>
+  <%= form_with model: @token, url: mcp_tokens_path, id: "token-form", html: {data: {turbo: false}} do |form| %>
+    <%= render Core::UI::ErrorSummaryComponent.new(record: @token) %>
+    <%= render Core::UI::FieldComponent.new(form:, attribute: :name, label: Core::McpToken.human_attribute_name(:name), hint: t(".name_hint"), autocomplete: "off", required: true, maxlength: 60) %>
+    <%= render Core::UI::FieldComponent.new(form:, attribute: :read_only, label: Core::McpToken.human_attribute_name(:read_only), as: :check_box, hint: t(".read_only_hint")) %>
+  <% end %>
+  <%= render(Core::UI::FormActionsComponent.new) do |actions| %>
+    <% actions.with_primary do %>
+      <%= render(Core::UI::ButtonComponent.new(type: :submit, form: "token-form")) { t(".submit") } %>
+    <% end %>
+  <% end %>
+</div>

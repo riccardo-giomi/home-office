@@ -2,6 +2,9 @@
 it:
   activerecord:
     attributes:
+      core/mcp_token:
+        name: Nome
+        read_only: Sola lettura
       user:
         date_format: Formato della data
         day_end_hour: Ultima ora visibile
@@ -215,6 +218,43 @@ it:
       title_change: Cambia il collegamento
     update:
       changed: Collegamento cambiato in %{title}.
+  mcp_tokens:
+    access:
+      read_only: Sola lettura
+      read_write: Lettura e scrittura
+    back: Torna ai token di accesso
+    created:
+      access: 'Accesso: %{access}.'
+      copied: Token copiato negli appunti.
+      copy: Copia
+      copy_failed: Copia non riuscita. Seleziona il token e copialo a mano.
+      done: Fatto
+      example_label: Richiesta di esempio
+      once: Copia subito questo token. Viene mostrato una sola volta e non si può recuperare.
+      title: Token creato
+      token_label: Token "%{name}"
+      use: 'Un agente lo invia come bearer token nell''intestazione Authorization:'
+    destroy:
+      revoked: Token "%{name}" revocato.
+    index:
+      access_line: 'Accesso: %{access}'
+      caption: I tuoi token di accesso
+      created: Creato
+      empty: Non hai ancora token di accesso.
+      intro: Un token di accesso permette a un agente di usare i tuoi piani tramite l'endpoint MCP. Un token di sola lettura può guardare ma non cambiare nulla. Revoca un token appena un agente non ne ha più bisogno.
+      last_used: Ultimo uso
+      never_used: Mai
+      new: Nuovo token
+      revoke: Revoca
+      revoke_confirm: Revoca il token
+      revoke_title: Revocare questo token?
+      revoke_warning: Ogni agente che usa "%{name}" perde subito l'accesso. Non si può annullare.
+      title: Token di accesso
+    new:
+      name_hint: Di' cosa lo userà, per esempio "Assistente del portatile". Fino a 60 caratteri.
+      read_only_hint: L'agente può leggere i tuoi piani ma non può cambiare nulla.
+      submit: Crea il token
+      title: Nuovo token
   preferences:
     automatic: Automatico
     date_formats:
@@ -267,6 +307,12 @@ it:
         caption: Lingua, date, fuso orario e tema.
         title: Preferenze
       title: Impostazioni
+      tokens:
+        caption: Permetti a un agente di usare i tuoi piani.
+        count:
+          one: "%{count} token"
+          other: "%{count} token"
+        title: Token di accesso
   trashes:
     show:
       caption: 'Nel cestino:'

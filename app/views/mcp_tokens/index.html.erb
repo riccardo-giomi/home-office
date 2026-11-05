@@ -1,0 +1,20 @@
+<% content_for :title, t(".title") %>
+<div class="w-full">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title"), back_href: settings_path, back_label: t("settings.back")) %>
+  <p class="mb-6 max-w-prose"><%= t(".intro") %></p>
+  <%= render(Core::UI::PageToolbarComponent.new) do |toolbar| %>
+    <% toolbar.with_leading do %>
+      <%= render(Core::UI::ButtonComponent.new(href: new_mcp_token_path)) { t(".new") } %>
+    <% end %>
+  <% end %>
+  <% if @tokens.empty? %>
+    <p><%= t(".empty") %></p>
+  <% else %>
+    <%# A list, not a table: five columns do not fit 320 px, and each token reads as one block %>
+    <%= render(Core::UI::RowListComponent.new(label: t(".caption"), empty_text: t(".empty"))) do |list| %>
+      <% @tokens.each do |token| %>
+        <% list.with_row(id: dom_id(token), detail: token_detail(token), actions: render("revoke", token:)) { token.name } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

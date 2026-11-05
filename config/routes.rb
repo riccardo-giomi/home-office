@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resource :settings, only: :show
   # The address of the preferences page ends in /preferences, not in /edit.
   resource :preferences, only: %i[edit update], path: "settings/preferences", path_names: {edit: ""}
+  resources :mcp_tokens, path: "settings/tokens", only: %i[index new create destroy]
   resource :theme, only: :update
   resource :trash, only: :show
   resource :selection, only: %i[create destroy]
@@ -50,6 +51,9 @@ Rails.application.routes.draw do
   mount Lookbook::Engine, at: "/lookbook" if Rails.env.development?
 
   get "up" => "rails/health#show", :as => :rails_health_check
+
+  post "mcp", to: "mcp#create"
+  match "mcp", to: "mcp#unsupported", via: %i[get put patch delete]
 
   root "home#show"
 end

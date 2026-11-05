@@ -2,6 +2,9 @@
 en:
   activerecord:
     attributes:
+      core/mcp_token:
+        name: Name
+        read_only: Read only
       user:
         date_format: Date format
         day_end_hour: Last hour shown
@@ -215,6 +218,43 @@ en:
       title_change: Change the link
     update:
       changed: Link changed to %{title}.
+  mcp_tokens:
+    access:
+      read_only: Read only
+      read_write: Read and write
+    back: Back to access tokens
+    created:
+      access: 'Access: %{access}.'
+      copied: Token copied to the clipboard.
+      copy: Copy
+      copy_failed: Could not copy. Select the token and copy it by hand.
+      done: Done
+      example_label: Example request
+      once: Copy this token now. It is shown only once and cannot be looked up again.
+      title: Token created
+      token_label: Token "%{name}"
+      use: 'An agent sends it as a bearer token in the Authorization header:'
+    destroy:
+      revoked: Token "%{name}" revoked.
+    index:
+      access_line: 'Access: %{access}'
+      caption: Your access tokens
+      created: Created
+      empty: You have no access tokens yet.
+      intro: An access token lets an agent use your plans through the MCP endpoint. A read-only token can look but never change anything. Revoke a token as soon as an agent no longer needs it.
+      last_used: Last used
+      never_used: Never
+      new: New token
+      revoke: Revoke
+      revoke_confirm: Revoke token
+      revoke_title: Revoke this token?
+      revoke_warning: Any agent using "%{name}" loses access at once. This cannot be undone.
+      title: Access tokens
+    new:
+      name_hint: Say what will use it, for example "Laptop assistant". Up to 60 characters.
+      read_only_hint: The agent can read your plans but cannot change anything.
+      submit: Create token
+      title: New token
   preferences:
     automatic: Automatic
     date_formats:
@@ -267,6 +307,12 @@ en:
         caption: Language, dates, time zone and theme.
         title: Preferences
       title: Settings
+      tokens:
+        caption: Let an agent use your plans.
+        count:
+          one: "%{count} token"
+          other: "%{count} tokens"
+        title: Access tokens
   trashes:
     show:
       caption: 'In the trash:'

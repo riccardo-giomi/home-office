@@ -1,0 +1,18 @@
+<% content_for :title, t(".title") %>
+<div class="w-full max-w-prose">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title"), back_href: settings_path, back_label: t("settings.back")) %>
+  <p role="status" class="mb-4 font-semibold"><%= t(".once") %></p>
+  <div class="mb-4" data-controller="clipboard" data-clipboard-done-value="<%= t(".copied") %>" data-clipboard-failed-value="<%= t(".copy_failed") %>">
+    <label for="token-value" class="mb-1 block font-medium"><%= t(".token_label", name: @token.name) %></label>
+    <div class="flex flex-wrap items-center gap-2">
+      <input id="token-value" type="text" readonly value="<%= @token.plain %>" class="input min-w-0 flex-1 font-mono" autocomplete="off" spellcheck="false" data-clipboard-target="source">
+      <%= render(Core::UI::ButtonComponent.new(variant: :secondary, hidden: true, data: {clipboard_target: "button", action: "clipboard#copy"})) { t(".copy") } %>
+    </div>
+    <p class="mt-1 text-sm" role="status" data-clipboard-target="status"></p>
+  </div>
+  <p class="mb-2"><%= t(".access", access: (@token.read_only? ? t("mcp_tokens.access.read_only") : t("mcp_tokens.access.read_write"))) %></p>
+  <p class="mb-2"><%= t(".use") %></p>
+  <pre class="mb-6 overflow-x-auto rounded border border-base-300 bg-base-100 p-3 text-sm" tabindex="0" aria-label="<%= t(".example_label") %>"><code>POST <%= mcp_url %>
+Authorization: Bearer <%= @token.plain %></code></pre>
+  <%= render(Core::UI::ButtonComponent.new(href: mcp_tokens_path)) { t(".done") } %>
+</div>
