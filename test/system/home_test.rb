@@ -106,6 +106,10 @@ class HomeTest < ApplicationSystemTestCase
       sign_in_through_form users(:member)
       visit root_path
       assert_selector "main article li a", text: "0 Urgent"
+      # The page would receive the change through its stream and the tests would
+      # prove nothing about this refresh. Taking the element out cuts the page
+      # off from the stream, as a connection that dropped would.
+      execute_script("window.stream = document.querySelector('turbo-cable-stream-source'); window.stream.remove()")
     end
 
     it "shows what changed while it was away, keeping the place and the focus" do
@@ -129,12 +133,44 @@ class HomeTest < ApplicationSystemTestCase
       assert_selector "main article li a", text: "0 Urgent"
     end
 
+    it "refreshes when the connection of the stream comes back, whatever the age of the page" do
+      Planner::Todo.create!(user: users(:member), title: "Behind your back", priority: "urgent")
+      sleep 0.5
+      assert_selector "main article li a", text: "0 Urgent"
+      execute_script("document.querySelector('[data-controller~=refresh-after-absence]').prepend(window.stream)")
+      assert_selector "main article li a", text: "1 Urgent"
+    end
+
     it "never refreshes while the page is hidden" do
       Planner::Todo.create!(user: users(:member), title: "Behind your back", priority: "urgent")
       find("main [data-controller~=refresh-after-absence]").execute_script("this.dataset.refreshAfterAbsenceSecondsValue = 0")
       show_page("hidden")
       sleep 0.5
       assert_selector "main article li a", text: "0 Urgent"
+    end
+  end
+
+  describe "changes made while the page is open" do
+    before do
+      Planner::Item.delete_all
+      sign_in_through_form member
+      visit root_path
+      assert_selector "main article li a", text: "0 Urgent"
+    end
+
+    it "shows a change made elsewhere without waiting for anything" do
+      Planner::Todo.create!(user: member, title: "Behind your back", priority: "urgent")
+      assert_selector "main article li a", text: "1 Urgent"
+      assert_selector "main article h2", text: "1 to do"
+    end
+
+    it "keeps the place and the focus" do
+      execute_script("window.scrollTo(0, 40)")
+      find("main article li a", text: "0 Urgent").send_keys(:tab)
+      focused = evaluate_script("document.activeElement.outerHTML")
+      Planner::Todo.create!(user: member, title: "Behind your back", priority: "urgent")
+      assert_selector "main article li a", text: "1 Urgent"
+      assert_equal focused, evaluate_script("document.activeElement.outerHTML")
     end
   end
 end

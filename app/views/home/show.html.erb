@@ -3,6 +3,8 @@
 <%# The numbers change while the page is open, so Turbo must not cache the page for the Back button %>
 <% content_for :head, tag.meta(name: "turbo-cache-control", content: "no-cache") %>
 <div data-controller="refresh-after-absence" data-refresh-after-absence-seconds-value="60">
+  <%# Core::Overview sends a refresh on this stream when a number of the page changes. It is inside the element of the controller, which watches its connection %>
+  <%= turbo_stream_from(*Core::Overview.stream(Current.user.id)) %>
   <h1 class="text-3xl font-bold"><%= t(".title") %></h1>
   <p class="my-4"><%= t(".signed_in_as", email: Current.user.email_address) %></p>
   <%= render(Core::UI::CardGridComponent.new(label: t(".cards"))) do |grid| %>
