@@ -6,6 +6,7 @@ require_relative "test_helpers/query_counting"
 require_relative "test_helpers/catch_up_mode"
 require_relative "test_helpers/mcp_tokens"
 require_relative "test_helpers/asserts_recurring_entry"
+require "turbo/broadcastable/test_helper"
 
 ENV["HOME_OFFICE_CATCH_UP"] = "off"
 
@@ -24,9 +25,9 @@ module ActiveSupport
     # The rate limiter needs a real cache store, which must not keep counts between tests
     setup { Rails.cache.clear }
 
+    # Add more helper methods to be used by all tests here...
     include QueryCounting
     include CatchUpMode
-
-    # Add more helper methods to be used by all tests here...
+    include Turbo::Broadcastable::TestHelper
   end
 end
