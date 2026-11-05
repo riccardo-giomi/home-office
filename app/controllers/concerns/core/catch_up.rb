@@ -5,7 +5,8 @@
 # Include it after RequestPreferences, which sets the time zone, so `today` is
 # the date in the user's time zone.
 #
-# It does nothing for visitors who are not signed in.
+# It does nothing for visitors who are not signed in, and nothing unless
+# Core::CatchUpMode is `lazy`.
 module Core::CatchUp
   extend ActiveSupport::Concern
 
@@ -16,6 +17,6 @@ module Core::CatchUp
   private
 
   def catch_up_modules
-    Core::Modules.catch_up(Current.user, today: Date.current) if Current.user
+    Core::Modules.catch_up(Current.user, today: Date.current) if Current.user && Core::CatchUpMode.lazy?
   end
 end

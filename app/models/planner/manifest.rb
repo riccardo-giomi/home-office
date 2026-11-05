@@ -38,9 +38,7 @@ Planner::Manifest = Core::ModuleManifest.new(
       subgroup_key: "planner.nav.subgroups.todos")
   ],
   purge: ->(now) { Planner::Series.purge_expired(now) },
-  catch_up: lambda do |user, today|
-    Planner::CatchUp.run(user, today:) if Planner::CatchUp.lazy?
-  end,
+  catch_up: ->(user, today) { Planner::CatchUp.run(user, today:) },
   dashboard: ->(user, today) { Planner::Dashboard.cards(user, today) },
   mcp_tools: [
     Planner::Mcp::ListItems, Planner::Mcp::GetItem, Planner::Mcp::CreateItem, Planner::Mcp::UpdateItems,

@@ -9,9 +9,11 @@ Core::ModuleManifest = Data.define(
   # purge: a callable that takes the moment, for what the module keeps in the
   # trash outside the entities. It runs before the entities are purged.
   #
-  # catch_up: a callable that takes the signed-in user and today's date. Core
-  # calls it on the requests of a signed-in user, so that a module can update
-  # what depends on the date.
+  # catch_up: a callable that takes a user and today's date in the time zone
+  # of that user, so that a module can update what depends on the date. Core
+  # calls it on the requests of a signed-in user when Core::CatchUpMode is
+  # `lazy`, and Core::CatchUpJob calls it for every active user when the mode is
+  # `job`. The job has no request and does not set `Current`.
   #
   # dashboard: a callable that takes the signed-in user and today's date, and
   # returns an array of Core::DashboardCard for the home page.

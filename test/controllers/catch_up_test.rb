@@ -40,12 +40,14 @@ class CatchUpTest < ActionDispatch::IntegrationTest
     _(item_inserts { get root_path }).must_be :empty?
   end
 
-  it "does nothing when it is off" do
+  it "does nothing when it is off or left to the job" do
     mine = gym(member)
     sign_in_as member
-    use_catch_up "off"
-    get root_path
-    _(made(mine)).must_be :empty?
+    %w[off job].each do |word|
+      use_catch_up word
+      get root_path
+      _(made(mine)).must_be :empty?
+    end
   end
 
   it "does nothing for a visitor who is not signed in" do

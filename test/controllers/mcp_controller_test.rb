@@ -193,9 +193,18 @@ class McpControllerTest < ActionDispatch::IntegrationTest
     it "runs the modules' catch-up for the user, with today in their zone" do
       seen = []
       Core::Modules.register(Core::ModuleManifest.new(name: "mcp_catch_up", catch_up: ->(user, today) { seen << [user.id, today] }))
+      use_catch_up "lazy"
       users(:member).update!(time_zone: "Pacific/Auckland")
       travel_to(Time.utc(2026, 10, 11, 23, 30)) { mcp_post("member_write", rpc("tools/list")) }
       assert_equal [[users(:member).id, Date.new(2026, 10, 12)]], seen
+    end
+
+    it "leaves the catch-up to the job in job mode" do
+      seen = []
+      Core::Modules.register(Core::ModuleManifest.new(name: "mcp_catch_up", catch_up: ->(user, today) { seen << user.id }))
+      use_catch_up "job"
+      mcp_post("member_write", rpc("tools/list"))
+      assert_empty seen
     end
   end
 end
