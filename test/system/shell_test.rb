@@ -58,15 +58,15 @@ class ShellTest < ApplicationSystemTestCase
     page.current_window.resize_to(320, 640)
     sign_in_through_form users(:member)
     click_button I18n.t("core.ui.header.menu")
-    click_link I18n.t("core.nav.preferences")
-    assert_selector "h1", text: I18n.t("preferences.edit.title")
+    click_link I18n.t("core.nav.settings")
+    assert_selector "h1", text: I18n.t("settings.show.title")
     assert_no_selector "nav#sidebar", visible: :visible
   end
 
   it "moves focus to the page heading after a Turbo visit" do
     sign_in_through_form users(:member)
-    click_link I18n.t("core.nav.preferences")
-    assert_selector "h1", text: I18n.t("preferences.edit.title")
+    click_link I18n.t("core.nav.settings")
+    assert_selector "h1", text: I18n.t("settings.show.title")
     assert_equal "H1", evaluate_script("document.activeElement.tagName")
   end
 
@@ -170,8 +170,8 @@ class ShellTest < ApplicationSystemTestCase
     find("[role=switch]").click
     assert_selector "html[data-theme=dark]"
     wait_for_saved_theme(users(:member))
-    click_link I18n.t("core.nav.preferences")
-    assert_selector "h1", text: I18n.t("preferences.edit.title")
+    click_link I18n.t("core.nav.settings")
+    assert_selector "h1", text: I18n.t("settings.show.title")
     go_back
     assert_selector "h1", text: I18n.t("home.show.title")
     assert_selector "html[data-theme=dark]"
@@ -179,14 +179,15 @@ class ShellTest < ApplicationSystemTestCase
 
   it "keeps a theme chosen on the preferences page when going back to a cached page" do
     sign_in_through_form users(:member)
-    click_link I18n.t("core.nav.preferences")
+    click_link I18n.t("core.nav.settings")
+    click_link I18n.t("settings.show.preferences.title")
     assert_selector "h1", text: I18n.t("preferences.edit.title")
     select I18n.t("preferences.themes.dark"), from: User.human_attribute_name(:theme)
     click_button I18n.t("preferences.edit.submit")
     assert_selector "[role=status]", text: I18n.t("preferences.update.updated")
     assert_selector "html[data-theme=dark]"
     go_back
-    assert_selector "h1", text: I18n.t("home.show.title")
+    assert_selector "h1", text: I18n.t("settings.show.title")
     assert_selector "html[data-theme=dark]"
   end
 

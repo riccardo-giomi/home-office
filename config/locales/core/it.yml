@@ -93,7 +93,7 @@ it:
       groups:
         admin: Amministrazione
       home: Home
-      preferences: Preferenze
+      settings: Impostazioni
       sign_out: Esci
       theme: Tema
       trash: Cestino
@@ -217,7 +217,6 @@ it:
       changed: Collegamento cambiato in %{title}.
   preferences:
     automatic: Automatico
-    back: Torna alla home
     date_formats:
       dmy: Giorno/mese/anno (31/12/2026)
       mdy: Mese/giorno/anno (12/31/2026)
@@ -259,6 +258,15 @@ it:
       submit: Accedi
       title: Accedi
     rate_limited: Troppi tentativi. Riprova più tardi.
+  settings:
+    back: Torna alle impostazioni
+    show:
+      intro: Scegli cosa configurare.
+      list: Impostazioni
+      preferences:
+        caption: Lingua, date, fuso orario e tema.
+        title: Preferenze
+      title: Impostazioni
   trashes:
     show:
       caption: 'Nel cestino:'

@@ -1,0 +1,10 @@
+<% content_for :title, t(".title") %>
+<div class="w-full">
+  <%= render Core::UI::PageHeaderComponent.new(title: t(".title")) %>
+  <p class="mb-4"><%= t(".intro") %></p>
+  <%= render(Core::UI::CardGridComponent.new(label: t(".list"))) do |grid| %>
+    <% grid.with_card do %>
+      <%= render Core::UI::CardLinkComponent.new(href: edit_preferences_path, title: t(".preferences.title"), caption: t(".preferences.caption"), lines: []) %>
+    <% end %>
+  <% end %>
+</div>

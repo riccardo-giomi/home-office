@@ -93,7 +93,7 @@ en:
       groups:
         admin: Admin
       home: Home
-      preferences: Preferences
+      settings: Settings
       sign_out: Sign out
       theme: Theme
       trash: Trash
@@ -217,7 +217,6 @@ en:
       changed: Link changed to %{title}.
   preferences:
     automatic: Automatic
-    back: Back to home
     date_formats:
       dmy: Day/month/year (31/12/2026)
       mdy: Month/day/year (12/31/2026)
@@ -259,6 +258,15 @@ en:
       submit: Sign in
       title: Sign in
     rate_limited: Too many attempts. Try again later.
+  settings:
+    back: Back to settings
+    show:
+      intro: Choose what to set up.
+      list: Settings
+      preferences:
+        caption: Language, dates, time zone and theme.
+        title: Preferences
+      title: Settings
   trashes:
     show:
       caption: 'In the trash:'

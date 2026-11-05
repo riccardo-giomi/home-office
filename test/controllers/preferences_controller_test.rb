@@ -25,6 +25,17 @@ class PreferencesControllerTest < ActionDispatch::IntegrationTest
       assert_select "#user_date_format_hint", text: I18n.t("preferences.edit.date_format_hint")
     end
 
+    it "lives in the Settings area, with a way back to the Settings page" do
+      assert_equal "/settings/preferences", edit_preferences_path
+      get edit_preferences_path
+      assert_select "h1 + p a[href='#{settings_path}']", text: I18n.t("settings.back")
+    end
+
+    it "names the sidebar entry Settings, and it leads to the Settings page" do
+      get edit_preferences_path
+      assert_select "a[href='/settings']", text: I18n.t("core.nav.settings")
+    end
+
     it "groups the settings under Localization, Day hours and Theme" do
       get edit_preferences_path
       assert_select "fieldset > legend", text: I18n.t("preferences.edit.groups.localization")
@@ -119,11 +130,12 @@ class PreferencesControllerTest < ActionDispatch::IntegrationTest
   describe "the shape of the page" do
     before { sign_in_as member }
 
-    it "puts the way back right under the heading, before the introduction and the form" do
+    it "puts the way back right under the heading, before the introduction and the form, and has no link home" do
       get edit_preferences_path
-      assert_select "h1 + p a[href='#{root_path}']", text: "Back to home"
+      assert_select "h1 + p a[href='#{settings_path}']", text: "Back to settings"
+      assert_select "main a", text: "Back to home", count: 0
       html = response.body
-      assert_operator html.index("Back to home"), :<, html.index('id="preferences-form"')
+      assert_operator html.index("Back to settings"), :<, html.index('id="preferences-form"')
     end
 
     it "keeps Save outside the form element, in the actions row at the end of the page" do

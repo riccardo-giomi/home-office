@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   resource :session, only: %i[new create destroy]
-  resource :preferences, only: %i[edit update]
+  resource :settings, only: :show
+  # The address of the preferences page ends in /preferences, not in /edit.
+  resource :preferences, only: %i[edit update], path: "settings/preferences", path_names: {edit: ""}
   resource :theme, only: :update
   resource :trash, only: :show
   resource :selection, only: %i[create destroy]

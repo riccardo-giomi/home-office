@@ -8,10 +8,10 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: I18n.t("home.show.title")
   end
 
-  it "links to the preferences page" do
+  it "links to the settings page" do
     sign_in_as users(:member)
     get root_path
-    assert_select "a[href=?]", edit_preferences_path
+    assert_select "a[href=?]", settings_path
   end
 
   it "sends an anonymous visitor to sign in" do

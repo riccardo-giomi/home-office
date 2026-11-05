@@ -33,7 +33,7 @@ describe Core::Modules do
   it "puts admin entries after every module's own entries, however they were registered" do
     admin_item = Core::NavItem.new(label_key: "core.nav.users", route: :admin_users_path, icon: :users, admin: true)
     first = Core::NavItem.new(label_key: "core.nav.home", route: :root_path, icon: :home)
-    second = Core::NavItem.new(label_key: "core.nav.preferences", route: :edit_preferences_path, icon: :cog)
+    second = Core::NavItem.new(label_key: "core.nav.settings", route: :settings_path, icon: :cog)
     Core::Modules.register(manifest("a", navigation: [first, admin_item]))
     Core::Modules.register(manifest("b", navigation: [second]))
     _(Core::Modules.navigation(admin: true)).must_equal [first, second, admin_item]
@@ -41,7 +41,7 @@ describe Core::Modules do
 
   it "keeps footer entries out of the main list and lists them apart" do
     main = Core::NavItem.new(label_key: "core.nav.home", route: :root_path, icon: :home)
-    footer = Core::NavItem.new(label_key: "core.nav.preferences", route: :edit_preferences_path, icon: :cog, placement: :footer)
+    footer = Core::NavItem.new(label_key: "core.nav.settings", route: :settings_path, icon: :cog, placement: :footer)
     Core::Modules.register(manifest("a", navigation: [footer, main]))
     _(Core::Modules.navigation(admin: false)).must_equal [main]
     _(Core::Modules.navigation(admin: false, placement: :footer)).must_equal [footer]
@@ -118,11 +118,11 @@ describe "the booted registry" do
     _(Core::Setup::Runner.default_steps.first).must_be_instance_of Core::Setup::AdminStep
   end
 
-  it "lays the sidebar out as Home, the Planner, then Admin; Preferences sits at the bottom" do
+  it "lays the sidebar out as Home, the Planner, then Admin; Settings sits at the bottom" do
     _(Core::Modules.navigation(admin: false).map(&:route)).must_equal %i[root_path planner_calendar_path planner_agenda_path planner_important_events_path planner_missed_events_path planner_schedule_path planner_forgotten_tasks_path planner_todos_path]
     _(Core::Modules.navigation(admin: true).map(&:route)).must_equal %i[root_path planner_calendar_path planner_agenda_path planner_important_events_path planner_missed_events_path planner_schedule_path planner_forgotten_tasks_path planner_todos_path admin_users_path admin_theme_path]
     [false, true].each do |admin|
-      _(Core::Modules.navigation(admin:, placement: :footer).map(&:route)).must_equal %i[edit_preferences_path trash_path]
+      _(Core::Modules.navigation(admin:, placement: :footer).map(&:route)).must_equal %i[settings_path trash_path]
     end
   end
 
