@@ -4,6 +4,7 @@ class User < ApplicationRecord
 
   # delete_all: strict loading forbids loading the sessions just to destroy them
   has_many :sessions, dependent: :delete_all
+  has_many :mcp_tokens, class_name: "Core::McpToken", dependent: :delete_all
   enum :role, {admin: "admin", user: "user"}, default: :user, validate: true
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
@@ -19,8 +20,8 @@ class User < ApplicationRecord
 
   # Deactivates the user.
   #
-  # Ends the sessions and keeps everything else. Answers false, with the reason
-  # in errors, when it must not happen.
+  # Ends the sessions and deletes the access tokens. Everything else stays.
+  # Answers false, with the reason in errors, when it must not happen.
   def deactivate
     return errors.add(:base, :already_deactivated) && false if deactivated?
     return errors.add(:base, :last_admin_deactivation) && false if last_active_admin?
@@ -28,6 +29,7 @@ class User < ApplicationRecord
     transaction do
       update_columns(deactivated_at: Time.current)
       sessions.delete_all
+      mcp_tokens.delete_all
     end
     true
   end

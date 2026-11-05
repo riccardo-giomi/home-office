@@ -1,0 +1,27 @@
+member_write:
+  user: member
+  name: Writer
+  token_digest: <%= McpTokens.digest("member_write") %>
+  read_only: 0
+  created_at: 2026-10-01 10:00:00
+
+member_read:
+  user: member
+  name: Reader
+  token_digest: <%= McpTokens.digest("member_read") %>
+  read_only: 1
+  created_at: 2026-10-01 10:00:00
+
+admin_write:
+  user: admin
+  name: Writer
+  token_digest: <%= McpTokens.digest("admin_write") %>
+  read_only: 0
+  created_at: 2026-10-01 10:00:00
+
+retired_write:
+  user: retired
+  name: Old laptop
+  token_digest: <%= McpTokens.digest("retired_write") %>
+  read_only: 0
+  created_at: 2026-10-01 10:00:00

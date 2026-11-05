@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_01_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_05_120000) do
   create_table "core_entities", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "record_type", null: false
@@ -32,6 +32,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_120000) do
     t.index ["first_entity_id", "second_entity_id"], name: "index_core_links_pair", unique: true
     t.index ["second_entity_id"], name: "index_core_links_on_second_entity_id"
     t.check_constraint "first_entity_id < second_entity_id", name: "chk_core_links_ordered"
+  end
+
+  create_table "core_mcp_tokens", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "name", null: false
+    t.string "token_digest", null: false
+    t.integer "read_only", default: 0, null: false
+    t.datetime "last_used_at"
+    t.datetime "created_at", null: false
+    t.index ["token_digest"], name: "index_core_mcp_tokens_on_token_digest", unique: true
+    t.index ["user_id", "name"], name: "index_core_mcp_tokens_on_user_id_and_name", unique: true
+    t.check_constraint "length(token_digest) = 64 AND token_digest NOT GLOB '*[^0-9a-f]*'", name: "chk_core_mcp_tokens_digest"
+    t.check_constraint "read_only IN (0, 1)", name: "chk_core_mcp_tokens_read_only"
   end
 
   create_table "planner_items", force: :cascade do |t|
@@ -158,6 +171,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_120000) do
   add_foreign_key "core_entities", "users", on_delete: :cascade
   add_foreign_key "core_links", "core_entities", column: ["first_entity_id", "user_id"], primary_key: ["id", "user_id"], on_delete: :cascade
   add_foreign_key "core_links", "core_entities", column: ["second_entity_id", "user_id"], primary_key: ["id", "user_id"], on_delete: :cascade
+  add_foreign_key "core_mcp_tokens", "users", on_delete: :cascade
   add_foreign_key "planner_items", "core_entities", column: ["id", "user_id", "record_type"], primary_key: ["id", "user_id", "record_type"], on_delete: :cascade
   add_foreign_key "planner_items", "planner_series", column: ["series_id", "user_id"], primary_key: ["id", "user_id"]
   add_foreign_key "planner_series", "planner_series", column: ["chain_id", "user_id"], primary_key: ["id", "user_id"]
