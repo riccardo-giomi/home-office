@@ -42,6 +42,8 @@ Planner::Manifest = Core::ModuleManifest.new(
     Planner::CatchUp.run(user, today:) if Planner::CatchUp.lazy?
   end,
   dashboard: ->(user, today) { Planner::Dashboard.cards(user, today) },
+  mcp_tools: [Planner::Mcp::ListItems, Planner::Mcp::GetItem],
+  mcp_overview: ->(user, today) { Planner::Mcp::Overview.call(user, today) },
   trash: Core::TrashSource.new(
     title_key: "planner.nav.groups.planner",
     route: :planner_trash_path,

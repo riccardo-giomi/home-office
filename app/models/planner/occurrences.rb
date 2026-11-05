@@ -3,9 +3,11 @@
 # The events of the user (rows) and the unsaved occurrences of their series,
 # together. The number of queries is fixed, however many series there are.
 module Planner::Occurrences
-  def self.for(user, range)
-    rows = Planner::Event.owned_by(user).kept.on_days(range).to_a
-    series = Planner::Series.owned_by(user).kept.overlapping(range).to_a
+  # title: an optional filter for the results, for the events (by their own title) and
+  # for the series (by the title of the series).
+  def self.for(user, range, title: nil)
+    rows = Core::TitleMatch.apply(Planner::Event.owned_by(user).kept.on_days(range), title).to_a
+    series = Core::TitleMatch.apply(Planner::Series.owned_by(user).kept.overlapping(range), title).to_a
     chronological(rows + unsaved_occurrences(series, range))
   end
 
