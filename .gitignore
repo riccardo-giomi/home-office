@@ -36,3 +36,10 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# A database copied into the project (a backup, a download) must not be
+# committed.
+/*.sqlite3
+
+# The key of a credentials file for one environment.
+/config/credentials/*.key
