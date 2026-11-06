@@ -35,6 +35,14 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal I18n.t("sessions.invalid"), flash[:alert]
   end
 
+  it "counts the failures by the address of the connection, not by a forwarded one that it cannot trust" do
+    11.times do |number|
+      post session_path, params: {email_address: users(:admin).email_address, password: "wrong password here"},
+        headers: {"X-Forwarded-For" => "198.51.100.#{number}"}, env: {"REMOTE_ADDR" => "203.0.113.9"}
+    end
+    assert_equal I18n.t("sessions.rate_limited"), flash[:alert]
+  end
+
   it "refuses even the correct password after 10 failures" do
     10.times { sign_in(password: "wrong password here") }
     sign_in

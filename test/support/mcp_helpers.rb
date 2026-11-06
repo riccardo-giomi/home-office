@@ -63,10 +63,10 @@ module McpHelpers
   def rpc(method, params = nil, id: 1) = {jsonrpc: "2.0", id:, method:, params:}.compact
 
   # Posts one JSON-RPC message as the token; the answer is `rpc_body`
-  def mcp_post(token, message, headers: {})
+  def mcp_post(token, message, headers: {}, env: {})
     body = message.is_a?(String) ? message : message.to_json
     auth = token ? bearer(token) : {}
-    post mcp_path, params: body, headers: JSON_HEADERS.merge(auth).merge(headers)
+    post mcp_path, params: body, headers: JSON_HEADERS.merge(auth).merge(headers), env:
   end
 
   def rpc_body = JSON.parse(response.body)

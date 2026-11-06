@@ -6,10 +6,12 @@
 # It is an API controller on purpose: no cookies, no CSRF token, no browser
 # checks. The token is the only way in.
 class McpController < ActionController::API
+  include Core::ClientAddress
+
   MAX_BODY = 256.kilobytes
   MAX_NESTING = 32
 
-  rate_limit to: 120, within: 1.minute, by: -> { authenticated_token&.token_digest || request.remote_ip },
+  rate_limit to: 120, within: 1.minute, by: -> { authenticated_token&.token_digest || client_address },
     with: -> { rpc_error(429, -32000, "Too many requests. Wait a minute and try again.") }
   before_action :reject_foreign_origin, :authenticate_token
 

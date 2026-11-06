@@ -181,11 +181,34 @@ class McpControllerTest < ActionDispatch::IntegrationTest
       assert_response :success
     end
 
+    def unknown_token(number) = {"Authorization" => "Bearer ho_#{number.to_s.rjust(64, "0")}"}
+
     it "counts requests with an unknown token against the address, whatever text each one sends" do
-      121.times { |number| mcp_post(nil, rpc("ping"), headers: {"Authorization" => "Bearer ho_#{number.to_s.rjust(64, "0")}"}) }
+      121.times { |number| mcp_post(nil, rpc("ping"), headers: unknown_token(number)) }
       assert_response :too_many_requests
       mcp_post("member_write", rpc("ping"))
       assert_response :success
+    end
+
+    it "does not count the requests of one address against another" do
+      121.times { |number| mcp_post(nil, rpc("ping"), headers: unknown_token(number)) }
+      assert_response :too_many_requests
+      mcp_post(nil, rpc("ping"), headers: unknown_token(1).merge("X-Forwarded-For" => "198.51.100.7"), env: {"REMOTE_ADDR" => "172.21.0.3"})
+      assert_response :unauthorized
+    end
+
+    it "counts a request through a proxy against the client in X-Forwarded-For" do
+      proxy = {"REMOTE_ADDR" => "172.21.0.3"}
+      121.times { |number| mcp_post(nil, rpc("ping"), headers: unknown_token(number).merge("X-Forwarded-For" => "198.51.100.7, 172.21.0.5"), env: proxy) }
+      assert_response :too_many_requests
+      mcp_post(nil, rpc("ping"), headers: unknown_token(1).merge("X-Forwarded-For" => "198.51.100.8, 172.21.0.5"), env: proxy)
+      assert_response :unauthorized
+    end
+
+    it "does not believe X-Forwarded-For from an address that is not a proxy" do
+      public_address = {"REMOTE_ADDR" => "203.0.113.9"}
+      121.times { |number| mcp_post(nil, rpc("ping"), headers: unknown_token(number).merge("X-Forwarded-For" => "198.51.100.#{number % 250}"), env: public_address) }
+      assert_response :too_many_requests
     end
   end
 
