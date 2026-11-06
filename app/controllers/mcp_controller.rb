@@ -9,7 +9,7 @@ class McpController < ActionController::API
   MAX_BODY = 256.kilobytes
   MAX_NESTING = 32
 
-  rate_limit to: 120, within: 1.minute, by: -> { presented_digest || request.remote_ip },
+  rate_limit to: 120, within: 1.minute, by: -> { authenticated_token&.token_digest || request.remote_ip },
     with: -> { rpc_error(429, -32000, "Too many requests. Wait a minute and try again.") }
   before_action :reject_foreign_origin, :authenticate_token
 
@@ -58,7 +58,7 @@ class McpController < ActionController::API
   end
 
   def authenticate_token
-    @token = Core::McpToken.authenticate(presented_token)
+    @token = authenticated_token
     return unauthorized unless @token
 
     @token.touch_last_used
@@ -66,7 +66,14 @@ class McpController < ActionController::API
 
   def presented_token = request.authorization.to_s[/\ABearer (\S+)\z/i, 1]
 
-  def presented_digest = (Core::McpToken.digest(presented_token) if presented_token)
+  # Returns the token that the request presents, or nil for no token, an unknown
+  # one or one of a deactivated user. It is looked up once for each request,
+  # because the rate limit and the authentication both use it.
+  def authenticated_token
+    return @authenticated_token if defined?(@authenticated_token)
+
+    @authenticated_token = Core::McpToken.authenticate(presented_token)
+  end
 
   def unauthorized
     response.headers["WWW-Authenticate"] = 'Bearer realm="Home Office"'

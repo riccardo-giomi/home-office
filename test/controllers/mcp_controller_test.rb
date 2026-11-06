@@ -181,8 +181,8 @@ class McpControllerTest < ActionDispatch::IntegrationTest
       assert_response :success
     end
 
-    it "counts requests with a wrong token against the text that was sent, not against everyone" do
-      121.times { mcp_post(nil, rpc("ping"), headers: {"Authorization" => "Bearer ho_#{"8" * 64}"}) }
+    it "counts requests with an unknown token against the address, whatever text each one sends" do
+      121.times { |number| mcp_post(nil, rpc("ping"), headers: {"Authorization" => "Bearer ho_#{number.to_s.rjust(64, "0")}"}) }
       assert_response :too_many_requests
       mcp_post("member_write", rpc("ping"))
       assert_response :success
