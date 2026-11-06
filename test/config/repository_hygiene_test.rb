@@ -18,4 +18,20 @@ describe "the repository" do
       assert ignored?(path), "#{path} is not ignored"
     end
   end
+
+  describe "the Kamal files" do
+    %w[config/deploy.production.yml .kamal/secrets.production].each do |path|
+      it "ignores #{path}, which holds the values of a server" do
+        skip "no .git directory" unless git
+        assert ignored?(path), "#{path} is not ignored"
+      end
+    end
+
+    %w[config/deploy.yml .kamal/secrets-common].each do |path|
+      it "keeps #{path}, which holds no value of a server" do
+        skip "no .git directory" unless git
+        refute ignored?(path), "#{path} is ignored"
+      end
+    end
+  end
 end

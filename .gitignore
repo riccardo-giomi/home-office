@@ -43,3 +43,7 @@
 
 # The key of a credentials file for one environment.
 /config/credentials/*.key
+
+# The files of a Kamal destination hold the values of a real server.
+/config/deploy.*.yml
+/.kamal/secrets.*
