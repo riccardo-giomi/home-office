@@ -111,7 +111,7 @@ en:
         time_format: 12h
     setup:
       admin:
-        created: Created the administratbr %{email}.
+        created: Created the administrator %{email}.
         email_prompt: 'Email address of the administrator: '
         no_password: No password given. Set HOME_OFFICE_ADMIN_PASSWORD or run this task in a terminal.
         password_confirm_prompt: 'Type the password again: '
