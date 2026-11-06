@@ -55,6 +55,10 @@ env:
     # and one when the application starts) or off.
     HOME_OFFICE_CATCH_UP: job
 
+    # The time zone in which the schedules (the backup at 3am, for example) are
+    # read. UTC if it is not set.
+    # HOME_OFFICE_SCHEDULE_TIME_ZONE: Europe/Rome
+
     # Set to true when a proxy or kamal-proxy terminates SSL.
     # HOME_OFFICE_SSL: true
 

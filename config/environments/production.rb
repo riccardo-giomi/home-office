@@ -58,6 +58,14 @@ Rails.application.configure do
   config.active_job.queue_adapter = :solid_queue
   config.solid_queue.connects_to = {database: {writing: :queue}}
 
+  # The time zone in which the schedules of config/recurring.yml are read
+  # ("every day at 3am"). It is the zone in HOME_OFFICE_SCHEDULE_TIME_ZONE, for
+  # example Europe/Rome, and UTC if the variable is empty. A name that is not a
+  # time zone stops the application at boot.
+  if (zone = ENV["HOME_OFFICE_SCHEDULE_TIME_ZONE"].presence)
+    config.solid_queue.time_zone = Time.find_zone!(zone)
+  end
+
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
