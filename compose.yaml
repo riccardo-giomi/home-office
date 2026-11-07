@@ -1,0 +1,42 @@
+# The production image on this computer:
+#   export RAILS_MASTER_KEY=$(cat config/master.key)
+#   docker compose up --build -d
+# Every `docker compose` command needs the variable, because Compose reads this
+# file for each one.
+services:
+  app:
+    build: .
+    ports:
+      - "3000:80"
+    environment:
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY:?Set RAILS_MASTER_KEY, for example from config/master.key}
+      SOLID_QUEUE_IN_PUMA: "true"
+      HOME_OFFICE_CATCH_UP: job
+      # The time zone in which the schedules are read; UTC if it is not set.
+      # HOME_OFFICE_SCHEDULE_TIME_ZONE: Europe/Rome
+      # The other settings, with their defaults:
+      # HOME_OFFICE_CATCH_UP_SCHEDULE: every hour at minute 5
+      # HOME_OFFICE_PURGE_SCHEDULE: every hour
+      # HOME_OFFICE_BACKUP_SCHEDULE: every day at 3am
+      # HOME_OFFICE_BACKUP_KEEP: 14
+      # HOME_OFFICE_BACKUP_DIR: storage/backups
+      # True when a proxy in front ends SSL.
+      # HOME_OFFICE_SSL: "true"
+      # True lets an administrator delete a deactivated user for good.
+      # HOME_OFFICE_ENABLE_HARD_DELETE: "true"
+    volumes:
+      - storage:/rails/storage
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+
+volumes:
+  storage:
