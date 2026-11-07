@@ -52,6 +52,9 @@ Rails.application.routes.draw do
 
   get "up" => "rails/health#show", :as => :rails_health_check
 
+  # The manifest of the web application: app/views/pwa/manifest.json.erb
+  get "manifest" => "rails/pwa#manifest", :as => :pwa_manifest
+
   post "mcp", to: "mcp#create"
   match "mcp", to: "mcp#unsupported", via: %i[get put patch delete]
 
