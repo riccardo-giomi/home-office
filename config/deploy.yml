@@ -62,6 +62,11 @@ env:
     # Set to true when a proxy or kamal-proxy terminates SSL.
     # HOME_OFFICE_SSL: true
 
+    # The addresses that browsers use to reach the application, separated by
+    # commas. Needed for live updates when a proxy sends the application a
+    # different host from the one in the browser.
+    # HOME_OFFICE_ALLOWED_ORIGINS: https://home-office.example.com:8081
+
     # Where the daily copies of the database go (default: storage/backups, in
     # the volume below). A host directory that is mounted for this must exist
     # and belong to the user with id 1000.

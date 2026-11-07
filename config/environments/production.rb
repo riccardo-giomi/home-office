@@ -38,6 +38,16 @@ Rails.application.configure do
   config.force_ssl = ssl
   config.ssl_options = {redirect: {exclude: ->(request) { request.path == "/up" }}}
 
+  # Action Cable accepts a connection when the Origin of the browser has the
+  # scheme and the host of the request. A proxy that sends the application
+  # a different host from the one the browser used, to route to one of several
+  # applications for example, makes them differ, and the connection is refused.
+  # HOME_OFFICE_ALLOWED_ORIGINS lists the addresses the browser uses, separated
+  # by commas, such as "https://home-office.example.com:8081". When it is not
+  # set, the default check stays.
+  origins = ENV["HOME_OFFICE_ALLOWED_ORIGINS"].to_s.split(",").map(&:strip).compact_blank
+  config.action_cable.allowed_request_origins = origins if origins.any?
+
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [:request_id]
   config.logger = ActiveSupport::TaggedLogging.logger($stdout)

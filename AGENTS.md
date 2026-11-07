@@ -8,18 +8,19 @@ endpoint. It is not about changing the code.
 
 Set in the environment of the running application. All are optional.
 
-| Variable                         | Default                  | Meaning                                                                                                   |
-| -------------------------------- | ------------------------ | --------------------------------------------------------------------------------------------------------- |
-| `HOME_OFFICE_ADMIN_PASSWORD`     | a hidden prompt          | Password for the first administrator in `home_office:setup`                                               |
-| `HOME_OFFICE_BACKUP_DIR`         | `storage/backups`        | Where the backups go                                                                                      |
-| `HOME_OFFICE_BACKUP_KEEP`        | `14`                     | How many backups stay                                                                                     |
-| `HOME_OFFICE_BACKUP_SCHEDULE`    | `every day at 3am`       | When the backup job runs; it does nothing on a day that already has a backup                              |
-| `HOME_OFFICE_CATCH_UP`           | `lazy`                   | What makes the past events of series real: `lazy` (the requests of users), `job` (an hourly job) or `off` |
-| `HOME_OFFICE_CATCH_UP_SCHEDULE`  | `every hour at minute 5` | When that job runs                                                                                        |
-| `HOME_OFFICE_ENABLE_HARD_DELETE` | off                      | `1` or `true` lets an administrator delete a deactivated user and all their data                          |
-| `HOME_OFFICE_PURGE_SCHEDULE`     | `every hour`             | When things that have been in the trash too long are deleted for good                                     |
-| `HOME_OFFICE_SCHEDULE_TIME_ZONE` | UTC                      | The time zone in which the schedules above are read, such as `Europe/Rome`                                |
-| `HOME_OFFICE_SSL`                | off                      | `1` or `true` when a proxy ends HTTPS in front of the application                                         |
+| Variable                         | Default                  | Meaning                                                                                                                                     |
+| -------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HOME_OFFICE_ADMIN_PASSWORD`     | a hidden prompt          | Password for the first administrator in `home_office:setup`                                                                                 |
+| `HOME_OFFICE_ALLOWED_ORIGINS`    | none                     | Addresses that browsers use to reach the application, separated by commas; needed when a proxy sends a different host, or live updates fail |
+| `HOME_OFFICE_BACKUP_DIR`         | `storage/backups`        | Where the backups go                                                                                                                        |
+| `HOME_OFFICE_BACKUP_KEEP`        | `14`                     | How many backups stay                                                                                                                       |
+| `HOME_OFFICE_BACKUP_SCHEDULE`    | `every day at 3am`       | When the backup job runs; it does nothing on a day that already has a backup                                                                |
+| `HOME_OFFICE_CATCH_UP`           | `lazy`                   | What makes the past events of series real: `lazy` (the requests of users), `job` (an hourly job) or `off`                                   |
+| `HOME_OFFICE_CATCH_UP_SCHEDULE`  | `every hour at minute 5` | When that job runs                                                                                                                          |
+| `HOME_OFFICE_ENABLE_HARD_DELETE` | off                      | `1` or `true` lets an administrator delete a deactivated user and all their data                                                            |
+| `HOME_OFFICE_PURGE_SCHEDULE`     | `every hour`             | When things that have been in the trash too long are deleted for good                                                                       |
+| `HOME_OFFICE_SCHEDULE_TIME_ZONE` | UTC                      | The time zone in which the schedules above are read, such as `Europe/Rome`                                                                  |
+| `HOME_OFFICE_SSL`                | off                      | `1` or `true` when a proxy ends HTTPS in front of the application                                                                           |
 
 `RAILS_MASTER_KEY` opens the credentials in production.
 `SOLID_QUEUE_IN_PUMA=true` runs the background jobs inside the web process,
