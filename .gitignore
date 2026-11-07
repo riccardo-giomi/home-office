@@ -47,3 +47,5 @@
 # The files of a Kamal destination hold the values of a real server.
 /config/deploy.*.yml
 /.kamal/secrets.*
+/.kamal/hooks/pre-connect
+/.kamal/hooks/post-deploy
