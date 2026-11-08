@@ -6,6 +6,12 @@ Rails.application.configure do
   # The Theme page renders the component previews on the server too; `enabled` stays false, so the
   # public /rails/view_components routes do not exist
   config.view_component.previews.paths = [Rails.root.join("test/components/previews").to_s]
+  # The admin/theme page requires some classes from the ViewComponent previews that are not autoloaded in production, e.g. ExampleUser.
+  # While including files from test/ is a bit clumsy, but the path is very
+  # specific to code related to what the amin/theme page actually shows.
+  # TODO: move component previews in app/, which is the correct place for them
+  # now that they have double duty.
+  config.autoload_paths << Rails.root.join("test/components/previews")
 
   # Code is not reloaded between requests.
   config.enable_reloading = false
