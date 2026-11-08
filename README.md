@@ -1,5 +1,9 @@
 # Home Office
 
+[![CI](https://github.com/riccardo-giomi/home-office/actions/workflows/ci.yml/badge.svg)](https://github.com/riccardo-giomi/home-office/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/riccardo-giomi/home-office)](LICENSE)
+[![Latest tag](https://img.shields.io/github/v/tag/riccardo-giomi/home-office)](https://github.com/riccardo-giomi/home-office/tags)
+
 A Ruby on Rails application that I use as my personal organizer, to bring order
 to my work and personal life.
 
