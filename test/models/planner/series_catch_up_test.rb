@@ -21,7 +21,7 @@ describe "Planner::Series catch-up" do
       first = events(gym).first
       _(events(gym).map { |event| event.occurrence_on.to_s }).must_equal((today - 5..yesterday).map(&:to_s))
       _(first.attributes.slice("title", "day", "tracks_done", "time_zone", "priority", "state")).must_equal(
-        "title" => "Gym", "day" => today - 5, "tracks_done" => 1, "time_zone" => "Europe/Rome", "priority" => "high", "state" => "active"
+        {"title" => "Gym", "day" => today - 5, "tracks_done" => 1, "time_zone" => "Europe/Rome", "priority" => "high", "state" => "active"}
       )
       _(first.start_time).must_equal "18:00"
       _(first.end_time).must_equal "19:00"
