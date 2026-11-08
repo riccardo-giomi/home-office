@@ -4,9 +4,9 @@ class ThemePageTest < ApplicationSystemTestCase
   before { sign_in_through_form users(:admin) }
 
   # The theme switch arrives with the page shell: until then the page is put in a theme by its attribute
-  # The page lists every component preview, so an axe scan of the whole page can
-  # exceed the driver's script timeout on a slow machine. Axe checks each
-  # component on its own in component_previews_test.
+  # No axe scan of the whole page: it only shows what the component previews show,
+  # and it lists all of them, so a scan can exceed the driver's script timeout on a
+  # slow machine. Axe checks each component on its own in component_previews_test.
   %w[light dark].each do |theme|
     it "renders the Theme page in the #{theme} theme" do
       visit admin_theme_path

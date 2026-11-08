@@ -100,10 +100,12 @@ class ShellTest < ApplicationSystemTestCase
   end
 
   %w[light dark].each do |theme|
+    # Not the Theme page: it only shows what the component previews show, and a scan of
+    # the whole page can exceed the driver's script timeout
     it "has no axe violations on every page in the #{theme} theme" do
       users(:admin).update!(theme:)
       sign_in_through_form users(:admin)
-      [root_path, edit_preferences_path, admin_users_path, new_admin_user_path, admin_theme_path].each do |path|
+      [root_path, edit_preferences_path, admin_users_path, new_admin_user_path].each do |path|
         visit path
         assert_selector "html[data-theme=#{theme}]"
         assert_accessible
