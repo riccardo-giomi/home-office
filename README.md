@@ -1,14 +1,22 @@
 # Home Office
 
-A Ruby on Rails application to organize your time: events, tasks and todos,
-with calendar, schedule and agenda views, links between records, repeating
-events, and a dashboard as home page where you can see the status of those at a
-glance.
+A Ruby on Rails application that I use as my personal organizer, to bring order
+to my work and personal life.
+
+It currently focuses on time, the ultimate tyrant: events, tasks and todos.
+It has a calendar, a schedule and an agenda, lets you link items to each other,
+supports repeating events, and has a dashboard where I can see all of my mess
+at a glance.
 
 The interface is in English and Italian, with a light and a dark theme. An MCP
-endpoint lets AI agents read and change your schedule.
+endpoint lets AI agents read and change the schedule.
 
 Built with Ruby on Rails 8.1, SQLite, Hotwire, Tailwind and daisyUI. No Node.
+
+It follows Rails conventions and public standards where they exist (WCAG 2.2 AA
+for accessibility, ISO 8601 and iCalendar for dates and repeating events, a
+Content Security Policy, JSON-RPC and bearer tokens for MCP), and bin/ci checks
+much of it.
 
 ## Run it locally
 
@@ -84,7 +92,7 @@ Keep a copy of the key outside the project, such as in a password manager.
 
 ## Settings
 
-Set in the environment of the running application. All are optional.
+These are set in the environment of the running application. All are optional.
 
 | Variable                         | Default                  | Meaning                                                                                                                                                                                                                             |
 | -------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -94,7 +102,7 @@ Set in the environment of the running application. All are optional.
 | `HOME_OFFICE_BACKUP_KEEP`        | `14`                     | How many backups stay                                                                                                                                                                                                               |
 | `HOME_OFFICE_BACKUP_SCHEDULE`    | `every day at 3am`       | When the backup job runs                                                                                                                                                                                                            |
 | `HOME_OFFICE_CATCH_UP`           | `lazy`                   | What saves the past occurrences of repeating events: `lazy` (on every user request), `job` (an hourly job) or `off` _(1)_                                                                                                           |
-| `HOME_OFFICE_CATCH_UP_SCHEDULE`  | `every hour at minute 5` | If `HOME_OFFICE_CATCH_UP` is set to `job`, this is the schedule used                                                                                                                                                                |
+| `HOME_OFFICE_CATCH_UP_SCHEDULE`  | `every hour at minute 5` | The schedule of that job, only used when HOME_OFFICE_CATCH_UP is set to "job"                                                                                                                                                       |
 | `HOME_OFFICE_ENABLE_HARD_DELETE` | off                      | `1` or `true` lets an administrator delete a deactivated user and all their data                                                                                                                                                    |
 | `HOME_OFFICE_PURGE_SCHEDULE`     | `every hour`             | When things that have been in the trash too long are deleted for good                                                                                                                                                               |
 | `HOME_OFFICE_SCHEDULE_TIME_ZONE` | UTC                      | The time zone in which the schedules above are read, such as `Europe/Rome`                                                                                                                                                          |
@@ -123,7 +131,7 @@ which a single-machine install needs.
 
 ## Agents
 
-In the application make a token under Settings, Access tokens, and point an
+In the application, make a token under Settings, Access tokens, and point an
 MCP client at `POST /mcp` with it. `AGENTS.md` describes the endpoint and says
 what each tool does.
 
