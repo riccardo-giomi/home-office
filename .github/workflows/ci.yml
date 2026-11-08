@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+# The workflow may read the repository and nothing else.
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Reads the Ruby version from .ruby-version and caches the gems.
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      # The same command as on your computer: security audits, linters, tests,
+      # system tests and the seeds.
+      - run: bin/ci
