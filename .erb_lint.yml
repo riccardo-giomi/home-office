@@ -1,4 +1,9 @@
 ---
+# The files of installed gems are not ours to lint. A CI run installs the gems
+# inside the project, in vendor/bundle.
+exclude:
+  - vendor/**/*
+  - node_modules/**/*
 EnableDefaultLinters: true
 linters:
   ErbSafetyLinter:
