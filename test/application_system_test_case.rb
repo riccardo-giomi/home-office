@@ -32,6 +32,14 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   end
 
   def sign_in_through_form(user, password: TEST_PASSWORD)
+    # A request from the previous test's page can reach a busy server after that
+    # test ended, when the session no longer exists. The server redirects the
+    # request to the sign-in page and stores the requested address in the session
+    # cookie, as the page to open after signing in. This sign-in then ends on that
+    # page and not on the home page, and the test fails at the home page check.
+    #
+    # Deleting all cookies before signing in removes the stored address.
+    page.driver.browser.manage.delete_all_cookies
     visit new_session_path
     fill_in I18n.t("sessions.new.email_address"), with: user.email_address
     fill_in I18n.t("sessions.new.password"), with: password
