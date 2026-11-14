@@ -4,6 +4,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   include AxeAssertions
   include LayoutAssertions
   include CspAssertions
+  include BrowserClock
 
   # Headless Chrome has no pointer that can hover, which switches every hover: style off; say it has a mouse
   driven_by :selenium, using: :headless_chrome, screen_size: [1400, 1400] do |options|

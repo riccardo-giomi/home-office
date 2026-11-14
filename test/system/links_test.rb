@@ -7,6 +7,7 @@ class LinksSystemTest < ApplicationSystemTestCase
 
   before do
     travel_to Time.utc(2026, 10, 7, 12)
+    use_server_time_in_browser
     admin.update!(time_zone: "UTC", time_format: "24h", date_format: "dmy", locale: "en")
     sign_in_through_form admin
   end

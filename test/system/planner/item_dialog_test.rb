@@ -20,6 +20,7 @@ class Planner::ItemDialogSystemTest < ApplicationSystemTestCase
     # Fix "today" so that the grid is always consistent with what the scroll
     # assertions below expect.
     travel_to Time.utc(2026, 12, 2, 8, 10)
+    use_server_time_in_browser
     admin.update!(time_zone: "UTC", time_format: "24h")
     sign_in_through_form admin
   end
