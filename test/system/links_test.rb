@@ -2,12 +2,15 @@ require "application_system_test_case"
 
 # The Links section of a record, on its page and in the dialog; the three kinds behave alike
 class LinksSystemTest < ApplicationSystemTestCase
+  include LinkPrefetch
+
   let(:admin) { users(:admin) }
   let(:kinds) { {"event" => :holiday, "task" => :buy_stamps_task, "todo" => :water_plants_todo} }
 
   before do
     travel_to Time.utc(2026, 10, 7, 12)
     use_server_time_in_browser
+    prevent_link_prefetch
     admin.update!(time_zone: "UTC", time_format: "24h", date_format: "dmy", locale: "en")
     sign_in_through_form admin
   end
