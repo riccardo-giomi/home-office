@@ -63,11 +63,11 @@ gem "standard", "~> 1.56", groups: [:development, :test], require: false
 
 gem "minitest-spec-rails", "~> 7.4", group: :test
 
-gem "view_component", "~> 4.15"
+gem "view_component", "~> 4.24"
 
 gem "lookbook", "~> 2.3", group: :development
 
-gem "i18n-tasks", "~> 1.1", groups: [:development, :test]
+gem "i18n-tasks", "~> 1.2", groups: [:development, :test]
 
 gem "axe-core-api", "~> 4.13", group: :test
 gem "axe-core-capybara", "~> 4.13", group: :test
@@ -78,8 +78,8 @@ gem "rails-i18n", "~> 8.1"
 
 gem "pagy", "~> 43.7"
 
-gem "positioning", "~> 0.4.8"
+gem "positioning", "~> 0.5.0"
 
 gem "rrule", "= 0.8.0"
 
-gem "mcp", "= 1.9.0"
+gem "mcp", "1.10.0"
