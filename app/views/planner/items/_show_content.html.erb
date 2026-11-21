@@ -23,7 +23,7 @@
       <dt class="font-semibold"><%= t("planner.items.show.state") %></dt>
       <dd><%= kind_t(item, "state_#{item.state}") %></dd>
     <% end %>
-    <% if item.tracks_done? %>
+    <% if item.tracks_done? && item.active? %>
       <dt class="font-semibold"><%= t("planner.items.show.done") %></dt>
       <dd class="flex items-center gap-2">
         <%= completion_check(item) %>

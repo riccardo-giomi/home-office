@@ -33,6 +33,15 @@ class Planner::StatesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "active", planner_items(:abandoned_task).reload.state
   end
 
+  it "draws no box on the page of an item that cannot be ticked, even a done one" do
+    task.update!(done_at: Time.current)
+    get planner_task_path(task)
+    assert_select "input[name=done]", 1
+    patch planner_item_state_path(task), params: {state: "abandoned"}
+    get planner_task_path(task)
+    assert_select "input[name=done]", 0
+  end
+
   it "carries the back address on to the item page" do
     back = planner_agenda_path(view: "week", date: "2026-10-07")
     patch planner_item_state_path(event), params: {state: "abandoned", back:}
