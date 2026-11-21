@@ -24,7 +24,7 @@ much of it.
 
 ## Run it locally
 
-You need Ruby 4.0.5 (`mise install` reads the version from `mise.toml`) and
+You need Ruby 4.0.10 (`mise install` reads the version from `mise.toml`) and
 Chrome or Chromium with its driver for the system tests.
 
 ```bash
