@@ -78,8 +78,8 @@ gem "rails-i18n", "~> 8.1"
 
 gem "pagy", "~> 43.7"
 
-gem "positioning", "~> 0.4.8"
+gem "positioning", "~> 0.5.0"
 
 gem "rrule", "= 0.8.0"
 
-gem "mcp", "= 1.9.0"
+gem "mcp", "1.10.0"
