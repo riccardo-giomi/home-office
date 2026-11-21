@@ -78,11 +78,13 @@ gem "rails-i18n", "~> 8.1"
 
 gem "pagy", "~> 43.7"
 
+# Keep within the minor version and update deliberately: the position column and
+# its unique index rely on how this version moves a record.
 gem "positioning", "~> 0.5.0"
 
-# Keep pinned and update deliberatly: we use some internals from the gem and
-# rely on the protocols as implemented in this version.
+# Keep pinned and update deliberately: the Expander's contract tests
+# (time zones, clock changes, short months) were checked with this version.
 gem "rrule", "= 0.8.0"
-# Keep pinned and update deliberatly: we use some internals from the gem and
+# Keep pinned and update deliberately: we use some internals from the gem and
 # rely on the protocols as defined in this version.
 gem "mcp", "= 1.10.0"
