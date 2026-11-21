@@ -2,9 +2,9 @@ require "axe/api"
 require "axe/core"
 
 module AxeAssertions
-  # Axe::API::A11yCheck raises on Ruby 4.0.5, so call the core directly.
-  # within: a selector, for what is on top of the page (an open modal dialog; the page behind it
-  # is inert and dimmed by the backdrop, which axe would report as low contrast)
+  # Axe::API::A11yCheck does not load with RubyGems 4 (it passes
+  # Gem::Deprecate#deprecate two arguments, not four), so call the core
+  # directly.
   def assert_accessible(page = self.page, within: nil)
     wait_for_transitions
     run = Axe::API::Run.new
