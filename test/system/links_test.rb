@@ -316,6 +316,15 @@ class LinksSystemTest < ApplicationSystemTestCase
       assert_selector "#links-section a", text: "Water the plants"
     end
 
+    it "leaves the pin out of a row narrower than 26rem, where the statuses keep the room" do
+      page.current_window.resize_to(1400, 900)
+      visit planner_todos_path
+      assert_button "Select Water the plants"
+      page.current_window.resize_to(320, 900)
+      assert_link "Water the plants"
+      assert_no_button "Select Water the plants"
+    end
+
     it "shows the number of links of an untimed task on the Schedule's day, and its list in the dialog" do
       visit planner_schedule_path(date: "2026-10-08")
       assert_selector "[role=img][aria-label='1 link']"

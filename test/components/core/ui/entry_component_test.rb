@@ -224,6 +224,11 @@ describe Core::UI::EntryComponent do
       render_inline(entry) { |component| component.with_commands { pin } }
       assert_selector "div.flex-nowrap button#pin"
     end
+
+    it "leaves them out below 26rem, where the statuses need the room" do
+      render_inline(entry) { |component| component.with_commands { pin } }
+      assert_selector "div.hidden[class~='@min-[26rem]:flex'] button#pin"
+    end
   end
 
   it "marks the entry it was asked to reveal, and only that one" do

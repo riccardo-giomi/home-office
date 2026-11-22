@@ -17,7 +17,9 @@
 # the icon when the word is not shown.
 #
 # commands: small buttons at the end of the same line, above the link that
-# covers the entry. The page decides which entries get them.
+# covers the entry. The page decides which entries get them. An entry narrower
+# than 26rem does not show them: the statuses keep the room, and every command
+# is also on the record's own page.
 #
 # reveal: true when the address of the page asks for this entry (`at=<id>`).
 # When the page opens, the entry scrolls to the center of the screen and its
@@ -81,8 +83,9 @@ class Core::UI::EntryComponent < ApplicationComponent
   def check_above = (tag.div(check, class: "relative z-10") if check?)
 
   # The commands stay above the link that covers the whole entry, so they can be
-  # used, and go to the end of the line.
-  def commands_end = (tag.div(commands, class: "relative z-10 ms-auto flex shrink-0 items-center gap-1") if commands?)
+  # used, and go to the end of the line. Below 26rem they are not drawn at all
+  # (display: none), so they cannot take the keyboard focus either.
+  def commands_end = (tag.div(commands, class: "relative z-10 ms-auto hidden shrink-0 items-center gap-1 @min-[26rem]:flex") if commands?)
 
   def status_strip
     return if @statuses.empty?
