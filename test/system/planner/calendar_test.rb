@@ -33,12 +33,15 @@ class Planner::CalendarSystemTest < ApplicationSystemTestCase
     click_link periods("next.month")
     assert_selector "header", text: I18n.l(Date.current.next_month, format: "%B %Y")
     click_link periods("previous.month")
+    assert_selector "header", text: I18n.l(Date.current, format: "%B %Y")
     click_link periods("views.week")
     assert_selector "nav a[aria-current=true]", text: periods("views.week")
     click_link periods("next.week")
+    assert_no_text "Standup"
     click_link periods("views.day")
     assert_selector "nav a[aria-current=true]", text: periods("views.day")
     click_link periods("next.day")
+    assert_title(/#{I18n.t("date.day_names")[(Date.current.next_month.prev_month + 8).wday]}/)
     click_link I18n.t("core.ui.period_nav.today")
     assert_text "Standup"
     assert evaluate_script("window.stillHere"), "a full page load happened"
