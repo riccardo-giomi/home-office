@@ -181,6 +181,16 @@ class Planner::ItemDialogSystemTest < ApplicationSystemTestCase
       assert_equal id, evaluate_script("document.activeElement.id")
       assert_selector "main s", text: "Pay the rent", visible: :all
     end
+
+    it "keeps the page behind in place when the first notice arrives, so nothing on it starts again" do
+      make_event "Standup", start_time: "09:00", end_time: "09:30"
+      visit planner_calendar_path(view: "week")
+      execute_script("window.pageHeading = document.querySelector('main h1')")
+      click_link "Standup"
+      click_button I18n.t("planner.kinds.event.abandon")
+      assert_text I18n.t("planner.kinds.event.abandoned")
+      assert evaluate_script("window.pageHeading.isConnected"), "the page behind the dialog was rebuilt"
+    end
   end
 
   it "fills a phone and fits it" do

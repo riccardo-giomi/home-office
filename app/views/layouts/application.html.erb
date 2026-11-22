@@ -45,9 +45,12 @@
       <% end %>
       <main id="main-content" tabindex="-1" data-sidebar-target="page" class="px-5 py-8 focus:outline-none">
         <%= render Core::UI::SelectionBarComponent.new(entries: current_selection.entries, dialog_frames: content_for(:dialog_frames).to_s.split) if authenticated? %>
-        <% flash.each do |kind, message| %>
-          <%= render Core::UI::FlashComponent.new(kind:, message:) %>
-        <% end %>
+        <%# Always present, so that a refresh that adds the first notice updates the page instead of rebuilding it %>
+        <div id="flash">
+          <% flash.each do |kind, message| %>
+            <%= render Core::UI::FlashComponent.new(kind:, message:) %>
+          <% end %>
+        </div>
         <%= yield %>
       </main>
     </div>
