@@ -20,6 +20,7 @@ class Planner::TodosControllerTest < ActionDispatch::IntegrationTest
       assert_select "select[name='planner_todo[priority]']"
       assert_select "textarea[name='planner_todo[notes]']"
       assert_select "input[type=date], input[type=time]", 0
+      assert_select "[data-controller~=time-offset]", 0
     end
 
     it "ignores a day or times sent anyway" do
