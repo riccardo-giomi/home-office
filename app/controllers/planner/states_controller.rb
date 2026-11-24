@@ -1,4 +1,4 @@
-# Abandon, cancel and reopen: each model define it's own rules
+# Abandon, cancel and reopen: each model defines its own rules
 # (Item#change_state), this only reports what happened.
 class Planner::StatesController < ApplicationController
   include Planner::ItemPages
