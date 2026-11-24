@@ -124,7 +124,7 @@ second_tuesday = last_month + ((2 - last_month.wday) % 7) + 7
 
   # Trashed the way the app does it, and then made older.
   Planner::Recurrence::Delete.new(series:, item: series.occurrence(series.starts_on), scope: "all").call
-  series.update_columns(deleted_at: Time.current - attrs[:trashed])
+  series.reload.update_columns(deleted_at: Time.current - attrs[:trashed])
 end
 
 # Piano practice has one occurrence done, one with notes of its own and one
