@@ -32,8 +32,8 @@ class Core::UI::EntryStripPreview < ViewComponent::Preview
   EVERY_STATUS = [{icon: :minus_circle, label: "Abandoned"}, {priority: :urgent, label: "Urgent priority"}, REPEATS, {icon: :link, label: "12 links", count: 12}].freeze
 
   OPTIONS = [
-    {name: "Wide enough for the pin (26rem), with a check", size: "w-104", check: true, pin: true, title: "Pay the rent", statuses: LINKS},
-    {name: "Wide enough for the pin (26rem), every status", size: "w-104", check: true, pin: true, title: "Review the plan", statuses: EVERY_STATUS},
+    {name: "Wide enough for the pin (27rem), with a check", size: "w-108", check: true, pin: true, title: "Pay the rent", statuses: LINKS},
+    {name: "Wide enough for the pin (27rem), every status", size: "w-108", check: true, pin: true, title: "Review the plan", statuses: EVERY_STATUS},
     {name: "Phone width (18rem): every status, no room for the pin", size: "w-72", check: true, pin: true, title: "Review the plan", statuses: EVERY_STATUS},
     {name: "No check, no pin", size: "w-72", check: false, pin: false, title: "Dentist", statuses: LINKS},
     {name: "Narrow (9.5rem): no pin", size: "w-40", check: true, pin: true, title: "Dentist, Wednesday", statuses: EVERY_STATUS},
