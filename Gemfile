@@ -87,4 +87,4 @@ gem "positioning", "~> 0.5.0"
 gem "rrule", "= 0.8.0"
 # Keep pinned and update deliberately: we use some internals from the gem and
 # rely on the protocols as defined in this version.
-gem "mcp", "= 1.10.0"
+gem "mcp", "= 1.11.0"
