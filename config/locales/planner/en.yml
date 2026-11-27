@@ -258,7 +258,6 @@ en:
     nav:
       agenda: Agenda
       calendar: Calendar
-      events: Events
       forgotten_tasks: Forgotten tasks
       forgotten_tasks_badge:
         one: "%{count} forgotten task"

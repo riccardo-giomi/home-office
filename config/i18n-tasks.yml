@@ -151,30 +151,18 @@ ignore_missing:
   - "date.{day_names,abbr_day_names,abbr_month_names}"
 
 ## Consider these keys used:
+## Only the keys that Rails looks up by itself (model names, attribute names,
+## validation messages). Every other key must be found in the code, by one of:
+## - a call to `t()` with the key written out, or with one interpolated part
+##   (`strict: false` above reads that part as a wildcard);
+## - a literal `*_key:` argument with one of the names that the scanner at the
+##   end of this file lists;
+## - for a key built from a variable outside `t()`, one hint per key on the
+##   lines above the code that builds it:
+##   `# i18n-tasks-use t("planner.link_kinds.event")`.
 ignore_unused:
   - "activemodel.*"
   - "activerecord.*"
-  - "core.dashboard.*"
-  - "core.nav.*"
-  - "core.preferences.defaults.*"
-  - "core.ui.time_grid.outside.*"
-  - "planner.dashboard.*"
-  - "planner.forgotten_tasks.index.*"
-  - "planner.important_events.horizons.*"
-  - "planner.important_events.minimums.*"
-  - "planner.important_events.index.empty.*"
-  - "planner.link_homes.*"
-  - "planner.link_kinds.*"
-  - "planner.missed_events.index.*"
-  - "planner.nav.*"
-  - "planner.recurrence.summary.*"
-  - "planner.trash.counts.*"
-  - "planner.trash.kinds.*"
-  - "preferences.date_formats.*"
-  - "preferences.locales.*"
-  - "preferences.themes.*"
-  - "preferences.time_formats.*"
-  - "user.roles.*"
 # - '{devise,kaminari,will_paginate}.*'
 # - 'simple_form.{yes,no}'
 # - 'simple_form.{placeholders,hints,labels}.*'
@@ -207,3 +195,11 @@ ignore_unused:
 #
 # <%# I18n::Tasks.add_scanner 'I18n::Tasks::Scanners::PatternMapper',
 #       patterns: [['\bSpree\.t[( ]\s*%{key}', 'spree.%{key}']] %>
+
+# Manifests and dashboard cards pass locale keys as literal `*_key:` arguments,
+# and the views translate them later. This marks each literal key as used. The
+# names are listed one by one: `foreign_key:` and the prefixes `labels_key:` and
+# `kinds_key:` are not locale keys.
+<% I18n::Tasks.add_scanner "I18n::Tasks::Scanners::PatternMapper",
+  only: %w[*.rb],
+  patterns: [['\b(?:label|title|total|group|subgroup|badge_label)_key:\s*%{key}', "%{key}"]] %>

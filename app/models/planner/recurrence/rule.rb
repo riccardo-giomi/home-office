@@ -90,6 +90,10 @@ class Planner::Recurrence::Rule < Data.define(:frequency, :interval, :weekdays, 
     ending = if until_on then words("until", date: I18n.l(until_on, format: "%-d %b %Y"))
     elsif count then words("times", count:)
     end
+    # i18n-tasks-use t("planner.recurrence.summary.every.daily")
+    # i18n-tasks-use t("planner.recurrence.summary.every.weekly")
+    # i18n-tasks-use t("planner.recurrence.summary.every.monthly")
+    # i18n-tasks-use t("planner.recurrence.summary.every.yearly")
     [[words("every.#{frequency}", count: interval), on].compact.join(" "), ending].compact.join(", ")
   end
 
@@ -98,6 +102,11 @@ class Planner::Recurrence::Rule < Data.define(:frequency, :interval, :weekdays, 
   def monthly_summary
     return words("on_month_day", day: month_day) unless nth_weekday
 
+    # i18n-tasks-use t("planner.recurrence.summary.nth.1")
+    # i18n-tasks-use t("planner.recurrence.summary.nth.2")
+    # i18n-tasks-use t("planner.recurrence.summary.nth.3")
+    # i18n-tasks-use t("planner.recurrence.summary.nth.4")
+    # i18n-tasks-use t("planner.recurrence.summary.nth.-1")
     words("on_nth_weekday", nth: words("nth.#{nth_weekday[/\A-?\d/]}"), weekday: weekday_name(nth_weekday[-2, 2]))
   end
 

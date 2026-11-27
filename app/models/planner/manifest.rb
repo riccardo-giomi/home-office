@@ -48,6 +48,9 @@ Planner::Manifest = Core::ModuleManifest.new(
   trash: Core::TrashSource.new(
     title_key: "planner.nav.groups.planner",
     route: :planner_trash_path,
+    # i18n-tasks-use t("planner.trash.counts.event")
+    # i18n-tasks-use t("planner.trash.counts.task")
+    # i18n-tasks-use t("planner.trash.counts.todo")
     labels_key: "planner.trash.counts",
     counts: ->(user) { Planner::Trash.new(user).counts },
     total: ->(user) { Planner::Trash.new(user).total },
@@ -71,10 +74,16 @@ Planner::Manifest = Core::ModuleManifest.new(
     }
     Core::LinkableKind.new(
       key:,
+      # i18n-tasks-use t("planner.link_kinds.event")
+      # i18n-tasks-use t("planner.link_kinds.task")
+      # i18n-tasks-use t("planner.link_kinds.todo")
       label_key: "planner.link_kinds.#{key}",
       scope: ->(user) { klass.owned_by(user).kept },
       new_route: :"new_planner_#{key}_path",
       home: homes.fetch(key),
+      # i18n-tasks-use t("planner.link_homes.event")
+      # i18n-tasks-use t("planner.link_homes.task")
+      # i18n-tasks-use t("planner.link_homes.todo")
       home_label_key: "planner.link_homes.#{key}",
       dialog_frame: Planner::ItemDialog::FRAME_ID
     )

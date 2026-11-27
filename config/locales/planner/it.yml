@@ -258,7 +258,6 @@ it:
     nav:
       agenda: Agenda
       calendar: Calendario
-      events: Eventi
       forgotten_tasks: Attività dimenticate
       forgotten_tasks_badge:
         one: "%{count} attività dimenticata"
