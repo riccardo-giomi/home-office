@@ -1,5 +1,10 @@
 require "test_helper"
 
+# System tests draw pages with the built stylesheet. `bin/rails test` builds it
+# only when it runs without a path, so a run of one file could test old CSS.
+Rails.application.load_tasks
+Rake::Task["tailwindcss:build"].invoke
+
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   include AxeAssertions
   include LayoutAssertions
