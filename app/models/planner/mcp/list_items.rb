@@ -18,7 +18,7 @@ class Planner::Mcp::ListItems < Core::Mcp::Tool
       state: {type: "string", enum: Query::STATES, description: "Default active."},
       done: {type: "boolean", description: "true: only done; false: only not done."},
       q: {type: "string", description: "Part of the title."},
-      trashed: {type: "boolean", description: "List the trash (newest first; a trashed series is one entry, named s<id>)."},
+      trashed: {type: "boolean", description: "List the trash: series first, one entry each named s<id>, then the items; both newest first."},
       limit: {type: "integer", minimum: 1, maximum: Query::MAX_LIMIT, description: "Default 50."},
       offset: {type: "integer", minimum: 0}
     },

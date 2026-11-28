@@ -1,7 +1,7 @@
 # An item as an agent reads it.
 #
-# Short keys, nothing that is null or the default, and clock times in the time
-# zone of the user (the zone of the item is named only when it differs).
+# Short keys, nothing that is null or the default, and clock times in the zone
+# of the item, which is named only when it differs from the zone of the user.
 #
 # An unsaved occurrence is named by its series and date (`s7@2026-11-03`). A
 # saved one is named by its id and, as `occurrence`, by the same series and

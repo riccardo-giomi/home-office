@@ -35,7 +35,8 @@ class McpController < ActionController::API
       tools: Core::Mcp::Registry.tools_for(@token),
       server_context: {user: @token.user, token: @token},
       instructions: "Home Office: the user's events, tasks and todos. Start with the overview tool. " \
-        "Times are local to the user's time zone, dates ISO 8601. Deleting only moves things to the trash."
+        "Times are local to the user's time zone, except for an item that names its own time_zone; " \
+        "dates ISO 8601. Deleting only moves things to the trash."
     )
   end
 
